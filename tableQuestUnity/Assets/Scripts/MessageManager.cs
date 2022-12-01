@@ -7,6 +7,9 @@ using UnityEngine;
 
 public class MessageManager : MonoBehaviour
 {
+    private float WIDTH_GRID_UNIT = 0.04f; // we're dividing the screen in a grid that is 25 tiles wide
+    private float HEIGHT_GRID_UNIT = 1/14f; //same but 14 tiles high
+
     public OSC osc;
     public TextMeshPro text;
 
@@ -73,8 +76,8 @@ public class MessageManager : MonoBehaviour
     private void CheckObject(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
-        float xCoord = float.Parse(tmp[1]);
-        float yCoord = float.Parse(tmp[2]);
+        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT;
+        float yCoord = (int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
@@ -99,15 +102,16 @@ public class MessageManager : MonoBehaviour
     {
         int id = int.Parse(tmp[0]);
         string value = tmp[1];
-        float xCoord = float.Parse(tmp[2]);
-        float yCoord = float.Parse(tmp[3]);
+        float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT;
+        float yCoord = (int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
         Camera cam = Camera.main;
         float height = 188;
         float width = 399;
         GameObject circle = GameObject.Find("Circle0");
-        circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z);
+        circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
+        Debug.Log("circle.transform.position = " + circle.transform.position);
         float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
-        Debug.Log(deg);
+        //Debug.Log(deg);
         circle.transform.rotation = Quaternion.Euler(0, 0, deg);
         TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
@@ -156,7 +160,7 @@ public class MessageManager : MonoBehaviour
         foreach (TuioEntity t in tuioEvents)
         {
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(t.position.TUIOPosition.x * Screen.width, t.position.TUIOPosition.y * Screen.height, 0));
-            Debug.DrawRay(Camera.main.transform.position, ray.direction * 100, Color.green);
+            //Debug.DrawRay(Camera.main.transform.position, ray.direction * 100, Color.green);
         }
     }
 }
