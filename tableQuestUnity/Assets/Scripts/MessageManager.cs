@@ -62,10 +62,19 @@ public class MessageManager : MonoBehaviour
                 {
                     str += t;
                     //cast an invisible ray that will collide with the first object
-                    Ray ray = Camera.main.ScreenPointToRay(new Vector3(t.position.TUIOPosition.x * Screen.width, t.position.TUIOPosition.y * Screen.height, 0));
-                    if (Physics.Raycast(ray, out RaycastHit hit))
-                        if (hit.transform.GetComponent<OSCEvent>() != null)
-                            hit.transform.GetComponent<OSCEvent>().RunFunction(t); //will run specific function based on the state of the TUIOEvent
+                    Camera cam = Camera.main;
+                    float height = 2f * cam.orthographicSize;
+                    float width = height * cam.aspect;
+                    RaycastHit2D hitinfo = Physics2D.Raycast(new Vector2(t.position.TUIOPosition.x * width, t.position.TUIOPosition.y * height), Vector2.zero);
+                    if (hitinfo.collider != null)
+                    {
+                        Debug.Log("hello");
+                        if (hitinfo.transform.GetComponent<clickMenu>() != null)
+                        {
+                            Debug.Log("yooooo");
+                            hitinfo.transform.GetComponent<OSCEvent>().RunFunction(t); //will run specific function based on the state of the TUIOEvent
+                        }
+                    }
                 }
                 text.SetText(str);
                 tuioEvents = tuioEvents.Except(deadTouches).ToList();
@@ -89,11 +98,6 @@ public class MessageManager : MonoBehaviour
         {
             Vector2 p = new Vector2(xCoord, 1.0f - yCoord);
             tuioEvent.UpdateCoordinates(p);
-            Camera cam = Camera.main;
-            float height = 2f * cam.orthographicSize;
-            float width = height * cam.aspect;
-            GameObject circle = GameObject.Find("Circle" + id);
-            circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z);
         }
 
     }
@@ -105,14 +109,17 @@ public class MessageManager : MonoBehaviour
         float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT + WIDTH_GRID_UNIT/2;
         float yCoord = (int)(float.Parse(tmp[3]) * 1.125f / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
         Camera cam = Camera.main;
-        float height = 188;
-        float width = 399;
+        float height = 2f * cam.orthographicSize;
+        float width = height * cam.aspect;
         GameObject circle = GameObject.Find("Circle0");
         circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
         Debug.Log("circle.transform.position = " + circle.transform.position);
-        float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
-        //Debug.Log(deg);
-        circle.transform.rotation = Quaternion.Euler(0, 0, deg);
+        if (tmp.Count > 4)
+        {
+            float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
+            //Debug.Log(deg);
+            circle.transform.rotation = Quaternion.Euler(0, 0, deg);
+        }
         TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
