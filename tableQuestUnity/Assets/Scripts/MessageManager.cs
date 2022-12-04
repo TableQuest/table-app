@@ -8,7 +8,7 @@ using UnityEngine;
 public class MessageManager : MonoBehaviour
 {
     private float WIDTH_GRID_UNIT = 0.04f; // we're dividing the screen in a grid that is 25 tiles wide
-    private float HEIGHT_GRID_UNIT = 1/14f; //same but 14 tiles high
+    private float HEIGHT_GRID_UNIT = 1.125f/14f; //same but 14 tiles high
 
     public OSC osc;
     public TextMeshPro text;
@@ -76,8 +76,8 @@ public class MessageManager : MonoBehaviour
     private void CheckObject(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
-        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT;
-        float yCoord = (int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
+        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT + WIDTH_GRID_UNIT/2;
+        float yCoord = (int)(float.Parse(tmp[2]) * 1.125f / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
@@ -102,8 +102,8 @@ public class MessageManager : MonoBehaviour
     {
         int id = int.Parse(tmp[0]);
         string value = tmp[1];
-        float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT;
-        float yCoord = (int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
+        float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT + WIDTH_GRID_UNIT/2;
+        float yCoord = (int)(float.Parse(tmp[3]) * 1.125f / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
         Camera cam = Camera.main;
         float height = 188;
         float width = 399;
