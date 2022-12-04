@@ -36,7 +36,6 @@ public class MessageManager : MonoBehaviour
     {
         string[] messageTab = message.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
         List<string> tmp = new List<string>(messageTab);
-        Debug.Log(tmp[0]);
     //    Debug.Log(string.Join(",", tmp));
         switch (tmp[0])
         {
@@ -66,12 +65,13 @@ public class MessageManager : MonoBehaviour
                     float height = 2f * cam.orthographicSize;
                     float width = height * cam.aspect;
                     RaycastHit2D hitinfo = Physics2D.Raycast(new Vector2(t.position.TUIOPosition.x * width, t.position.TUIOPosition.y * height), Vector2.zero);
+                    Debug.Log(t);
+                    Debug.Log("raycast This");
                     if (hitinfo.collider != null)
                     {
                         Debug.Log("hello");
                         if (hitinfo.transform.GetComponent<clickMenu>() != null)
                         {
-                            Debug.Log("yooooo");
                             hitinfo.transform.GetComponent<OSCEvent>().RunFunction(t); //will run specific function based on the state of the TUIOEvent
                         }
                     }
@@ -113,7 +113,6 @@ public class MessageManager : MonoBehaviour
         float width = height * cam.aspect;
         GameObject circle = GameObject.Find("Circle0");
         circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
-        Debug.Log("circle.transform.position = " + circle.transform.position);
         if (tmp.Count > 4)
         {
             float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;

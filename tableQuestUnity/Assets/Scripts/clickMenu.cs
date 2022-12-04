@@ -21,4 +21,9 @@ public class clickMenu : MonoBehaviour
     {
         Debug.Log("click");
     }
+
+    public void printbis()
+    {
+        Debug.Log("click");
+    }
 }
