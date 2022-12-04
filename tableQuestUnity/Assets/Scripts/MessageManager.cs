@@ -7,8 +7,9 @@ using UnityEngine;
 
 public class MessageManager : MonoBehaviour
 {
-    private float WIDTH_GRID_UNIT = 0.04f; // we're dividing the screen in a grid that is 25 tiles wide
-    private float HEIGHT_GRID_UNIT = 1.125f/14f; //same but 14 tiles high
+    private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
+    private float HEIGHT_GRID_UNIT = 1.2f/14f; //same but 14 tiles high
+    private float RATIO_MULTIPLIER = 1.2f; // value added to position operations so they're still correctly displayed even tho height != width
 
     public OSC osc;
     public TextMeshPro text;
@@ -77,7 +78,7 @@ public class MessageManager : MonoBehaviour
     {
         int id = int.Parse(tmp[0]);
         float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT + WIDTH_GRID_UNIT/2;
-        float yCoord = (int)(float.Parse(tmp[2]) * 1.125f / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
+        float yCoord = (int)(float.Parse(tmp[2]) * RATIO_MULTIPLIER / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
@@ -103,12 +104,12 @@ public class MessageManager : MonoBehaviour
         int id = int.Parse(tmp[0]);
         string value = tmp[1];
         float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT + WIDTH_GRID_UNIT/2;
-        float yCoord = (int)(float.Parse(tmp[3]) * 1.125f / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
+        float yCoord = (int)(float.Parse(tmp[3]) * RATIO_MULTIPLIER / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
         Camera cam = Camera.main;
         float height = 188;
         float width = 399;
         GameObject circle = GameObject.Find("Circle0");
-        circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
+        circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z);
         Debug.Log("circle.transform.position = " + circle.transform.position);
         float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
         //Debug.Log(deg);
