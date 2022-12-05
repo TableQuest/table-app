@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,5 +47,13 @@ public class GridManager : MonoBehaviour
 
     public Tile getTileAtPosition(int x, int y) {
         return getTileAtPosition(new Vector2(x, y));
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

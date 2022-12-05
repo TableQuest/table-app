@@ -8,8 +8,10 @@ using UnityEngine;
 public class MessageManager : MonoBehaviour
 {
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
-    private float HEIGHT_GRID_UNIT = 1.2f/14f; //same but 14 tiles high
-    private float RATIO_MULTIPLIER = 1.2f; // value added to position operations so they're still correctly displayed even tho height != width
+    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
+    //private float RATIO_MULTIPLIER = 1.2f; // value added to position operations so they're still correctly displayed even tho height != width
+
+    private GridManager grid;
 
     public OSC osc;
     public TextMeshPro text;
@@ -25,6 +27,8 @@ public class MessageManager : MonoBehaviour
     {
         osc.SetAddressHandler(cursor, Generate2DTUIOEvent);
         osc.SetAddressHandler(obj, Generate2DTUIOEvent);
+
+        grid = GameObject.Find("GridManager").GetComponent<GridManager>();
     }
 
     private void Generate2DTUIOEvent(OscMessage oscM)
@@ -83,8 +87,8 @@ public class MessageManager : MonoBehaviour
     private void CheckObject(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
-        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT + WIDTH_GRID_UNIT/2;
-        float yCoord = (int)(float.Parse(tmp[2]) * RATIO_MULTIPLIER / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
+        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
+        float yCoord = (int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT);
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
@@ -104,17 +108,18 @@ public class MessageManager : MonoBehaviour
     {
         int id = int.Parse(tmp[0]);
         string value = tmp[1];
-        float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT + WIDTH_GRID_UNIT/2;
-        float yCoord = (int)(float.Parse(tmp[3]) * RATIO_MULTIPLIER / HEIGHT_GRID_UNIT) * HEIGHT_GRID_UNIT;
+        float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT);
+        float yCoord = (int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT);
         Camera cam = Camera.main;
         float height = 2f * cam.orthographicSize;
         float width = height * cam.aspect;
         GameObject circle = GameObject.Find("Circle0");
-        circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
+        circle.transform.position = new Vector3(grid.getTileAtPosition(0, 0).getWidth() * xCoord + grid.getTileAtPosition(0, 0).getWidth()/2,
+                                                grid.getTileAtPosition(0, 0).getHeight() * yCoord + grid.getTileAtPosition(0, 0).getHeight()/2,
+                                                circle.transform.position.z);
         if (tmp.Count > 4)
         {
             float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
-            //Debug.Log(deg);
             circle.transform.rotation = Quaternion.Euler(0, 0, deg);
         }
         TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.Id == id);
@@ -164,7 +169,6 @@ public class MessageManager : MonoBehaviour
         foreach (TuioEntity t in tuioEvents)
         {
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(t.position.TUIOPosition.x * Screen.width, t.position.TUIOPosition.y * Screen.height, 0));
-            //Debug.DrawRay(Camera.main.transform.position, ray.direction * 100, Color.green);
         }
     }
 }
