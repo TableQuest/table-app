@@ -114,8 +114,8 @@ public class MessageManager : MonoBehaviour
         float height = 2f * cam.orthographicSize;
         float width = height * cam.aspect;
         GameObject circle = GameObject.Find("Circle0");
-        circle.transform.position = new Vector3(grid.getTileAtPosition(0, 0).getWidth() * xCoord + grid.getTileAtPosition(0, 0).getWidth()/2,
-                                                grid.getTileAtPosition(0, 0).getHeight() * yCoord + grid.getTileAtPosition(0, 0).getHeight()/2,
+        circle.transform.position = new Vector3(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth()/2,
+                                                grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight()/2,
                                                 circle.transform.position.z);
         if (tmp.Count > 4)
         {

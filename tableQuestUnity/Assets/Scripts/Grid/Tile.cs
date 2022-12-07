@@ -24,11 +24,11 @@ public class Tile : MonoBehaviour
         highlighter.SetActive(false);
     }
 
-    public int getWidth() {
+    public int GetWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public int GetHeight() {
         return height;
     }
 }

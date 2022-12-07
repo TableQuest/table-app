@@ -24,8 +24,8 @@ public class GridManager : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 var spawnedTile = Instantiate(tile,
-                                                new Vector3(x*tile.getWidth()+tile.getWidth()/2,
-                                                            y*tile.getHeight()+tile.getHeight()/2),
+                                                new Vector3(x*tile.GetWidth()+tile.GetWidth()/2,
+                                                            y*tile.GetHeight()+tile.GetHeight()/2),
                                                 Quaternion.identity, canvas);
                 spawnedTile.name = $"Tile {x} {y}";
 
@@ -37,7 +37,7 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    public Tile getTileAtPosition(Vector2 pos) {
+    public Tile GetTileAtPosition(Vector2 pos) {
         if (tiles.TryGetValue(pos, out var tile))
         {
             return tile;
@@ -45,15 +45,15 @@ public class GridManager : MonoBehaviour
         return null;
     }
 
-    public Tile getTileAtPosition(int x, int y) {
-        return getTileAtPosition(new Vector2(x, y));
+    public Tile GetTileAtPosition(int x, int y) {
+        return GetTileAtPosition(new Vector2(x, y));
     }
 
-    public int getWidth() {
+    public int GetWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public int GetHeight() {
         return height;
     }
 }
