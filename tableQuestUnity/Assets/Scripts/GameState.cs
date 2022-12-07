@@ -27,6 +27,7 @@ public class GameState
 		{
 			case STATE.INIT:
 				HandleEventInit(id, pos);
+				MoveTangiblePlaying(id, pos);
 				break;
 			case STATE.PLAYING:
 				MoveTangiblePlaying(id, pos);
@@ -40,10 +41,16 @@ public class GameState
 	{
 		if (!_entityManager.Exists(id) && !_menuManager.Exists(id))
 		{
-			if (!IsInZone(id))
+			string _idMenu = _menuManager.IsInZone(pos);
+			if(_idMenu == "")
 			{
-				_menuManager.createZone();
-			}
+				Debug.Log("salut");
+				_menuManager.CreateNewMenu(id,pos);
+			} else
+            {
+				_entityManager.CreateNewPlayer(id, pos, _idMenu);
+				_menuManager.SetMenuGlobalID(_idMenu, id);
+            }
 		}
 	}
     

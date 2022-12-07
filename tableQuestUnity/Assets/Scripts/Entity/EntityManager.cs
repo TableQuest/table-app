@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EntityManager
+public class EntityManager : MonoBehaviour
 {
 
 	List<Player> players;
@@ -16,12 +16,34 @@ public class EntityManager
 
     public bool Exists(string id)
     {
-        throw new NotImplementedException();
+        foreach(Player player in players)
+        {
+            if(player.id == id)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
-    internal void Move(string id, Vector2 pos)
+    public void Move(string id, Vector2 pos)
     {
-        throw new NotImplementedException();
+        foreach (Player player in players)
+        {
+            if (player.id == id)
+            {
+                player.Move(pos);
+            }
+        }
+    }
+
+
+    public void CreateNewPlayer(string id, Vector2 pos, string idMenu)
+    {
+        Player player = new Player(id, id + idMenu, pos);
+        players.Add(player);
+        player.tangibleObject = Instantiate(Resources.Load("Prefab/Player") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
+        player.tangibleObject.name = "Menu" + id;
     }
 }
 

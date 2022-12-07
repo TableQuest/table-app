@@ -116,44 +116,9 @@ public class MessageManager : MonoBehaviour
         float yCoord = -(int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) + 14 ;
         float xPosition = grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2;
         float yPosition = grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2;
-        Camera cam = Camera.main;
-        float height = 2f * cam.orthographicSize;
-        float width = height * cam.aspect;
-        GameObject playerOrMenu = GameObject.Find("Player" + value + "(Clone)") == null ? GameObject.Find("Menu" + value + "(Clone)") : GameObject.Find("Player" + value + "(Clone)");
-        if (playerOrMenu != null)
-        {
-            playerOrMenu.transform.position = new Vector3(width * xCoord, height - height * yCoord, playerOrMenu.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
-            if (tmp.Count > 4)
-            {
-                float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
-                playerOrMenu.transform.rotation = Quaternion.Euler(0, 0, deg);
-            }
-        }
-        
         TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.value == value);
-        //TODO check si le max de joueur atteint
         if (tuioEvent == null)
         {
-            menuPrefab.name = "Menu" + value;
-            int tempLenZoneList = zonesMenuActives.Count;
-            Debug.Log(tempLenZoneList);
-            string valueMenuOfPlayer = isInZone(new Vector2(xPosition, yPosition));
-            if (zonesMenuActives.Count != tempLenZoneList)
-            {
-                Debug.Log("yooo");
-                if (valueMenuOfPlayer != "")
-                {
-                    Debug.Log("salut");
-                    playerPrefab.name = "Player" + value;
-                    Instantiate(playerPrefab, new Vector3(xPosition, yPosition, -10), Quaternion.identity);
-                }
-                
-            }
-            if(valueMenuOfPlayer == "")
-            {
-                Instantiate(menuPrefab, new Vector3(xPosition, yPosition, -10), Quaternion.identity);
-                createNewZoneMenu(xPosition, yPosition, value);
-            }
             tuioEvent = new TuioObject(id, xCoord, 1.0f - yCoord, value);
             tuioEvents.Add(tuioEvent);
             StartCoroutine(InstantiateType(tuioEvent));
@@ -162,12 +127,8 @@ public class MessageManager : MonoBehaviour
         {
             Vector2 p = new Vector2(xCoord, 1.0f - yCoord);
             tuioEvent.UpdateCoordinates(p);
-            playerOrMenu.transform.position = new Vector3(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2,
-                                              grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2,
-                                              playerOrMenu.transform.position.z);
         }
-       
-
+        gameState.HandleTangibleEvents(value, new Vector2(xPosition, yPosition));
     }
 
     private IEnumerator InstantiateType(TuioEntity tuioEvent)
@@ -209,9 +170,6 @@ public class MessageManager : MonoBehaviour
     {
         foreach (GameObject zone in zonesMenuActives)
         {
-            Debug.Log(positionTangible);
-            Debug.Log(zone.GetComponent<SpriteRenderer>().bounds.center);
-            Debug.Log(zone.GetComponent<SpriteRenderer>().bounds.extents.x);
             if (Vector2.Distance(positionTangible, zone.GetComponent<SpriteRenderer>().bounds.center) <= zone.GetComponent<SpriteRenderer>().bounds.extents.x)
             {
                 Debug.Log("DANS ZONE");

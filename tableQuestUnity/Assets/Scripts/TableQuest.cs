@@ -11,6 +11,7 @@ public class TableQuest : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
         _gameState = new GameState();
-
+        Debug.Log(GameObject.Find("Manager").GetComponent<MessageManager>());
+        GameObject.Find("Manager").GetComponent<MessageManager>().gameState = _gameState;
     }
 }
