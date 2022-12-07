@@ -13,6 +13,7 @@ public class MessageManager : MonoBehaviour
 
     private GridManager grid;
 
+    public GameState gameState;
     public OSC osc;
     public TextMeshPro text;
     public GameObject menuPrefab;
