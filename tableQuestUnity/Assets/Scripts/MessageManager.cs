@@ -7,11 +7,22 @@ using UnityEngine;
 
 public class MessageManager : MonoBehaviour
 {
+    private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
+    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
+    //private float RATIO_MULTIPLIER = 1.2f; // value added to position operations so they're still correctly displayed even tho height != width
+
+    private GridManager grid;
+
+    public GameState gameState;
     public OSC osc;
     public TextMeshPro text;
+    public GameObject menuPrefab;
+    public GameObject playerPrefab;
+    public GameObject zoneMenuInitPrefab;
 
     List<TuioEntity> tuioEvents = new List<TuioEntity>();
     List<TuioEntity> deadTouches = new List<TuioEntity>();
+    List<GameObject> zonesMenuActives = new List<GameObject>();
 
     private const string cursor = "/tuio/2Dcur";
     private const string obj = "/tuio/2Dobj";
@@ -21,6 +32,8 @@ public class MessageManager : MonoBehaviour
     {
         osc.SetAddressHandler(cursor, Generate2DTUIOEvent);
         osc.SetAddressHandler(obj, Generate2DTUIOEvent);
+
+        grid = GameObject.Find("GridManager").GetComponent<GridManager>();
     }
 
     private void Generate2DTUIOEvent(OscMessage oscM)
@@ -33,7 +46,6 @@ public class MessageManager : MonoBehaviour
     {
         string[] messageTab = message.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
         List<string> tmp = new List<string>(messageTab);
-        Debug.Log(tmp[0]);
     //    Debug.Log(string.Join(",", tmp));
         switch (tmp[0])
         {
@@ -59,13 +71,20 @@ public class MessageManager : MonoBehaviour
                 {
                     str += t;
                     //cast an invisible ray that will collide with the first object
-                    Ray ray = Camera.main.ScreenPointToRay(new Vector3(t.position.TUIOPosition.x * Screen.width, t.position.TUIOPosition.y * Screen.height, 0));
-                    if (Physics.Raycast(ray, out RaycastHit hit))
-                        if (hit.transform.GetComponent<OSCEvent>() != null)
-                            hit.transform.GetComponent<OSCEvent>().RunFunction(t); //will run specific function based on the state of the TUIOEvent
+                    Camera cam = Camera.main;
+                    float height = 2f * cam.orthographicSize;
+                    float width = height * cam.aspect;
+                    RaycastHit2D hitinfo = Physics2D.Raycast(new Vector2(t.position.TUIOPosition.x * width, t.position.TUIOPosition.y * height), Vector2.zero);
+                    if (hitinfo.collider != null)
+                    {
+                        if (hitinfo.transform.GetComponent<clickMenu>() != null)
+                        {
+                            hitinfo.transform.GetComponent<OSCEvent>().RunFunction(t); //will run specific function based on the state of the TUIOEvent
+                        }
+                    }
                 }
                 text.SetText(str);
-                tuioEvents = tuioEvents.Except(deadTouches).ToList();
+             //   tuioEvents = tuioEvents.Except(deadTouches).ToList();
                 break;
         }
     }
@@ -73,8 +92,8 @@ public class MessageManager : MonoBehaviour
     private void CheckObject(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
-        float xCoord = float.Parse(tmp[1]);
-        float yCoord = float.Parse(tmp[2]);
+        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
+        float yCoord = -(int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) + 14;
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
@@ -86,32 +105,55 @@ public class MessageManager : MonoBehaviour
         {
             Vector2 p = new Vector2(xCoord, 1.0f - yCoord);
             tuioEvent.UpdateCoordinates(p);
-            Camera cam = Camera.main;
-            float height = 2f * cam.orthographicSize;
-            float width = height * cam.aspect;
-            GameObject circle = GameObject.Find("Circle" + id);
-            circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z);
         }
-
     }
 
     private void CheckObjectObj(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
         string value = tmp[1];
-        float xCoord = float.Parse(tmp[2]);
-        float yCoord = float.Parse(tmp[3]);
+        float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT);
+        float yCoord = -(int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) + 14 ;
+        float xPosition = grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2;
+        float yPosition = grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2;
         Camera cam = Camera.main;
-        float height = 188;
-        float width = 399;
-        GameObject circle = GameObject.Find("Circle0");
-        circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z);
-        float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
-        Debug.Log(deg);
-        circle.transform.rotation = Quaternion.Euler(0, 0, deg);
-        TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.Id == id);
+        float height = 2f * cam.orthographicSize;
+        float width = height * cam.aspect;
+        GameObject playerOrMenu = GameObject.Find("Player" + value + "(Clone)") == null ? GameObject.Find("Menu" + value + "(Clone)") : GameObject.Find("Player" + value + "(Clone)");
+        if (playerOrMenu != null)
+        {
+            playerOrMenu.transform.position = new Vector3(width * xCoord, height - height * yCoord, playerOrMenu.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
+            if (tmp.Count > 4)
+            {
+                float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
+                playerOrMenu.transform.rotation = Quaternion.Euler(0, 0, deg);
+            }
+        }
+        
+        TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.value == value);
+        //TODO check si le max de joueur atteint
         if (tuioEvent == null)
         {
+            menuPrefab.name = "Menu" + value;
+            int tempLenZoneList = zonesMenuActives.Count;
+            Debug.Log(tempLenZoneList);
+            string valueMenuOfPlayer = isInZone(new Vector2(xPosition, yPosition));
+            if (zonesMenuActives.Count != tempLenZoneList)
+            {
+                Debug.Log("yooo");
+                if (valueMenuOfPlayer != "")
+                {
+                    Debug.Log("salut");
+                    playerPrefab.name = "Player" + value;
+                    Instantiate(playerPrefab, new Vector3(xPosition, yPosition, -10), Quaternion.identity);
+                }
+                
+            }
+            if(valueMenuOfPlayer == "")
+            {
+                Instantiate(menuPrefab, new Vector3(xPosition, yPosition, -10), Quaternion.identity);
+                createNewZoneMenu(xPosition, yPosition, value);
+            }
             tuioEvent = new TuioObject(id, xCoord, 1.0f - yCoord, value);
             tuioEvents.Add(tuioEvent);
             StartCoroutine(InstantiateType(tuioEvent));
@@ -120,7 +162,11 @@ public class MessageManager : MonoBehaviour
         {
             Vector2 p = new Vector2(xCoord, 1.0f - yCoord);
             tuioEvent.UpdateCoordinates(p);
+            playerOrMenu.transform.position = new Vector3(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2,
+                                              grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2,
+                                              playerOrMenu.transform.position.z);
         }
+       
 
     }
 
@@ -156,7 +202,33 @@ public class MessageManager : MonoBehaviour
         foreach (TuioEntity t in tuioEvents)
         {
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(t.position.TUIOPosition.x * Screen.width, t.position.TUIOPosition.y * Screen.height, 0));
-            Debug.DrawRay(Camera.main.transform.position, ray.direction * 100, Color.green);
         }
+    }
+
+    private string isInZone(Vector2 positionTangible)
+    {
+        foreach (GameObject zone in zonesMenuActives)
+        {
+            Debug.Log(positionTangible);
+            Debug.Log(zone.GetComponent<SpriteRenderer>().bounds.center);
+            Debug.Log(zone.GetComponent<SpriteRenderer>().bounds.extents.x);
+            if (Vector2.Distance(positionTangible, zone.GetComponent<SpriteRenderer>().bounds.center) <= zone.GetComponent<SpriteRenderer>().bounds.extents.x)
+            {
+                Debug.Log("DANS ZONE");
+                Destroy(GameObject.Find(zone.name));;
+                string value = zone.name.Replace("zone", "");
+                zonesMenuActives.Remove(zone);
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private void createNewZoneMenu(float x, float y, string value)
+    {
+
+        GameObject tempZone = Instantiate(zoneMenuInitPrefab, new Vector3(100, 100, -10), Quaternion.identity);
+        tempZone.name = "zone" + value;
+        zonesMenuActives.Add(tempZone);
     }
 }
