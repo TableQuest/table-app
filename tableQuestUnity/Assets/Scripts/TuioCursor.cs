@@ -2,7 +2,7 @@
 
 public class TuioCursor : TuioEntity
 {
-    public TuioCursor(int id, float x, float y) : base(id, x, y)
+    public TuioCursor(int id, float x, float y) : base(id, x, y,"")
     {
     }
 

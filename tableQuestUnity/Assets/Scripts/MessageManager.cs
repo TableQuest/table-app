@@ -13,9 +13,13 @@ public class MessageManager : MonoBehaviour
 
     public OSC osc;
     public TextMeshPro text;
+    public GameObject menuPrefab;
+    public GameObject playerPrefab;
+    public GameObject zoneMenuInitPrefab;
 
     List<TuioEntity> tuioEvents = new List<TuioEntity>();
     List<TuioEntity> deadTouches = new List<TuioEntity>();
+    List<GameObject> zonesMenuActives = new List<GameObject>();
 
     private const string cursor = "/tuio/2Dcur";
     private const string obj = "/tuio/2Dobj";
@@ -75,7 +79,7 @@ public class MessageManager : MonoBehaviour
                     }
                 }
                 text.SetText(str);
-                tuioEvents = tuioEvents.Except(deadTouches).ToList();
+             //   tuioEvents = tuioEvents.Except(deadTouches).ToList();
                 break;
         }
     }
@@ -97,7 +101,6 @@ public class MessageManager : MonoBehaviour
             Vector2 p = new Vector2(xCoord, 1.0f - yCoord);
             tuioEvent.UpdateCoordinates(p);
         }
-
     }
 
     private void CheckObjectObj(List<string> tmp)
@@ -109,17 +112,38 @@ public class MessageManager : MonoBehaviour
         Camera cam = Camera.main;
         float height = 2f * cam.orthographicSize;
         float width = height * cam.aspect;
-        GameObject circle = GameObject.Find("Circle0");
-        circle.transform.position = new Vector3(width * xCoord, height * yCoord, circle.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
-        if (tmp.Count > 4)
+        GameObject playerOrMenu = GameObject.Find("Player" + value + "(Clone)") == null ? GameObject.Find("Menu" + value + "(Clone)") : GameObject.Find("Player" + value + "(Clone)");
+        if (playerOrMenu != null)
         {
-            float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
-            //Debug.Log(deg);
-            circle.transform.rotation = Quaternion.Euler(0, 0, deg);
+            playerOrMenu.transform.position = new Vector3(width * xCoord, height - height * yCoord, playerOrMenu.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
+            if (tmp.Count > 4)
+            {
+                float deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
+                playerOrMenu.transform.rotation = Quaternion.Euler(0, 0, deg);
+            }
         }
-        TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.Id == id);
+        
+        TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.value == value);
+        //TODO check si le max de joueur atteint
         if (tuioEvent == null)
         {
+            menuPrefab.name = "Menu" + value;
+            int tempLenZoneList = zonesMenuActives.Count;
+            string valueMenuOfPlayer = isInZone(new Vector2(width * xCoord, height - height * yCoord));
+            if (zonesMenuActives.Count != tempLenZoneList)
+            {         
+                if (valueMenuOfPlayer != "")
+                {
+                    playerPrefab.name = "Player" + value;
+                    Instantiate(playerPrefab, new Vector3(width * xCoord, height - height * yCoord, -10), Quaternion.identity);
+                }
+                
+            }
+            if(valueMenuOfPlayer == "")
+            {
+                Instantiate(menuPrefab, new Vector3(width * xCoord, height - height * yCoord, -10), Quaternion.identity);
+                createNewZoneMenu(width * xCoord, height - height * yCoord, value);
+            }
             tuioEvent = new TuioObject(id, xCoord, 1.0f - yCoord, value);
             tuioEvents.Add(tuioEvent);
             StartCoroutine(InstantiateType(tuioEvent));
@@ -166,5 +190,28 @@ public class MessageManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(t.position.TUIOPosition.x * Screen.width, t.position.TUIOPosition.y * Screen.height, 0));
             //Debug.DrawRay(Camera.main.transform.position, ray.direction * 100, Color.green);
         }
+    }
+
+    private string isInZone(Vector2 positionTangible)
+    {
+        foreach (GameObject zone in zonesMenuActives)
+        {
+            if (Vector2.Distance(positionTangible, zone.GetComponent<SpriteRenderer>().bounds.center) <= zone.GetComponent<SpriteRenderer>().bounds.extents.x)
+            {
+                Destroy(GameObject.Find(zone.name));;
+                string value = zone.name.Replace("zone", "");
+                zonesMenuActives.Remove(zone);
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private void createNewZoneMenu(float x, float y, string value)
+    {
+
+        GameObject tempZone = Instantiate(zoneMenuInitPrefab, new Vector3(20, 20, -10), Quaternion.identity);
+        tempZone.name = "zone" + value;
+        zonesMenuActives.Add(tempZone);
     }
 }
