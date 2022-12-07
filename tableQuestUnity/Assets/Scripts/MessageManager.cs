@@ -92,7 +92,7 @@ public class MessageManager : MonoBehaviour
     {
         int id = int.Parse(tmp[0]);
         float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
-        float yCoord = (int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT);
+        float yCoord = -(int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) + 14;
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
@@ -112,7 +112,7 @@ public class MessageManager : MonoBehaviour
         int id = int.Parse(tmp[0]);
         string value = tmp[1];
         float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT);
-        float yCoord = (int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT);
+        float yCoord = -(int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) + 14 ;
         float xPosition = grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2;
         float yPosition = grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2;
         Camera cam = Camera.main;
