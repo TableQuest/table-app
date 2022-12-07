@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class TuioObject : TuioEntity
 {
-    private readonly string value;
-    public TuioObject(int id, float x, float y, string value) : base(id, x, y)
+    public readonly string value;
+    public TuioObject(int id, float x, float y, string value) : base(id, x, y, value)
     {
         this.value = value;
     }

@@ -14,12 +14,14 @@ public abstract class TuioEntity
         }
     }
     public int Id { get; private set; }
+    public string value;
     public Position position;
 
 
-    public TuioEntity(int id, float x, float y)
+    public TuioEntity(int id, float x, float y, string value)
     {
         this.Id = id;
+        this.value = value;
         position = new Position(x, y);
         state = TuioState.CLICK_DOWN;
         previousState = TuioState.CLICK_DOWN;

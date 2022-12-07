@@ -13,8 +13,8 @@ public class clickMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 menuPosition = GameObject.Find("Circle0").transform.position;
-        gameObject.transform.position = new Vector3(menuPosition.x, menuPosition.y - 15, gameObject.transform.position.z);
+       // Vector3 menuPosition = GameObject.Find("Circle0").transform.position;
+       // gameObject.transform.position = new Vector3(menuPosition.x, menuPosition.y - 15, gameObject.transform.position.z);
     }
 
     public void printclick()
