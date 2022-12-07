@@ -991,6 +991,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   osc: {fileID: 1452674822}
   text: {fileID: 676541132}
+  menuPrefab: {fileID: 5024962769303657887, guid: ea9f9e71060efa643a3d18dbd756fc3c, type: 3}
+  playerPrefab: {fileID: 3059107449345245999, guid: 59da4fa10456c814685f0c3ab11f8462, type: 3}
+  zoneMenuInitPrefab: {fileID: 8228953674590994940, guid: 3f51519e81920f34ead2188d07f125ea, type: 3}
 --- !u!4 &2130510436
 Transform:
   m_ObjectHideFlags: 0

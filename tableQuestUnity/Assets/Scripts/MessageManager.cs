@@ -113,13 +113,12 @@ public class MessageManager : MonoBehaviour
         string value = tmp[1];
         float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT);
         float yCoord = (int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT);
+        float xPosition = grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2;
+        float yPosition = grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2;
         Camera cam = Camera.main;
         float height = 2f * cam.orthographicSize;
         float width = height * cam.aspect;
         GameObject playerOrMenu = GameObject.Find("Player" + value + "(Clone)") == null ? GameObject.Find("Menu" + value + "(Clone)") : GameObject.Find("Player" + value + "(Clone)");
-        playerOrMenu.transform.position = new Vector3(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth()/2,
-                                                grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight()/2,
-                                                playerOrMenu.transform.position.z);
         if (playerOrMenu != null)
         {
             playerOrMenu.transform.position = new Vector3(width * xCoord, height - height * yCoord, playerOrMenu.transform.position.z); // / WIDTH_GRID_UNIT) * WIDTH_GRID_UNIT
@@ -136,20 +135,23 @@ public class MessageManager : MonoBehaviour
         {
             menuPrefab.name = "Menu" + value;
             int tempLenZoneList = zonesMenuActives.Count;
-            string valueMenuOfPlayer = isInZone(new Vector2(width * xCoord, height - height * yCoord));
+            Debug.Log(tempLenZoneList);
+            string valueMenuOfPlayer = isInZone(new Vector2(xPosition, yPosition));
             if (zonesMenuActives.Count != tempLenZoneList)
-            {         
+            {
+                Debug.Log("yooo");
                 if (valueMenuOfPlayer != "")
                 {
+                    Debug.Log("salut");
                     playerPrefab.name = "Player" + value;
-                    Instantiate(playerPrefab, new Vector3(width * xCoord, height - height * yCoord, -10), Quaternion.identity);
+                    Instantiate(playerPrefab, new Vector3(xPosition, yPosition, -10), Quaternion.identity);
                 }
                 
             }
             if(valueMenuOfPlayer == "")
             {
-                Instantiate(menuPrefab, new Vector3(width * xCoord, height - height * yCoord, -10), Quaternion.identity);
-                createNewZoneMenu(width * xCoord, height - height * yCoord, value);
+                Instantiate(menuPrefab, new Vector3(xPosition, yPosition, -10), Quaternion.identity);
+                createNewZoneMenu(xPosition, yPosition, value);
             }
             tuioEvent = new TuioObject(id, xCoord, 1.0f - yCoord, value);
             tuioEvents.Add(tuioEvent);
@@ -159,7 +161,11 @@ public class MessageManager : MonoBehaviour
         {
             Vector2 p = new Vector2(xCoord, 1.0f - yCoord);
             tuioEvent.UpdateCoordinates(p);
+            playerOrMenu.transform.position = new Vector3(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2,
+                                              grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2,
+                                              playerOrMenu.transform.position.z);
         }
+       
 
     }
 
@@ -202,8 +208,12 @@ public class MessageManager : MonoBehaviour
     {
         foreach (GameObject zone in zonesMenuActives)
         {
+            Debug.Log(positionTangible);
+            Debug.Log(zone.GetComponent<SpriteRenderer>().bounds.center);
+            Debug.Log(zone.GetComponent<SpriteRenderer>().bounds.extents.x);
             if (Vector2.Distance(positionTangible, zone.GetComponent<SpriteRenderer>().bounds.center) <= zone.GetComponent<SpriteRenderer>().bounds.extents.x)
             {
+                Debug.Log("DANS ZONE");
                 Destroy(GameObject.Find(zone.name));;
                 string value = zone.name.Replace("zone", "");
                 zonesMenuActives.Remove(zone);
@@ -216,7 +226,7 @@ public class MessageManager : MonoBehaviour
     private void createNewZoneMenu(float x, float y, string value)
     {
 
-        GameObject tempZone = Instantiate(zoneMenuInitPrefab, new Vector3(20, 20, -10), Quaternion.identity);
+        GameObject tempZone = Instantiate(zoneMenuInitPrefab, new Vector3(100, 100, -10), Quaternion.identity);
         tempZone.name = "zone" + value;
         zonesMenuActives.Add(tempZone);
     }
