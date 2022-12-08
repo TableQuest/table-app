@@ -1,7 +1,8 @@
 # This .gitignore file should be placed at the root of your Unity project directory
 #
-.gitignore
 .idea
+
+UserSettings/
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
 /[Ll]ibrary/
