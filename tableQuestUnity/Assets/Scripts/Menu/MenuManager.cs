@@ -8,11 +8,16 @@ public class MenuManager : MonoBehaviour
 	List<Menu> menuList;
     List<GameObject> zoneInitList;
 
+    GridManager _grid;
+
+    private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 24 tiles wide
+    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
 
 	public MenuManager()
 	{
 		this.menuList = new List<Menu>();
-        this.zoneInitList = new List<GameObject>();
+        this.zoneInitList = new List<GameObject>();        
+        _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
     }
 
     public bool Exists(string id)
@@ -22,6 +27,10 @@ public class MenuManager : MonoBehaviour
 
     public void Move(string id, Vector2 pos)
     {
+        float xCoord = pos.x / WIDTH_GRID_UNIT;
+        float yCoord = -(pos.y / HEIGHT_GRID_UNIT) + 15 ;
+        pos.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
+        pos.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
         GetMenuWithId(id).Move(pos);
     }
 
