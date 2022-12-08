@@ -15,5 +15,10 @@ public abstract class Entity
 	{
 		tangibleObject.transform.position = new Vector3(pos.x, pos.y, -10);
 	}
+
+	public void Rotate(float degree)
+    {
+        tangibleObject.transform.rotation = Quaternion.Euler(0, 0, degree);
+    }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
@@ -7,34 +8,30 @@ public class MenuManager : MonoBehaviour
 	List<Menu> menuList;
     List<GameObject> zoneInitList;
 
+    GridManager _grid;
+
+    private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 24 tiles wide
+    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
 
 	public MenuManager()
 	{
 		this.menuList = new List<Menu>();
-        this.zoneInitList = new List<GameObject>();
+        this.zoneInitList = new List<GameObject>();        
+        _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
     }
 
     public bool Exists(string id)
     {
-        foreach (Menu menu in menuList)
-        {
-            if (menu.id == id)
-            {
-                return true;
-            }
-        }
-        return false;
+        return menuList.Where(p => p.id == id).Count() > 0;
     }
 
     public void Move(string id, Vector2 pos)
     {
-        foreach(Menu menu in menuList)
-        {
-            if(menu.id == id)
-            {
-                menu.Move(pos);
-            }
-        }
+        float xCoord = pos.x / WIDTH_GRID_UNIT;
+        float yCoord = -(pos.y / HEIGHT_GRID_UNIT) + 15 ;
+        pos.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
+        pos.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
+        GetMenuWithId(id).Move(pos);
     }
 
     public void CreateNewMenu(string id, Vector2 pos)
@@ -49,13 +46,7 @@ public class MenuManager : MonoBehaviour
 
     internal void SetMenuGlobalID(string idMenu, string idPlayer)
     {
-       foreach(Menu menu in menuList)
-        {
-            if(menu.id == idMenu)
-            {
-                menu.globalId = idMenu + idPlayer;
-            }
-        }
+       GetMenuWithId(idMenu).globalId = idMenu + idPlayer;
     }
 
     public string IsInZone(Vector2 positionTangible)
@@ -71,6 +62,11 @@ public class MenuManager : MonoBehaviour
             }
         }
         return "";
+    }
+
+    public Menu GetMenuWithId(string id) {
+        Predicate<Menu> matchingId = delegate(Menu currentMenu) { return currentMenu.id == id; };
+        return menuList.Find(matchingId);
     }
 }
 

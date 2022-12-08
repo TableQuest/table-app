@@ -8,9 +8,6 @@ public class Player : Entity
 	{
 		this.globalId = globalId;
 	}
-
-	
-
  
 }
 

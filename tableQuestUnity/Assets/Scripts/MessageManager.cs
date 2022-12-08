@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -9,7 +8,6 @@ public class MessageManager : MonoBehaviour
 {
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
     private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
-    //private float RATIO_MULTIPLIER = 1.2f; // value added to position operations so they're still correctly displayed even tho height != width
 
     private GridManager grid;
 
@@ -30,6 +28,7 @@ public class MessageManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameState = new GameState();
         osc.SetAddressHandler(cursor, Generate2DTUIOEvent);
         osc.SetAddressHandler(obj, Generate2DTUIOEvent);
 
@@ -112,10 +111,15 @@ public class MessageManager : MonoBehaviour
     {
         int id = int.Parse(tmp[0]);
         string value = tmp[1];
-        float xCoord = (int)(float.Parse(tmp[2]) / WIDTH_GRID_UNIT);
-        float yCoord = -(int)(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) + 14 ;
-        float xPosition = grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + grid.GetTileAtPosition(0, 0).GetWidth() / 2;
-        float yPosition = grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + grid.GetTileAtPosition(0, 0).GetHeight() / 2;
+        float xCoord = float.Parse(tmp[2]);
+        float yCoord = float.Parse(tmp[3]);
+        float deg = 0f;
+
+        if (tmp.Count > 4)
+        {
+            deg = float.Parse(tmp[4]) * Mathf.Rad2Deg;
+        }
+
         TuioObject tuioEvent = (TuioObject)tuioEvents.Find(e => e.value == value);
         if (tuioEvent == null)
         {
@@ -128,7 +132,7 @@ public class MessageManager : MonoBehaviour
             Vector2 p = new Vector2(xCoord, 1.0f - yCoord);
             tuioEvent.UpdateCoordinates(p);
         }
-        gameState.HandleTangibleEvents(value, new Vector2(xPosition, yPosition));
+        gameState.HandleTangibleEvents(value, new Vector2(xCoord, yCoord), deg);
     }
 
     private IEnumerator InstantiateType(TuioEntity tuioEvent)
