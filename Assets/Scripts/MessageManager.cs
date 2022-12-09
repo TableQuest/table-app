@@ -77,6 +77,9 @@ public class MessageManager : MonoBehaviour
                     // float xCoord = float.Parse(tmp[2]) / WIDTH_GRID_UNIT;
                     // float yCoord = -(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) + 15;
                     
+                    Debug.Log("tpos x : "+ t.position.TUIOPosition.x);
+                    Debug.Log("tpos x : "+ t.position.TUIOPosition.y);
+
                     float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
                     float yCoord = -(t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) + 15 ;
                     
