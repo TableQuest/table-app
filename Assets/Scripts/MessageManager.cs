@@ -73,7 +73,19 @@ public class MessageManager : MonoBehaviour
                     Camera cam = Camera.main;
                     float height = 2f * cam.orthographicSize;
                     float width = height * cam.aspect;
-                    RaycastHit2D hitinfo = Physics2D.Raycast(new Vector2(t.position.TUIOPosition.x * width, t.position.TUIOPosition.y * height), Vector2.zero);
+                    
+                    // float xCoord = float.Parse(tmp[2]) / WIDTH_GRID_UNIT;
+                    // float yCoord = -(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) + 15;
+                    
+                    float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
+                    float yCoord = -(t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) + 15 ;
+                    
+                    
+                    var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
+                    
+                    Debug.Log("Position of vec : "+ vec.ToString());
+                    
+                    RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
                     if (hitinfo.collider != null)
                     {
                         if (hitinfo.transform.GetComponent<clickMenu>() != null)
@@ -91,8 +103,10 @@ public class MessageManager : MonoBehaviour
     private void CheckObject(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
-        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
-        float yCoord = -(int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) + 14;
+        // float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
+        // float yCoord = -(int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) + 14;
+        float xCoord = float.Parse(tmp[1]);
+        float yCoord = float.Parse(tmp[2]);
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {

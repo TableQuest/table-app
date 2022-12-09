@@ -112,7 +112,7 @@ Transform:
   m_GameObject: {fileID: 4792205967431080412}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 213.5041, y: -31.067692, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 80, y: 72, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4044098567952609262}
@@ -185,9 +185,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 80
   height: 72
-  firstColor: {r: 0, g: 0, b: 0, a: 0}
-  secondColor: {r: 0, g: 0, b: 0, a: 0}
-  tileRenderer: {fileID: 0}
+  firstColor: {r: 0.20784314, g: 0.7529412, b: 0.40784314, a: 1}
+  secondColor: {r: 0.078431375, g: 0.5019608, b: 0.23529412, a: 1}
+  tileRenderer: {fileID: 6839182376628926554}
   highlighter: {fileID: 4060673562509960201}
 --- !u!61 &5514636498235161928
 BoxCollider2D:

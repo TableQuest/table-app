@@ -4,9 +4,9 @@ using UnityEngine.Events;
 class OSCCursorEvent : OSCEvent
 {
     [SerializeField]
-    protected UnityEvent OnClick;
+    public UnityEvent OnClick;
     [SerializeField]
-    protected UnityEvent OnLongClick;
+    public UnityEvent OnLongClick;
 
     public override void RunFunction(TuioEntity tuio)
     {
