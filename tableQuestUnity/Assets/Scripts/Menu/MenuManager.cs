@@ -13,10 +13,10 @@ public class MenuManager : MonoBehaviour
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 24 tiles wide
     private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
 
-	public MenuManager()
+	void Start()
 	{
-		this.menuList = new List<Menu>();
-        this.zoneInitList = new List<GameObject>();        
+		menuList = new List<Menu>();
+        zoneInitList = new List<GameObject>();        
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
     }
 

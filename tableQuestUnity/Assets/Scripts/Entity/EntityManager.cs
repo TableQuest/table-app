@@ -17,9 +17,9 @@ public class EntityManager : MonoBehaviour
     private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
 
 
-    public EntityManager()
+    void Start()
 	{
-		this._players = new List<Player>();
+		_players = new List<Player>();
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
 	}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum STATE
@@ -16,10 +17,10 @@ public class GameState : MonoBehaviour
 
 	void Start()
 	{
-		_entityManager = new EntityManager();
-		_menuManager = new MenuManager();
 		_state = STATE.INIT;
 		gameObject.AddComponent<InitializationSocket>();
+		_entityManager = gameObject.AddComponent<EntityManager>();
+		_menuManager = gameObject.AddComponent<MenuManager>();
 		GameObject.Find("Manager").GetComponent<MessageManager>().gameState = this;
 		DontDestroyOnLoad(gameObject);
 	}
