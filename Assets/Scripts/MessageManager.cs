@@ -73,20 +73,14 @@ public class MessageManager : MonoBehaviour
                     Camera cam = Camera.main;
                     float height = 2f * cam.orthographicSize;
                     float width = height * cam.aspect;
-                    
-                    // float xCoord = float.Parse(tmp[2]) / WIDTH_GRID_UNIT;
-                    // float yCoord = -(float.Parse(tmp[3]) / HEIGHT_GRID_UNIT) + 15;
-                    
-                    Debug.Log("tpos x : "+ t.position.TUIOPosition.x);
-                    Debug.Log("tpos x : "+ t.position.TUIOPosition.y);
 
                     float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
-                    float yCoord = -(t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) + 15 ;
+                    float yCoord = (t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) ;
                     
                     
                     var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
                     
-                    Debug.Log("Position of vec : "+ vec.ToString());
+                    // Debug.Log("Position of vec : "+ vec.ToString());
                     
                     RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
                     if (hitinfo.collider != null)
