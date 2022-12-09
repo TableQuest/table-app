@@ -66,6 +66,7 @@ public class MessageManager : MonoBehaviour
                 break;
             case "fseq":
                 string str = "Voici les detections:\n";
+                TuioEntity toRemove = null;
                 foreach (TuioEntity t in tuioEvents)
                 {
                     str += t;
@@ -80,19 +81,20 @@ public class MessageManager : MonoBehaviour
                     
                     var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
                     
-                    // Debug.Log("Position of vec : "+ vec.ToString());
                     
                     RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
                     if (hitinfo.collider != null)
                     {
-                        if (hitinfo.transform.GetComponent<clickMenu>() != null)
+                        if (hitinfo.transform.GetComponent<MyClick>() != null)
                         {
-                            hitinfo.transform.GetComponent<OSCEvent>().RunFunction(t); //will run specific function based on the state of the TUIOEvent
+                            hitinfo.transform.GetComponent<MyClick>().TestClick();
+                            toRemove = t;
                         }
                     }
                 }
+                tuioEvents.Remove(toRemove);
                 text.SetText(str);
-             //   tuioEvents = tuioEvents.Except(deadTouches).ToList();
+
                 break;
         }
     }
