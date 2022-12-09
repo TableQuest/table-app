@@ -8,7 +8,7 @@ public class MyClick : MonoBehaviour
 {
     private int counter;
     public UnityAction call;
-    public static int MAX_COUNTER = 200;
+    public static int MAX_COUNTER = 1000;
     
     public void TestClick()
     {
