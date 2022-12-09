@@ -27,7 +27,6 @@ public class GameState : MonoBehaviour
 
 	public void HandleTangibleEvents(string id, Vector2 pos, float rotation)
 	{
-		Debug.Log("state : " + _state.ToString());
 		switch(_state)
 		{
 			case STATE.INIT:

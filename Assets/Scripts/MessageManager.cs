@@ -66,6 +66,7 @@ public class MessageManager : MonoBehaviour
                 break;
             case "fseq":
                 string str = "Voici les detections:\n";
+                TuioEntity toRemove = null;
                 foreach (TuioEntity t in tuioEvents)
                 {
                     str += t;
@@ -73,17 +74,27 @@ public class MessageManager : MonoBehaviour
                     Camera cam = Camera.main;
                     float height = 2f * cam.orthographicSize;
                     float width = height * cam.aspect;
-                    RaycastHit2D hitinfo = Physics2D.Raycast(new Vector2(t.position.TUIOPosition.x * width, t.position.TUIOPosition.y * height), Vector2.zero);
+
+                    float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
+                    float yCoord = (t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) ;
+                    
+                    
+                    var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
+                    
+                    
+                    RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
                     if (hitinfo.collider != null)
                     {
-                        if (hitinfo.transform.GetComponent<clickMenu>() != null)
+                        if (hitinfo.transform.GetComponent<MyClick>() != null)
                         {
-                            hitinfo.transform.GetComponent<OSCEvent>().RunFunction(t); //will run specific function based on the state of the TUIOEvent
+                            hitinfo.transform.GetComponent<MyClick>().TestClick();
+                            toRemove = t;
                         }
                     }
                 }
+                tuioEvents.Remove(toRemove);
                 text.SetText(str);
-             //   tuioEvents = tuioEvents.Except(deadTouches).ToList();
+
                 break;
         }
     }
@@ -91,8 +102,10 @@ public class MessageManager : MonoBehaviour
     private void CheckObject(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
-        float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
-        float yCoord = -(int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) + 14;
+        // float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
+        // float yCoord = -(int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) + 14;
+        float xCoord = float.Parse(tmp[1]);
+        float yCoord = float.Parse(tmp[2]);
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
         if (tuioEvent == null)
         {
