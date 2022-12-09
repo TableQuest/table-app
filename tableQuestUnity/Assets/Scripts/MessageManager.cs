@@ -28,7 +28,7 @@ public class MessageManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameState = new GameState();
+        gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
         osc.SetAddressHandler(cursor, Generate2DTUIOEvent);
         osc.SetAddressHandler(obj, Generate2DTUIOEvent);
 

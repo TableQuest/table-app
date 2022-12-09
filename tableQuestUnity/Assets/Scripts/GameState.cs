@@ -7,22 +7,26 @@ public enum STATE
 	PLAYING
 }
 
-public class GameState
+public class GameState : MonoBehaviour
 {
 	public EntityManager _entityManager;
 	public MenuManager _menuManager;
 
 	public STATE _state;
 
-	public GameState()
+	void Start()
 	{
 		_entityManager = new EntityManager();
 		_menuManager = new MenuManager();
 		_state = STATE.INIT;
+		gameObject.AddComponent<InitializationSocket>();
+		GameObject.Find("Manager").GetComponent<MessageManager>().gameState = this;
+		DontDestroyOnLoad(gameObject);
 	}
 
 	public void HandleTangibleEvents(string id, Vector2 pos, float rotation)
 	{
+		Debug.Log("state : " + _state.ToString());
 		switch(_state)
 		{
 			case STATE.INIT:
