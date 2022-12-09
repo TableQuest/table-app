@@ -34,8 +34,24 @@ public class Socket : MonoBehaviour
 
         // Execute the code of the added callback
         action?.Invoke();
+        
+        StartCoroutine(UpdateCoroutine());
     }
 
+    private IEnumerator UpdateCoroutine()
+    {
+        while (true)
+        {
+            yield return new WaitUntil((() => _mainThreadhActions.Count > 0));
+            if (!_mainThreadhActions.TryDequeue(out var action))
+            {
+                Debug.LogError("Something Went Wrong ! ", this);
+                yield break;
+            }
+            
+            action?.Invoke();
+        }
+    }
 
     async void InitSocketThread()
     {

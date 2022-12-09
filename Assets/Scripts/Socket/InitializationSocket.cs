@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using SocketIOClient;
 using System.Threading;
-using System.Collections.Concurrent;
-using System;
-using Unity.VisualScripting;
+
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -24,24 +21,9 @@ public class InitializationSocket : MonoBehaviour
     {
         var thread = new Thread(RouteThread);
         thread.Start();
-
-        StartCoroutine(UpdateCoroutine());
+        
     }
 
-    private IEnumerator UpdateCoroutine()
-    {
-        while (true)
-        {
-            yield return new WaitUntil((() => socket._mainThreadhActions.Count > 0));
-            if (!socket._mainThreadhActions.TryDequeue(out var action))
-            {
-                Debug.LogError("Something Went Wrong ! ", this);
-                yield break;
-            }
-            
-            action?.Invoke();
-        }
-    }
 
 
     private void RouteThread()
