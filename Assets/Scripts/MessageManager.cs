@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System.Linq;
 
 public class MessageManager : MonoBehaviour
 {
@@ -45,7 +46,6 @@ public class MessageManager : MonoBehaviour
     {
         string[] messageTab = message.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
         List<string> tmp = new List<string>(messageTab);
-    //    Debug.Log(string.Join(",", tmp));
         switch (tmp[0])
         {
             case "alive":
@@ -53,9 +53,6 @@ public class MessageManager : MonoBehaviour
                 UpdateCollection(tmp, adress);
                 break;
             case "set":
-                //5 et 11
-              //  Debug.Log(tmp[5]);
-               // Debug.Log(Int32.Parse(tmp[5])*(360/6.283175));
                 tmp.RemoveAt(0);
                 if (adress == obj)
                 {
@@ -88,13 +85,11 @@ public class MessageManager : MonoBehaviour
                         if (hitinfo.transform.GetComponent<MyClick>() != null)
                         {
                             hitinfo.transform.GetComponent<MyClick>().TestClick();
-                            toRemove = t;
                         }
                     }
                 }
-                tuioEvents.Remove(toRemove);
                 text.SetText(str);
-
+                tuioEvents = tuioEvents.Except(deadTouches).ToList();
                 break;
         }
     }
@@ -102,8 +97,6 @@ public class MessageManager : MonoBehaviour
     private void CheckObject(List<string> tmp)
     {
         int id = int.Parse(tmp[0]);
-        // float xCoord = (int)(float.Parse(tmp[1]) / WIDTH_GRID_UNIT);
-        // float yCoord = -(int)(float.Parse(tmp[2]) / HEIGHT_GRID_UNIT) + 14;
         float xCoord = float.Parse(tmp[1]);
         float yCoord = float.Parse(tmp[2]);
         TuioCursor tuioEvent = (TuioCursor)tuioEvents.Find(e => e.Id == id);
@@ -181,29 +174,5 @@ public class MessageManager : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(t.position.TUIOPosition.x * Screen.width, t.position.TUIOPosition.y * Screen.height, 0));
         }
-    }
-
-    private string isInZone(Vector2 positionTangible)
-    {
-        foreach (GameObject zone in zonesMenuActives)
-        {
-            if (Vector2.Distance(positionTangible, zone.GetComponent<SpriteRenderer>().bounds.center) <= zone.GetComponent<SpriteRenderer>().bounds.extents.x)
-            {
-                Debug.Log("DANS ZONE");
-                Destroy(GameObject.Find(zone.name));;
-                string value = zone.name.Replace("zone", "");
-                zonesMenuActives.Remove(zone);
-                return value;
-            }
-        }
-        return "";
-    }
-
-    private void createNewZoneMenu(float x, float y, string value)
-    {
-
-        GameObject tempZone = Instantiate(zoneMenuInitPrefab, new Vector3(100, 100, -10), Quaternion.identity);
-        tempZone.name = "zone" + value;
-        zonesMenuActives.Add(tempZone);
     }
 }

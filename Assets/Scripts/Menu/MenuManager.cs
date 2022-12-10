@@ -39,7 +39,12 @@ public class MenuManager : MonoBehaviour
         Menu _menu = new Menu(id);
         menuList.Add(_menu);
         _menu.InstantiateMenu(pos);
-        GameObject _zone = Instantiate(Resources.Load("Prefab/ZoneMenu") as GameObject, new Vector3(pos.x + 50, pos.y, -10), Quaternion.identity);
+        float xCoord = pos.x / WIDTH_GRID_UNIT;
+        float yCoord = -(pos.y / HEIGHT_GRID_UNIT) + 15;
+        pos.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
+        pos.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
+        //float rayonMenu = _menu.GetComponent<SpriteRenderer>().bounds.extents.x;
+        GameObject _zone = Instantiate(Resources.Load("Prefab/ZoneMenu") as GameObject, new Vector3(pos.x + 40, pos.y, -1), Quaternion.identity);
         _zone.name = "zone" + id;
         zoneInitList.Add(_zone);
     }
@@ -53,6 +58,10 @@ public class MenuManager : MonoBehaviour
     {
         foreach (GameObject zone in zoneInitList)
         {
+            float xCoord = positionTangible.x / WIDTH_GRID_UNIT;
+            float yCoord = -(positionTangible.y / HEIGHT_GRID_UNIT) + 15;
+            positionTangible.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
+            positionTangible.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
             if (Vector2.Distance(positionTangible, zone.GetComponent<SpriteRenderer>().bounds.center) <= zone.GetComponent<SpriteRenderer>().bounds.extents.x)
             {
                 Destroy(GameObject.Find(zone.name)); ;

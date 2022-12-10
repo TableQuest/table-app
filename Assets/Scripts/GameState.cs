@@ -48,7 +48,6 @@ public class GameState : MonoBehaviour
 			string _idMenu = _menuManager.IsInZone(pos);
 			if(_idMenu == "")
 			{
-				Debug.Log("salut");
 				_menuManager.CreateNewMenu(id,pos);
 			} else
             {
