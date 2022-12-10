@@ -6,7 +6,7 @@ using UnityEngine;
 public class MenuManager : MonoBehaviour
 {
 	List<Menu> menuList;
-    List<GameObject> zoneInitList;
+    Dictionary<string, GameObject> zoneInitDict;
 
     GridManager _grid;
 
@@ -16,7 +16,7 @@ public class MenuManager : MonoBehaviour
 	void Start()
 	{
 		menuList = new List<Menu>();
-        zoneInitList = new List<GameObject>();        
+        zoneInitDict = new Dictionary<string, GameObject>();
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
     }
 
@@ -34,10 +34,18 @@ public class MenuManager : MonoBehaviour
         GetMenuWithId(id).Move(pos);
     }
 
+    public void HandleNotOnTable(string id)
+    {
+        zoneInitDict.Remove(id);
+        GameObject.Destroy(GetMenuWithId(id).tangibleObject);
+        menuList.Remove(GetMenuWithId(id));
+     
+    }
+
     public void Rotate(string id, float degree)
     {
         GetMenuWithId(id).Rotate(degree);
-    }
+    }   
 
     public void CreateNewMenu(string id, Vector2 pos)
     {
@@ -51,7 +59,7 @@ public class MenuManager : MonoBehaviour
         GameObject _zone = Instantiate(Resources.Load("Prefab/ZoneMenu") as GameObject, new Vector3(100, 50, -1), Quaternion.identity);
         _zone.transform.parent = _menu.tangibleObject.transform;
         _zone.name = "zone" + id;
-        zoneInitList.Add(_zone);
+        zoneInitDict.Add(id, _zone);
     }
 
     internal void SetMenuGlobalID(string idMenu, string idPlayer)
@@ -61,17 +69,17 @@ public class MenuManager : MonoBehaviour
 
     public string IsInZone(Vector2 positionTangible)
     {
-        foreach (GameObject zone in zoneInitList)
+        foreach (var item in zoneInitDict)
         {
             float xCoord = positionTangible.x / WIDTH_GRID_UNIT;
             float yCoord = -(positionTangible.y / HEIGHT_GRID_UNIT) + 15;
             positionTangible.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
             positionTangible.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
-            if (Vector2.Distance(positionTangible, zone.GetComponent<SpriteRenderer>().bounds.center) <= zone.GetComponent<SpriteRenderer>().bounds.extents.x)
+            if (Vector2.Distance(positionTangible, item.Value.GetComponent<SpriteRenderer>().bounds.center) <= item.Value.GetComponent<SpriteRenderer>().bounds.extents.x)
             {
-                Destroy(GameObject.Find(zone.name)); ;
-                string value = zone.name.Replace("zone", "");
-                zoneInitList.Remove(zone);
+                Destroy(GameObject.Find(item.Value.name)); ;
+                string value = item.Value.name.Replace("zone", "");
+                zoneInitDict.Remove(value);
                 return value;
             }
         }

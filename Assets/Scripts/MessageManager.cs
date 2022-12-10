@@ -21,7 +21,6 @@ public class MessageManager : MonoBehaviour
 
     List<TuioEntity> tuioEvents = new List<TuioEntity>();
     List<TuioEntity> deadTouches = new List<TuioEntity>();
-    List<GameObject> zonesMenuActives = new List<GameObject>();
 
     private const string cursor = "/tuio/2Dcur";
     private const string obj = "/tuio/2Dobj";
@@ -63,7 +62,6 @@ public class MessageManager : MonoBehaviour
                 break;
             case "fseq":
                 string str = "Voici les detections:\n";
-                TuioEntity toRemove = null;
                 foreach (TuioEntity t in tuioEvents)
                 {
                     str += t;
@@ -74,17 +72,13 @@ public class MessageManager : MonoBehaviour
 
                     float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
                     float yCoord = (t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) ;
-                    
-                    
                     var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
-                    
-                    
                     RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
                     if (hitinfo.collider != null)
                     {
-                        if (hitinfo.transform.GetComponent<MyClick>() != null)
+                        if (hitinfo.transform.GetComponent<OnClickButton>() != null)
                         {
-                            hitinfo.transform.GetComponent<MyClick>().TestClick();
+                          hitinfo.transform.GetComponent<OnClickButton>().onClick();
                         }
                     }
                 }
@@ -155,7 +149,11 @@ public class MessageManager : MonoBehaviour
         else
             deadTouches = tuioEvents.FindAll(e => !(e is TuioObject || idAlive.Contains(e.Id.ToString())));
         foreach (TuioEntity t in deadTouches)
+        {
             t.State = TuioState.CLICK_UP;
+            gameState.HandleNotOnTable(t.value);
+        }
+           
     }
 
     private string GetMessage(OscMessage message)
