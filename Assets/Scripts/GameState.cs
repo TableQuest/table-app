@@ -68,6 +68,7 @@ public class GameState : MonoBehaviour
 		else if (_menuManager.Exists(id))
 		{
 			_menuManager.Move(id, pos);
+			_menuManager.Rotate(id, rotation);
 		}
 	}
 	

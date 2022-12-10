@@ -34,6 +34,11 @@ public class MenuManager : MonoBehaviour
         GetMenuWithId(id).Move(pos);
     }
 
+    public void Rotate(string id, float degree)
+    {
+        GetMenuWithId(id).Rotate(degree);
+    }
+
     public void CreateNewMenu(string id, Vector2 pos)
     {
         Menu _menu = new Menu(id);
@@ -43,8 +48,8 @@ public class MenuManager : MonoBehaviour
         float yCoord = -(pos.y / HEIGHT_GRID_UNIT) + 15;
         pos.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
         pos.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
-        //float rayonMenu = _menu.GetComponent<SpriteRenderer>().bounds.extents.x;
-        GameObject _zone = Instantiate(Resources.Load("Prefab/ZoneMenu") as GameObject, new Vector3(pos.x + 40, pos.y, -1), Quaternion.identity);
+        GameObject _zone = Instantiate(Resources.Load("Prefab/ZoneMenu") as GameObject, new Vector3(100, 50, -1), Quaternion.identity);
+        _zone.transform.parent = _menu.tangibleObject.transform;
         _zone.name = "zone" + id;
         zoneInitList.Add(_zone);
     }
