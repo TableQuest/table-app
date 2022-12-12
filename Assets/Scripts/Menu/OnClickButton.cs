@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class MyClick : MonoBehaviour
+public class OnClickButton : MonoBehaviour
 {
     private int counter;
     public UnityAction call;
     public static int MAX_COUNTER = 1000;
-    
-    public void TestClick()
+
+    public void onClick()
     {
         if (counter == 0)
         {

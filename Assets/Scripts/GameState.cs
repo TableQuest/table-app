@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketIOClient;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -31,7 +32,7 @@ public class GameState : MonoBehaviour
 		{
 			case STATE.INIT:
 				HandleEventInit(id, pos);
-				MoveTangiblePlaying(id, pos, rotation);
+				MoveTangiblePlaying(id, pos, rotation);	
 				break;
 			case STATE.PLAYING:
 				MoveTangiblePlaying(id, pos, rotation);
@@ -48,7 +49,6 @@ public class GameState : MonoBehaviour
 			string _idMenu = _menuManager.IsInZone(pos);
 			if(_idMenu == "")
 			{
-				Debug.Log("salut");
 				_menuManager.CreateNewMenu(id,pos);
 			} else
             {
@@ -57,6 +57,14 @@ public class GameState : MonoBehaviour
             }
 		}
 	}
+
+	public void HandleNotOnTable(string id)
+    {
+		if (_menuManager.Exists(id) && _state == STATE.INIT && !_menuManager.hasPlayer(id)) 
+		{
+			_menuManager.HandleNotOnTable(id);
+		}
+    }
     
 
 	private void MoveTangiblePlaying(string id, Vector2 pos, float rotation)
@@ -69,6 +77,7 @@ public class GameState : MonoBehaviour
 		else if (_menuManager.Exists(id))
 		{
 			_menuManager.Move(id, pos);
+			_menuManager.Rotate(id, rotation);
 		}
 	}
 	
