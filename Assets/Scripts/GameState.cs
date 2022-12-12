@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocketIOClient;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -31,7 +32,7 @@ public class GameState : MonoBehaviour
 		{
 			case STATE.INIT:
 				HandleEventInit(id, pos);
-				MoveTangiblePlaying(id, pos, rotation);
+				MoveTangiblePlaying(id, pos, rotation);	
 				break;
 			case STATE.PLAYING:
 				MoveTangiblePlaying(id, pos, rotation);
@@ -59,7 +60,7 @@ public class GameState : MonoBehaviour
 
 	public void HandleNotOnTable(string id)
     {
-		if (_menuManager.Exists(id) && _state == STATE.INIT)
+		if (_menuManager.Exists(id) && _state == STATE.INIT && !_menuManager.hasPlayer(id)) 
 		{
 			_menuManager.HandleNotOnTable(id);
 		}

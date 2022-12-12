@@ -8,7 +8,7 @@ using UnityEngine;
 public class EntityManager : MonoBehaviour
 {
 
-	List<Player> _players;
+	public List<Player> _players;
     // NPC[] npcs;
 
     GridManager _grid;
@@ -31,13 +31,7 @@ public class EntityManager : MonoBehaviour
 
     public void Move(string id, Vector2 pos)
     {
-        float xCoord = (int)(pos.x / WIDTH_GRID_UNIT);
-        float yCoord = -(int)(pos.y / HEIGHT_GRID_UNIT) + 14 ;
-        float xPosition = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + _grid.GetTileAtPosition(0, 0).GetWidth() / 2;
-        float yPosition = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + _grid.GetTileAtPosition(0, 0).GetHeight() / 2;
-
-        Vector2 entityNewPosition = new Vector2(xPosition,
-                                                yPosition);
+        Vector2 entityNewPosition = GetCanvasPosition(pos);
         GetPlayerWithId(id).Move(entityNewPosition);
 
     }
@@ -48,7 +42,6 @@ public class EntityManager : MonoBehaviour
         float yCoord = -(int)(pos.y / HEIGHT_GRID_UNIT) + 14 ;
         float xPosition = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord + _grid.GetTileAtPosition(0, 0).GetWidth() / 2;
         float yPosition = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord + _grid.GetTileAtPosition(0, 0).GetHeight() / 2;
-
         return new Vector2(xPosition, yPosition);
     }
 
@@ -91,14 +84,11 @@ public class EntityManager : MonoBehaviour
         button.transform.localScale = new Vector3(1, 1, 1);
         button.transform.GetComponent<OnClickButton>().call = delegate { validerAction(); };
 
-        Vector3 helpPos = GetCanvasPosition(pos);
-        helpPos.z = 0;
-        helpPos.x -= 100;
-        GameObject helperConnection = Instantiate(Resources.Load("Prefab/ConnectionInfo") as GameObject,
-            helpPos, Quaternion.identity);
-        helperConnection.transform.SetParent(GameObject.Find("Canvas").transform);
+
+        GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(0,0,-5), Quaternion.identity);
+        helperConnection.transform.SetParent(player.tangibleObject.transform);
         helperConnection.name = "helper" + player.globalId;
-        helperConnection.GetComponent<TextMeshProUGUI>().text = player.globalId;
+        helperConnection.GetComponent<TextMeshPro>().text = player.globalId;
         player.helpConnection = helperConnection;
     }
 

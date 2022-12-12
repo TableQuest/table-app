@@ -69,7 +69,6 @@ public class MessageManager : MonoBehaviour
                     Camera cam = Camera.main;
                     float height = 2f * cam.orthographicSize;
                     float width = height * cam.aspect;
-
                     float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
                     float yCoord = (t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) ;
                     var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
@@ -82,6 +81,7 @@ public class MessageManager : MonoBehaviour
                         }
                     }
                 }
+
                 text.SetText(str);
                 tuioEvents = tuioEvents.Except(deadTouches).ToList();
                 break;
