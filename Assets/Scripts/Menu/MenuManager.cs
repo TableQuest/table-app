@@ -127,6 +127,7 @@ public class MenuManager : MonoBehaviour
             id = globalIDPlayer,
             life = "50",
         };
+        Debug.Log("Removing life to " + globalIDPlayer);
         //Tranform it to Json object
         string jsonData = JsonConvert.SerializeObject(myData);
         SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
