@@ -15,9 +15,6 @@ public class MessageManager : MonoBehaviour
     public GameState gameState;
     public OSC osc;
     public TextMeshPro text;
-    public GameObject menuPrefab;
-    public GameObject playerPrefab;
-    public GameObject zoneMenuInitPrefab;
 
     List<TuioEntity> tuioEvents = new List<TuioEntity>();
     List<TuioEntity> deadTouches = new List<TuioEntity>();

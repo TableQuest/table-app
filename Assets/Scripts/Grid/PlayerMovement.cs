@@ -101,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
             CurMovement.IsMoving = true;
             _gameState._entityManager.Move(player.id, oscPos);
             _gameState._entityManager.Rotate(player.id, rotation);
-            // TODO activate the button to confirm move.
+            ActivateMoveButton(player);
         }
         // If the current movement is at the initial position, move tangible and set "IsMoving" to false.
         else if (CurMovement.IsInInitialPosition(tilePos))
@@ -109,22 +109,21 @@ public class PlayerMovement : MonoBehaviour
             CurMovement.IsMoving = false;
             _gameState._entityManager.Move(player.id, oscPos);
             _gameState._entityManager.Rotate(player.id, rotation);
-            // TODO Deactivate the button to confirm the move.
+            DeactivateMoveButton(player);
         }
         // If the current Movement is not in the zone. The state is WRONG. The player must replace his pawn.
         else
         {
             _gameState._state = STATE.WRONG;
             _gameState.WrongMove.SetActive(true);
-            // TODO : Deactivate the button to confirm the move.
+            DeactivateMoveButton(player);
         }
     }
     
     // When a player validate the move in constraint mode. it deactivates the highlighted tiles and confirms the move.
-    private void ValidateMove(Player player, Vector2 pos, float rotation)
+    private void ValidateMove()
     {
-        _gameState._entityManager.Move(player.id, pos);
-        _gameState._entityManager.Rotate(player.id, rotation);
+        DeactivateMoveButton(CurMovement.Player);
         CurMovement.DeactivateMove();
         CurMovement = null;
     }
@@ -135,6 +134,20 @@ public class PlayerMovement : MonoBehaviour
         var tilePos = _grid.GetPosFromEntityPos(canvasPos);
         
         return !tilePos.Equals(player.tilePosition);
+    }
+    
+    public void ActivateMoveButton(Player player)
+    {
+        var button = player.tangibleObject.transform.GetChild(0);
+        button.gameObject.SetActive(true);
+        button.GetComponent<OnClickButton>().call = ValidateMove;
+    }
+
+    public void DeactivateMoveButton(Player player)
+    {
+        var button = player.tangibleObject.transform.GetChild(0);
+        button.gameObject.SetActive(false);
+        button.GetComponent<OnClickButton>().call = null;
     }
 }
 

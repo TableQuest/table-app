@@ -15,7 +15,6 @@ public class EntityManager : MonoBehaviour
 
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
     private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
-    public GameObject button;
 
 
     void Start()
@@ -71,12 +70,11 @@ public class EntityManager : MonoBehaviour
         player.tangibleObject = Instantiate(Resources.Load("Prefab/Player") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
         player.tangibleObject.name = "Pawn" + id;
 
-        button = Instantiate(Resources.Load("Prefab/Button") as GameObject, new Vector3(), Quaternion.identity);
+        var button = Instantiate(Resources.Load("Prefab/Button") as GameObject, new Vector3(), Quaternion.identity);
         button.transform.SetParent(player.tangibleObject.transform);
         button.transform.localPosition = new Vector3(0, 1.4f, 0);
         button.transform.localScale = new Vector3(1, 1, 1);
-        button.transform.GetComponent<OnClickButton>().call = delegate { validerAction(); };
-
+        button.SetActive(false);
 
         GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(0,0,-5), Quaternion.identity);
         helperConnection.transform.SetParent(player.tangibleObject.transform);
@@ -102,6 +100,7 @@ public class EntityManager : MonoBehaviour
     {
         Debug.Log("Action validé");
     }
+
 
 
 }

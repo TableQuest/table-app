@@ -509,7 +509,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Replace your tanible !
+  m_text: Replace your pawn to his place !
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
@@ -1032,6 +1032,3 @@ MonoBehaviour:
   gameState: {fileID: 0}
   osc: {fileID: 1452674822}
   text: {fileID: 676541132}
-  menuPrefab: {fileID: 5024962769303657887, guid: ea9f9e71060efa643a3d18dbd756fc3c, type: 3}
-  playerPrefab: {fileID: 3059107449345245999, guid: 59da4fa10456c814685f0c3ab11f8462, type: 3}
-  zoneMenuInitPrefab: {fileID: 8228953674590994940, guid: 3f51519e81920f34ead2188d07f125ea, type: 3}

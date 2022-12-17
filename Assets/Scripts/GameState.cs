@@ -105,19 +105,16 @@ public class GameState : MonoBehaviour
 		{
 			if (playerMovement.CurMovement == null) // If nobody has asked for moving.
 			{
-				Debug.Log("??");
 				_state = STATE.WRONG;
 				WrongMove.SetActive(true);
 			}
 			else if (playerMovement.CurMovement != null && playerMovement.CurMovement.Player != player) // If the current movement is not the right player who asked for. 
 			{
-				Debug.Log("HERE");
 				_state = STATE.WRONG;
 				WrongMove.SetActive(true);
 			}
 			else if (playerMovement != null) // if the current player is the one who's trying to move in the zone.
 			{
-				Debug.Log("NORMAL");
 				playerMovement.MovePlayer(player, pos, rotation);
 			}
 		}
@@ -127,9 +124,9 @@ public class GameState : MonoBehaviour
 	private void ReplaceTangible(string id, Vector2 pos, float rotation)
 	{
 		var player = _entityManager.GetPlayerWithId(id);
+		var playerMovement = GameObject.Find("GridManager").GetComponent<PlayerMovement>();
 		if (player != null)
 		{
-			var playerMovement = GameObject.Find("GridManager").GetComponent<PlayerMovement>();
 			playerMovement.ReplacePlayer(player, pos, rotation);
 		}
 	}

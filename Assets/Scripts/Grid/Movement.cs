@@ -7,7 +7,7 @@ public class Movement
     
     private List<Tile> _tiles;
     private Vector2 _initialTilePosition;
-    public bool IsMoving = true; // use to check if a player already move from the initial position but didn't validate the move yet.
+    public bool IsMoving = false; // use to check if a player already move from the initial position but didn't validate the move yet.
     
     public Movement(List<Tile> tiles, Player player, Vector2 initialTilePosition)
     {
