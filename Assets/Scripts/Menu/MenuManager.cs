@@ -51,8 +51,8 @@ public class MenuManager : MonoBehaviour
     {
         float xCoord = pos.x / WIDTH_GRID_UNIT;
         float yCoord = -(pos.y / HEIGHT_GRID_UNIT) + 15;
-        pos.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
-        pos.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
+        pos.x = Tile.WIDTH * xCoord;
+        pos.y = Tile.HEIGHT * yCoord;
         return pos; 
     }
 
@@ -130,7 +130,6 @@ public class MenuManager : MonoBehaviour
     {
         return GetMenuWithId(idMenu).globalId != null;
     }
-
-
+    
 }
 
