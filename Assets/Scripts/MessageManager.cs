@@ -71,7 +71,7 @@ public class MessageManager : MonoBehaviour
                     float width = height * cam.aspect;
                     float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
                     float yCoord = (t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) ;
-                    var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
+                    var vec = new Vector2(Tile.WIDTH * xCoord, Tile.HEIGHT * yCoord);
                     RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
                     if (hitinfo.collider != null)
                     {
@@ -153,7 +153,6 @@ public class MessageManager : MonoBehaviour
             t.State = TuioState.CLICK_UP;
             gameState.HandleNotOnTable(t.value);
         }
-           
     }
 
     private string GetMessage(OscMessage message)

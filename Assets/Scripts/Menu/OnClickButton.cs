@@ -14,8 +14,11 @@ public class OnClickButton : MonoBehaviour
     {
         if (counter == 0)
         {
-            call.Invoke();
-            counter = 1;
+            if (call != null)
+            {
+                call.Invoke();
+                counter = 1;
+            }
         }
     }
 

@@ -52,6 +52,16 @@ public class InitializationSocket : MonoBehaviour
                 _gameState._menuManager.populateMenu();
             });
         });
+        
+        _client.On("switchStateConstraint", data =>
+        {
+            string str = data.GetValue<string>(0);
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.CONSTRAINT;
+                Debug.Log("changing : "+_gameState._state);
+            });
+        });
     }
 
 
