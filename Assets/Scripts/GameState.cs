@@ -65,8 +65,7 @@ public class GameState : MonoBehaviour
 			_menuManager.HandleNotOnTable(id);
 		}
     }
-    
-
+	
 	private void MoveTangiblePlaying(string id, Vector2 pos, float rotation)
 	{
 		if (_entityManager.Exists(id))

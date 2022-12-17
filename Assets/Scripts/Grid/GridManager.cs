@@ -37,11 +37,34 @@ public class GridManager : MonoBehaviour
         }
     }
 
+    public Vector2 GetCanvasPosition(Vector2 pos)
+    {
+        float xCoord = (int)(pos.x / (1/width));
+        float yCoord = -(int)(pos.y / (1/height)) + 14 ;
+        
+        Debug.Log("pos in func "+xCoord + " "+ yCoord);
+        float xPosition = GetTileAtPosition(0, 0).GetWidth() * xCoord + GetTileAtPosition(0, 0).GetWidth() / 2;
+        float yPosition = GetTileAtPosition(0, 0).GetHeight() * yCoord + GetTileAtPosition(0, 0).GetHeight() / 2;
+        return new Vector2(xPosition, yPosition);
+    }
+
+    public Tile GetTileFromEntityPos(Vector2 pos)
+    {
+        var xCoord = (int)(pos.x / (1/width));
+        var yCoord = -(int)(pos.y / (1/height)) + 14 ;
+        
+        Debug.Log("x :" + xCoord);
+        Debug.Log("y :" + yCoord);
+        return null;
+    }
+    
     public Tile GetTileAtPosition(Vector2 pos) {
+        Debug.Log("trying find with vector : " + pos);
         if (tiles.TryGetValue(pos, out var tile))
         {
             return tile;
         }
+        Debug.Log("None found");
         return null;
     }
 

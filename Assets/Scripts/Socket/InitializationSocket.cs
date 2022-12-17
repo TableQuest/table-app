@@ -24,8 +24,6 @@ public class InitializationSocket : MonoBehaviour
         
     }
 
-
-
     private void RouteThread()
     {
         while (_client == null)

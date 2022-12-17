@@ -33,7 +33,6 @@ public class EntityManager : MonoBehaviour
     {
         Vector2 entityNewPosition = GetCanvasPosition(pos);
         GetPlayerWithId(id).Move(entityNewPosition);
-
     }
 
     public Vector2 GetCanvasPosition(Vector2 pos)
@@ -58,16 +57,8 @@ public class EntityManager : MonoBehaviour
 
     public Player GetPlayerWithGlobalId(string globalId)
     {
-        // Predicate<Player> matchingId = delegate(Player currentPlayer) { return currentPlayer.globalId == globalId; };
-        // return _players.Find(matchingId);
-        Debug.Log("FindPlayer with ID : " + globalId);
-        Debug.Log("players size : "+ _players.Count);
-        foreach (var player in _players)
-        {
-            Debug.Log(player.globalId);
-        }
-
-        return null;
+        Predicate<Player> matchingId = delegate(Player currentPlayer) { return currentPlayer.globalId == globalId; };
+        return _players.Find(matchingId);
     }
 
     public void CreateNewPlayer(string id, Vector2 pos, string idMenu)
