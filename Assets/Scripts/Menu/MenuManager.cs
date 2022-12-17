@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class MenuManager : MonoBehaviour
 {
-	List<Menu> menuList;
+	public List<Menu> menuList;
     Dictionary<string, GameObject> zoneInitDict;
 
     GridManager _grid;
@@ -90,33 +90,25 @@ public class MenuManager : MonoBehaviour
     }
 
     public Menu GetMenuWithId(string id) {
-        Predicate<Menu> matchingId = delegate(Menu currentMenu) { return currentMenu.id == id; };
-        return menuList.Find(matchingId);
+        foreach(Menu menu in menuList)
+        {
+            if (menu.globalId == id || menu.id == id)
+            {
+                return menu;
+            } 
+        }
+        return null;
+       // Predicate<Menu> matchingId = delegate(Menu currentMenu) { return currentMenu.id == id; };
+       // return menuList.Find(matchingId);
     }
 
     public void populateMenu()
     {
-        List<Player> players = GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players;
         foreach (Menu menu in menuList)
         {
-            int i = 0;
-            foreach (Player player in players)
-            {
-                GameObject button = Instantiate(Resources.Load("Prefab/Button") as GameObject, new Vector3(), Quaternion.identity);
-                button.transform.SetParent(menu.tangibleObject.transform);
-               // button.transform.localPosition = new Vector3(0, 1.4f, 0);
-                float angle = i * Mathf.PI * 2f / (float)players.Count();
-                float radius = 1.5f;
-                button.transform.localPosition = new Vector3(Mathf.Sin(angle) * radius, Mathf.Cos(angle) * radius, 0);
-                button.transform.localScale = new Vector3(1, 1, 1);
-                button.transform.GetComponent<OnClickButton>().call = delegate { attackPlayerButtonClick(player.globalId); };
-                i++;
-            }
-            GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3(0, 0 - 5), Quaternion.identity);
-            helperConnection.transform.SetParent(menu.tangibleObject.transform);
-            helperConnection.name = "helper" + menu.globalId;
-            helperConnection.GetComponent<TextMeshPro>().text = menu.globalId;
-            helperConnection.transform.localPosition = new Vector3(0, 0, 0);
+            menu.listPagesButton = MenuBuilder.generatePages(menu.globalId);
+            MenuBuilder.InstantiateButton(menu);
+            MenuBuilder.DisplayPage(0,menu);
         }
     }
 

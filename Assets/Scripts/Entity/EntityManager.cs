@@ -77,14 +77,6 @@ public class EntityManager : MonoBehaviour
         _players.Add(player);
         player.tangibleObject = Instantiate(Resources.Load("Prefab/Player") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
         player.tangibleObject.name = "Pawn" + id;
-
-        button = Instantiate(Resources.Load("Prefab/Button") as GameObject, new Vector3(), Quaternion.identity);
-        button.transform.SetParent(player.tangibleObject.transform);
-        button.transform.localPosition = new Vector3(0, 1.4f, 0);
-        button.transform.localScale = new Vector3(1, 1, 1);
-        button.transform.GetComponent<OnClickButton>().call = delegate { validerAction(); };
-
-
         GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(0,0,-5), Quaternion.identity);
         helperConnection.transform.SetParent(player.tangibleObject.transform);
         helperConnection.name = "helper" + player.globalId;

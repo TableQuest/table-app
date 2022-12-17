@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Menu : ScriptableObject
@@ -6,6 +7,8 @@ public class Menu : ScriptableObject
 	public string globalId;
 	public string id;
 	public GameObject tangibleObject;
+	public List<ButtonAbstract>[] listPagesButton;
+	public int currentPage = 1;
 
 	public Menu(string id)
 	{
