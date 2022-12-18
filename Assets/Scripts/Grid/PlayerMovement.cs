@@ -25,11 +25,9 @@ public class PlayerMovement : MonoBehaviour
         _socket.client.On("playerMove", (response) =>
         {
             var str = response.GetValue<string>(0);
-            
             _socket._mainThreadhActions.Enqueue(() =>
             {
                 var playerMove = JsonUtility.FromJson<PlayerMove>(str);
-                
                 var player = _gameState._entityManager.GetPlayerWithGlobalId(playerMove.playerId);
                 
                 // If there is not current Move yet.

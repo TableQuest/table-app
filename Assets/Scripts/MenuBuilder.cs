@@ -28,7 +28,7 @@ public class MenuBuilder : MonoBehaviour
 
     public static List<ButtonAbstract>[] generatePages(string globalID)
     {
-        List<ButtonAbstract> page1 = new List<ButtonAbstract> { new ButtonNavigation("Prefab/ButtonAction", globalID,1), new ButtonAction("Prefab/ButtonTorche", globalID,""), new ButtonAction("Prefab/ButtonMove", globalID,"") };
+        List<ButtonAbstract> page1 = new List<ButtonAbstract> { new ButtonNavigation("Prefab/ButtonAction", globalID,1), new ButtonAction("Prefab/ButtonTorche", globalID,""), new ButtonAction("Prefab/ButtonMove", globalID, "playerMove") };
         List<ButtonAbstract> page2 = new List<ButtonAbstract> { new ButtonAction("Prefab/ButtonCombat", globalID,""), new ButtonAction("Prefab/ButtonDice", globalID,""), new ButtonNavigation("Prefab/ButtonReturn", globalID, 0) };
         List<ButtonAbstract> page3 = new List<ButtonAbstract> { new ButtonAction("Prefab/Button", globalID,""), new ButtonAction("Prefab/Button", globalID,"") };
         List<ButtonAbstract>[] listPages = {page1, page2, page3};

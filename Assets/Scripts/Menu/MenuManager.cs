@@ -89,6 +89,8 @@ public class MenuManager : MonoBehaviour
         return "";
     }
 
+
+    //TODO FAIRE GAFFE ID GLOBALID
     public Menu GetMenuWithId(string id) {
         foreach(Menu menu in menuList)
         {

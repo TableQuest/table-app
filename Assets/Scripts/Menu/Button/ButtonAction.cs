@@ -1,18 +1,27 @@
+using Newtonsoft.Json;
+using SocketIOClient;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ButtonAction : ButtonAbstract
 {
-    string messageToServer;
-    public ButtonAction(string prefabPath, string globalID, string messageToServer) : base(prefabPath, globalID)
+    string endpoint;
+    public ButtonAction(string prefabPath, string globalID, string endpoint) : base(prefabPath, globalID)
     {
-        this.messageToServer = messageToServer;
+        this.endpoint = endpoint;
     }
 
-    public override void functionOnClick()
+    public override async void functionOnClick()
     {
-        Debug.Log("envois message to server");
+        if (endpoint != "")
+        {
+            SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
+            await client.EmitAsync(endpoint, globalID);
+        } else
+        {
+            Debug.Log("click on" + prefabPath);
+        }
     }
 
 
