@@ -42,25 +42,31 @@ public class InitializationSocket : MonoBehaviour
             });
         });
         
-        _client.On("switchStatePlaying", (data) =>
+
+        _client.On("switchState", (data) =>
         {
             string str = data.GetValue<string>(0);
-            socket._mainThreadhActions.Enqueue(() =>
-            {
-                GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.PLAYING;
-                Debug.Log("changing : "+_gameState._state);
-                _gameState._menuManager.populateMenu();
-            });
-        });
-        
-        _client.On("switchStateConstraint", data =>
-        {
-            string str = data.GetValue<string>(0);
-            socket._mainThreadhActions.Enqueue(() =>
-            {
-                GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.CONSTRAINT;
-                Debug.Log("changing : "+_gameState._state);
-            });
+            switch(str) {
+                case "FREE":
+                    socket._mainThreadhActions.Enqueue(() =>
+                    {
+                        GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.PLAYING;
+                        Debug.Log("changing : "+_gameState._state);
+                        _gameState._menuManager.populateMenu();
+                    });
+                    break;
+
+                case "RESTRICTED":
+                    socket._mainThreadhActions.Enqueue(() =>
+                    {
+                        GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.CONSTRAINT;
+                        Debug.Log("changing : "+_gameState._state);
+                    });
+                    break;
+                
+                default: Debug.Log("State " + str + " is wrong or not implemented yet.");
+                    break;
+            }
         });
     }
 
