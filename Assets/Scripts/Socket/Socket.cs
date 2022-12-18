@@ -4,36 +4,30 @@ using SocketIOClient;
 using System.Threading;
 using System.Collections.Concurrent;
 using System;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Socket : MonoBehaviour
 {
     public readonly ConcurrentQueue<Action> _mainThreadhActions = new ConcurrentQueue<Action>();
     public SocketIO client;
+    public string requestURI;
 
     public string clientId;
     // Start is called before the first frame update
-    private IEnumerator Start()
+    private void StartConnection()
     {
         DontDestroyOnLoad(gameObject);
         // Create a new thread in order to run the InitSocketThread method
         var thread = new Thread(InitSocketThread);
         // start the thread
         thread.Start();
-
-
-        // Wait until a callback action is added to the queue
-        yield return new WaitUntil(() => _mainThreadhActions.Count > 0);
-
-        // If this fails something is wrong ^^
-        // simply get the first added callback
-        if (!_mainThreadhActions.TryDequeue(out var action))
+        
+        if (requestURI == null)
         {
-            Debug.LogError("Something Went Wrong ! ", this);
-            yield break;
+            requestURI = "http://localhost:3000";
         }
-
-        // Execute the code of the added callback
-        action?.Invoke();
+        Debug.Log("Connection to : " + requestURI);
         
         StartCoroutine(UpdateCoroutine());
     }
@@ -57,13 +51,24 @@ public class Socket : MonoBehaviour
     {
         if (client == null)
         {
-            client = new SocketIO("http://localhost:3000/");
+            client = new SocketIO(requestURI);
             await client.ConnectAsync();
             if (clientId != null)
             {
                 await client.EmitAsync("tableConnection", "");
+                _mainThreadhActions.Enqueue(() =>
+                {
+                    SceneManager.LoadScene("MainScene");
+                });
             }
         }
+    }
+    
+    public void ClickConnect()
+    {
+        var input = GameObject.Find("Input").GetComponent<TMP_InputField>();
+        requestURI = "http://" + input.text + ":3000";
+        StartConnection();
     }
 
 }

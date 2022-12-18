@@ -385,7 +385,6 @@ public class UDPPacketIO
     public int inPort  = 6969;
     public string outIP = "127.0.0.1";
     public int outPort  = 6161;
-
       private UDPPacketIO OscPacketIO;
       Thread ReadThread;
 	  private bool ReaderRunning;

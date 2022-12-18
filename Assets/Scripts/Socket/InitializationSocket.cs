@@ -5,7 +5,7 @@ using System.Threading;
 
 public class InitializationSocket : MonoBehaviour
 {
-    private SocketIO _client;
+    public SocketIO _client;
     private Socket socket;
     private GameState _gameState;
     
@@ -23,8 +23,6 @@ public class InitializationSocket : MonoBehaviour
         thread.Start();
         
     }
-
-
 
     private void RouteThread()
     {
@@ -47,10 +45,20 @@ public class InitializationSocket : MonoBehaviour
         _client.On("switchStatePlaying", (data) =>
         {
             string str = data.GetValue<string>(0);
-            
             socket._mainThreadhActions.Enqueue(() =>
             {
                 GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.PLAYING;
+                Debug.Log("changing : "+_gameState._state);
+                _gameState._menuManager.populateMenu();
+            });
+        });
+        
+        _client.On("switchStateConstraint", data =>
+        {
+            string str = data.GetValue<string>(0);
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.CONSTRAINT;
                 Debug.Log("changing : "+_gameState._state);
             });
         });
