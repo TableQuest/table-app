@@ -74,6 +74,9 @@ public class GameState : MonoBehaviour
 		if (_menuManager.Exists(id) && _state == STATE.INIT && !_menuManager.hasPlayer(id)) 
 		{
 			_menuManager.HandleNotOnTable(id);
+		} else
+        {
+			_menuManager.HandleNotOnTableBis(id);
 		}
     }
 
