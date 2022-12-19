@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class ButtonCombat : ButtonAbstract
@@ -41,7 +42,10 @@ public class ButtonCombat : ButtonAbstract
             buttonObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
             buttonObject.transform.SetParent(this.buttonObject.transform);
             buttonObject.AddComponent<OnClickButton>();
-            buttonObject.GetComponent<OnClickButton>().call = delegate { Debug.Log("click sur competence" + skill.name); };
+            buttonObject.GetComponent<OnClickButton>().call = delegate 
+            {
+                clickSkill(this.globalID, skill);
+            };
             float angle = i * Mathf.PI * 2f / (float)skillList.Count;
             float radius = 1.5f;
             buttonObject.transform.localPosition = new Vector3(Mathf.Sin(angle) * radius, Mathf.Cos(angle) * radius, 0);
@@ -68,5 +72,54 @@ public class ButtonCombat : ButtonAbstract
     }
 
 
+    private void clickSkill(string playerId, Skill skill) {
+        Debug.Log(playerId + " clicked on " + skill.name);
+        Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
+        socket.client.On("clickSkill", (data) => {
+            Debug.Log("Received clickSkill with");
+            string str = data.GetValue<string>(0);
 
+            SkillUse skillUse = JsonUtility.FromJson<SkillUse>(str);
+            Debug.Log("skillUse: " + skillUse.ToString());
+            foreach (Player potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+            {
+                Debug.Log("Checking for " + potentialTarget.globalId);
+                if (skillUse.targetList.Contains(potentialTarget.globalId)) {
+                    var button = potentialTarget.tangibleObject.transform.GetChild(0);
+                    button.gameObject.SetActive(true);
+                    button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.id); };
+                }
+            }
+        });
+
+        var myData = new 
+        {
+            playerId = playerId,
+            skillId = skill.id,
+            skillName = skill.name
+        };
+
+        socket.client.EmitAsync("clickSkill", JsonConvert.SerializeObject(myData));
+    }
+
+    private void sendSkillUsage(int playerId, Skill skill, string targetId) {
+        Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
+
+        var data = new 
+        {
+            playerId = playerId,
+            skillId = skill.id,
+            targetId = targetId
+        };
+
+        string jsonData = JsonConvert.SerializeObject(data);
+        socket.client.EmitAsync("useSkill", jsonData);
+    }
+
+}
+
+public class SkillUse {
+    public int playerId;
+    public ButtonCombat.Skill skill;
+    public string[] targetList;
 }
