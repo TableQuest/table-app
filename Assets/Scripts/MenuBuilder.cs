@@ -8,6 +8,7 @@ public class MenuBuilder : MonoBehaviour
 {
     public static void InstantiateButton(Menu menu)
     {
+        Debug.Log(menu.listPagesButton.Length);
         foreach (List<ButtonAbstract> page in menu.listPagesButton)
         {
             int i = 0;
@@ -35,9 +36,8 @@ public class MenuBuilder : MonoBehaviour
     public static List<ButtonAbstract>[] generatePages(string globalID, string jsonSkills)
     {
         List<ButtonAbstract> page1 = new List<ButtonAbstract> { new ButtonNavigation("Prefab/ButtonAction", globalID,1), new ButtonAction("Prefab/ButtonTorche", globalID,""), new ButtonAction("Prefab/ButtonMove", globalID, "playerMove") };
-        List<ButtonAbstract> page2 = new List<ButtonAbstract> { new ButtonCombat("Prefab/ButtonCombat", globalID, jsonSkills), new ButtonAction("Prefab/ButtonDice", globalID,""), new ButtonNavigation("Prefab/ButtonReturn", globalID, 0) };
-        List<ButtonAbstract> page3 = new List<ButtonAbstract> { new ButtonAction("Prefab/Button", globalID,""), new ButtonAction("Prefab/Button", globalID,"") };
-        List<ButtonAbstract>[] listPages = {page1, page2, page3};
+        List<ButtonAbstract> page2 = new List<ButtonAbstract> { new ButtonNavigation("Prefab/ButtonReturn", globalID, 0) , new ButtonCombat("Prefab/ButtonCombat", globalID, jsonSkills), new ButtonAction("Prefab/ButtonDice", globalID,"")};
+        List<ButtonAbstract>[] listPages = {page1, page2};
         return listPages;
     }
 
@@ -57,6 +57,10 @@ public class MenuBuilder : MonoBehaviour
         foreach (ButtonAbstract button in menu.listPagesButton[pageIndex])
         {
             button.buttonObject.SetActive(false);
+            if(button.prefabPath == "Prefab/ButtonCombat")
+            {
+                button.functionOnClick();
+            }
         }
     }
 
