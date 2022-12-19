@@ -8,6 +8,7 @@ public class InitializationSocket : MonoBehaviour
     public SocketIO _client;
     private Socket socket;
     private GameState _gameState;
+    bool firstSwitch = true;
     
     void Start()
     {
@@ -52,7 +53,10 @@ public class InitializationSocket : MonoBehaviour
                     {
                         GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.PLAYING;
                         Debug.Log("changing : "+_gameState._state);
-                        _gameState._menuManager.populateMenu();
+                        if(firstSwitch) {
+                            _gameState._menuManager.populateMenu();
+                            firstSwitch = false;
+                        }
                     });
                     break;
 

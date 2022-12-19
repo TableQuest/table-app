@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using SocketIOClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class MenuManager : MonoBehaviour
 {
@@ -108,10 +110,39 @@ public class MenuManager : MonoBehaviour
     {
         foreach (Menu menu in menuList)
         {
-            menu.listPagesButton = MenuBuilder.generatePages(menu.globalId);
-            MenuBuilder.InstantiateButton(menu);
-            MenuBuilder.DisplayPage(0,menu);
+            StartCoroutine(GetRequest("http://localhost:3000/players/" + menu.globalId +  "/skills", menu ));
         }
+    }
+
+    public IEnumerator GetRequest(string uri, Menu menu)
+    {
+        string message = "";
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
+        {
+            // Request and wait for the desired page.
+            yield return webRequest.SendWebRequest();
+
+            string[] pages = uri.Split('/');
+            int page = pages.Length - 1;
+            
+
+            switch (webRequest.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.DataProcessingError:
+                    Debug.LogError(pages[page] + ": Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    message = webRequest.downloadHandler.text;
+                    break;
+            }
+        }
+        menu.listPagesButton = MenuBuilder.generatePages(menu.globalId, message);
+        MenuBuilder.InstantiateButton(menu);
+        MenuBuilder.DisplayPage(0, menu);
     }
 
     public async void attackPlayerButtonClick(string globalIDPlayer)
