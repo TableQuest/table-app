@@ -108,8 +108,16 @@ public class ButtonCombat : ButtonAbstract
 
         string jsonData = JsonConvert.SerializeObject(data);
         await socket.client.EmitAsync("useSkill", jsonData);
-        buttonValidate.SetActive(false);
-        buttonValidate.GetComponent<OnClickButton>().call = null;
+        
+        foreach (var pl in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+        {
+            var button = pl.tangibleObject.transform.GetChild(0);
+            button.gameObject.SetActive(false);
+            button.GetComponent<OnClickButton>().call = null;
+        }
+        
+        // buttonValidate.SetActive(false);
+        // buttonValidate.GetComponent<OnClickButton>().call = null;
 
     }
 
