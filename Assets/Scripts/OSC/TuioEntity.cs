@@ -4,6 +4,8 @@ public abstract class TuioEntity
 {
     protected TuioState previousState;
     protected TuioState state;
+    public int type;
+
     public TuioState State
     {
         get => state;

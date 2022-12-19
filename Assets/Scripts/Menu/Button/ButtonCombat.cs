@@ -37,8 +37,11 @@ public class ButtonCombat : ButtonAbstract
         foreach(Skill skill in skillList)
         {
             ButtonAction button = new ButtonAction(skill.image, globalID, "");
-            GameObject buttonObject = Instantiate(Resources.Load("Prefab/skill") as GameObject, new Vector3(), Quaternion.identity);
-            buttonObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
+            GameObject buttonObject = Instantiate(Resources.Load("Prefab/ButtonSkill") as GameObject, new Vector3(), Quaternion.identity);
+            buttonObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
+            buttonObject.transform.Find("Background").transform.Find("Icon").transform.localScale = new Vector3(1, 1, 1);
+           // buttonObject.transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
+            //buttonObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
             buttonObject.transform.SetParent(this.buttonObject.transform);
             buttonObject.AddComponent<OnClickButton>();
             buttonObject.GetComponent<OnClickButton>().call = delegate { Debug.Log("click sur competence" + skill.name); };

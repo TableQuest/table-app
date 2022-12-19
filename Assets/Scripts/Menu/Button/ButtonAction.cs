@@ -14,13 +14,12 @@ public class ButtonAction : ButtonAbstract
 
     public override async void functionOnClick()
     {
+        GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("BUTTON ACTION : before if : click " + endpoint);
         if (endpoint != "")
         {
             SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
             await client.EmitAsync(endpoint, globalID);
-        } else
-        {
-            Debug.Log("click on" + prefabPath);
+            GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("BUTTON ACTION : emit click " +  endpoint);
         }
     }
 
