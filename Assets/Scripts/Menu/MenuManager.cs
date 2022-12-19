@@ -16,7 +16,7 @@ public class MenuManager : MonoBehaviour
     GridManager _grid;
 
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 24 tiles wide
-    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
+    private float HEIGHT_GRID_UNIT = 1/14f; //same but 14 tiles high
 
 	void Start()
 	{

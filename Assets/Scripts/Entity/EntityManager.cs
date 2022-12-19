@@ -14,7 +14,7 @@ public class EntityManager : MonoBehaviour
     GridManager _grid;
 
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
-    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
+    private float HEIGHT_GRID_UNIT = 1/14f; //same but 14 tiles high
 
 
     void Start()
@@ -39,7 +39,7 @@ public class EntityManager : MonoBehaviour
     public Vector2 GetCanvasPosition(Vector2 oscPos)
     {
         float xCoord = (int)(oscPos.x / WIDTH_GRID_UNIT);
-        float yCoord = -(int)(oscPos.y / HEIGHT_GRID_UNIT) + 14 ;
+        float yCoord = -(int)(oscPos.y / HEIGHT_GRID_UNIT) + 13 ;
         float xPosition = Tile.WIDTH * xCoord + Tile.WIDTH / 2;
         float yPosition = Tile.HEIGHT * yCoord + Tile.HEIGHT / 2;
         return new Vector2(xPosition, yPosition);
@@ -76,7 +76,7 @@ public class EntityManager : MonoBehaviour
         button.transform.localScale = new Vector3(1, 1, 1);
         button.SetActive(false);
 
-        GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(0,0,-5), Quaternion.identity);
+        GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-20), Quaternion.identity);
         helperConnection.transform.SetParent(player.tangibleObject.transform);
         helperConnection.name = "helper" + player.globalId;
         helperConnection.GetComponent<TextMeshPro>().text = player.globalId;

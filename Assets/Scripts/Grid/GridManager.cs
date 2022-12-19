@@ -11,7 +11,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private int nbTilesHeight;
     
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
-    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
+    private float HEIGHT_GRID_UNIT = 1/14f; //same but 14 tiles high
 
     [SerializeField] private Tile tile;
 
@@ -57,7 +57,7 @@ public class GridManager : MonoBehaviour
     public Vector2 GetCanvasPosition(Vector2 oscPos)
     {
         int xCoord = (int)(oscPos.x / WIDTH_GRID_UNIT);
-        int yCoord = -(int)(oscPos.y / HEIGHT_GRID_UNIT) + 14 ;
+        int yCoord = -(int)(oscPos.y / HEIGHT_GRID_UNIT) + 13 ;
 
         float xPosition = Tile.WIDTH * xCoord + Tile.WIDTH / 2;
         float yPosition = Tile.HEIGHT * yCoord + Tile.HEIGHT / 2;

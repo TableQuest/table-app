@@ -8,7 +8,7 @@ using System.Linq;
 public class MessageManager : MonoBehaviour
 {
     private float WIDTH_GRID_UNIT = 1/24f; // we're dividing the screen in a grid that is 25 tiles wide
-    private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
+    private float HEIGHT_GRID_UNIT = 1/14f; //same but 14 tiles high
 
     private GridManager grid;
 
