@@ -110,15 +110,13 @@ public class MenuManager : MonoBehaviour
     {
         foreach (Menu menu in menuList)
         {
-            StartCoroutine(GetRequest("http://localhost:3000/players/" + menu.globalId +  "/skills" ));
-            menu.listPagesButton = MenuBuilder.generatePages(menu.globalId);
-            MenuBuilder.InstantiateButton(menu);
-            MenuBuilder.DisplayPage(0,menu);
+            StartCoroutine(GetRequest("http://localhost:3000/players/" + menu.globalId +  "/skills", menu ));
         }
     }
 
-    public IEnumerator GetRequest(string uri)
+    public IEnumerator GetRequest(string uri, Menu menu)
     {
+        string message = "";
         using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
         {
             // Request and wait for the desired page.
@@ -126,6 +124,7 @@ public class MenuManager : MonoBehaviour
 
             string[] pages = uri.Split('/');
             int page = pages.Length - 1;
+            
 
             switch (webRequest.result)
             {
@@ -137,10 +136,13 @@ public class MenuManager : MonoBehaviour
                     Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                    message = webRequest.downloadHandler.text;
                     break;
             }
         }
+        menu.listPagesButton = MenuBuilder.generatePages(menu.globalId, message);
+        MenuBuilder.InstantiateButton(menu);
+        MenuBuilder.DisplayPage(0, menu);
     }
 
     public async void attackPlayerButtonClick(string globalIDPlayer)
