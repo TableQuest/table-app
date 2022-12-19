@@ -72,24 +72,25 @@ public class ButtonCombat : ButtonAbstract
     }
 
 
-    private void clickSkill(string playerId, Skill skill) {
+    private async void clickSkill(string playerId, Skill skill) {
         Debug.Log(playerId + " clicked on " + skill.name);
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         socket.client.On("clickSkill", (data) => {
-            Debug.Log("Received clickSkill with");
+
             string str = data.GetValue<string>(0);
 
-            SkillUse skillUse = JsonUtility.FromJson<SkillUse>(str);
-            Debug.Log("skillUse: " + skillUse.ToString());
-            foreach (Player potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+            socket._mainThreadhActions.Enqueue(() => 
             {
-                Debug.Log("Checking for " + potentialTarget.globalId);
-                if (skillUse.targetList.Contains(potentialTarget.globalId)) {
-                    var button = potentialTarget.tangibleObject.transform.GetChild(0);
-                    button.gameObject.SetActive(true);
-                    button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.id); };
+                SkillUse skillUse = JsonUtility.FromJson<SkillUse>(str);
+                foreach (Player potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+                {
+                    if (skillUse.targetsId.Contains(potentialTarget.globalId)) {
+                        var button = potentialTarget.tangibleObject.transform.GetChild(0);
+                        button.gameObject.SetActive(true);
+                        button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.id); };
+                    }
                 }
-            }
+            });
         });
 
         var myData = new 
@@ -99,12 +100,14 @@ public class ButtonCombat : ButtonAbstract
             skillName = skill.name
         };
 
-        socket.client.EmitAsync("clickSkill", JsonConvert.SerializeObject(myData));
+        await socket.client.EmitAsync("clickSkill", JsonConvert.SerializeObject(myData));
     }
 
-    private void sendSkillUsage(int playerId, Skill skill, string targetId) {
+    private async void sendSkillUsage(int playerId, Skill skill, string targetId) {
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
-
+        Debug.Log(playerId);
+        Debug.Log(skill.id);
+        Debug.Log(targetId);
         var data = new 
         {
             playerId = playerId,
@@ -113,7 +116,7 @@ public class ButtonCombat : ButtonAbstract
         };
 
         string jsonData = JsonConvert.SerializeObject(data);
-        socket.client.EmitAsync("useSkill", jsonData);
+        await socket.client.EmitAsync("useSkill", jsonData);
     }
 
 }
@@ -121,5 +124,5 @@ public class ButtonCombat : ButtonAbstract
 public class SkillUse {
     public int playerId;
     public ButtonCombat.Skill skill;
-    public string[] targetList;
+    public string[] targetsId;
 }
