@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public static int WIDTH = 80;
-    public static int HEIGHT = 72;
+    public static int WIDTH = 77;
+    public static int HEIGHT = 77;
     
-    [SerializeField] private int width = 80;
-    [SerializeField] private int height = 72;
+    [SerializeField] private int width = 77;
+    [SerializeField] private int height = 77;
     [SerializeField] private Color firstColor, secondColor;
     [SerializeField] public SpriteRenderer tileRenderer;
     [SerializeField] private GameObject highlighter;
@@ -35,11 +35,11 @@ public class Tile : MonoBehaviour
     }
     
     void OnMouseEnter() {
-        highlighter.SetActive(true);
+        // highlighter.SetActive(true);
     }
 
     void OnMouseExit() {
-        highlighter.SetActive(false);
+        // highlighter.SetActive(false);
     }
 
     public int GetWidth() {
