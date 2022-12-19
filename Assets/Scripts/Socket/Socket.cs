@@ -63,12 +63,16 @@ public class Socket : MonoBehaviour
             }
         }
     }
+
+    public async void sendDebug(string message)
+    {
+        await client.EmitAsync("debugMessage", message);
+    }
     
     public void ClickConnect()
     {
         var input = GameObject.Find("Input").GetComponent<TMP_InputField>();
-        requestURI = "http://"+input.text+":3000";
-
+        requestURI = "http://" + input.text + ":3000";
         StartConnection();
     }
 

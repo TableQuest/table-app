@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 2297983738805972507}
   - component: {fileID: 5381756621408412968}
   - component: {fileID: -5032838093022452812}
-  - component: {fileID: 6164119081428945146}
+  - component: {fileID: 7844690907366898006}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -394,7 +394,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &6164119081428945146
+--- !u!114 &7844690907366898006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

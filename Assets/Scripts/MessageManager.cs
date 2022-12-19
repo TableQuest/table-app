@@ -15,9 +15,6 @@ public class MessageManager : MonoBehaviour
     public GameState gameState;
     public OSC osc;
     public TextMeshPro text;
-    public GameObject menuPrefab;
-    public GameObject playerPrefab;
-    public GameObject zoneMenuInitPrefab;
 
     List<TuioEntity> tuioEvents = new List<TuioEntity>();
     List<TuioEntity> deadTouches = new List<TuioEntity>();
@@ -62,22 +59,25 @@ public class MessageManager : MonoBehaviour
                 break;
             case "fseq":
                 string str = "Voici les detections:\n";
+                Camera cam = Camera.main;
                 foreach (TuioEntity t in tuioEvents)
                 {
-                    str += t;
-                    //cast an invisible ray that will collide with the first object
-                    Camera cam = Camera.main;
-                    float height = 2f * cam.orthographicSize;
-                    float width = height * cam.aspect;
-                    float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
-                    float yCoord = (t.position.TUIOPosition.y / HEIGHT_GRID_UNIT) ;
-                    var vec = new Vector2(grid.GetTileAtPosition(0, 0).GetWidth() * xCoord, grid.GetTileAtPosition(0, 0).GetHeight() * yCoord);
-                    RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
-                    if (hitinfo.collider != null)
+                    if (t.type != null && t.type == 0)
                     {
-                        if (hitinfo.transform.GetComponent<OnClickButton>() != null)
+                        str += t;
+                        //cast an invisible ray that will collide with the first object
+                        float height = 2f * cam.orthographicSize;
+                        float width = height * cam.aspect;
+                        float xCoord = t.position.TUIOPosition.x / WIDTH_GRID_UNIT;
+                        float yCoord = (t.position.TUIOPosition.y / HEIGHT_GRID_UNIT);
+                        var vec = new Vector2(Tile.WIDTH * xCoord, Tile.HEIGHT * yCoord);
+                        RaycastHit2D hitinfo = Physics2D.Raycast(vec, Vector2.zero);
+                        if (hitinfo.collider != null)
                         {
-                          hitinfo.transform.GetComponent<OnClickButton>().onClick();
+                            if (hitinfo.transform.GetComponent<OnClickButton>() != null)
+                            {
+                                hitinfo.transform.GetComponent<OnClickButton>().onClick();
+                            }
                         }
                     }
                 }
@@ -97,6 +97,7 @@ public class MessageManager : MonoBehaviour
         if (tuioEvent == null)
         {
             tuioEvent = new TuioCursor(id, xCoord, 1.0f - yCoord);
+            tuioEvent.type = 0;
             tuioEvents.Add(tuioEvent);
             StartCoroutine(InstantiateType(tuioEvent));
         }
@@ -153,7 +154,6 @@ public class MessageManager : MonoBehaviour
             t.State = TuioState.CLICK_UP;
             gameState.HandleNotOnTable(t.value);
         }
-           
     }
 
     private string GetMessage(OscMessage message)

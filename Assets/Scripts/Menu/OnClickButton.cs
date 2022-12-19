@@ -8,14 +8,18 @@ public class OnClickButton : MonoBehaviour
 {
     private int counter;
     public UnityAction call;
-    public static int MAX_COUNTER = 1000;
+    public static int MAX_COUNTER = 15;
 
     public void onClick()
     {
         if (counter == 0)
         {
-            call.Invoke();
-            counter = 1;
+            
+            if (call != null)
+            {
+                call.Invoke();
+                counter = 1;
+            }
         }
     }
 

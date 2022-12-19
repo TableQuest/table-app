@@ -189,6 +189,7 @@ MonoBehaviour:
   secondColor: {r: 0.078431375, g: 0.5019608, b: 0.23529412, a: 1}
   tileRenderer: {fileID: 6839182376628926554}
   highlighter: {fileID: 4060673562509960201}
+  tilePos: {x: 0, y: 0}
 --- !u!61 &5514636498235161928
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -1,14 +1,16 @@
 ﻿using Newtonsoft.Json;
 using SocketIOClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class MenuManager : MonoBehaviour
 {
-	List<Menu> menuList;
+	public List<Menu> menuList;
     Dictionary<string, GameObject> zoneInitDict;
 
     GridManager _grid;
@@ -51,8 +53,8 @@ public class MenuManager : MonoBehaviour
     {
         float xCoord = pos.x / WIDTH_GRID_UNIT;
         float yCoord = -(pos.y / HEIGHT_GRID_UNIT) + 15;
-        pos.x = _grid.GetTileAtPosition(0, 0).GetWidth() * xCoord;
-        pos.y = _grid.GetTileAtPosition(0, 0).GetHeight() * yCoord;
+        pos.x = Tile.WIDTH * xCoord;
+        pos.y = Tile.HEIGHT * yCoord;
         return pos; 
     }
 
@@ -89,35 +91,59 @@ public class MenuManager : MonoBehaviour
         return "";
     }
 
+
+    //TODO FAIRE GAFFE ID GLOBALID
     public Menu GetMenuWithId(string id) {
-        Predicate<Menu> matchingId = delegate(Menu currentMenu) { return currentMenu.id == id; };
-        return menuList.Find(matchingId);
+        foreach(Menu menu in menuList)
+        {
+            if (menu.globalId == id || menu.id == id)
+            {
+                return menu;
+            } 
+        }
+        return null;
+       // Predicate<Menu> matchingId = delegate(Menu currentMenu) { return currentMenu.id == id; };
+       // return menuList.Find(matchingId);
     }
 
     public void populateMenu()
     {
-        List<Player> players = GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players;
+        string url = GameObject.Find("SocketClient").GetComponent<Socket>().requestURI;
         foreach (Menu menu in menuList)
         {
-            int i = 0;
-            foreach (Player player in players)
-            {
-                GameObject button = Instantiate(Resources.Load("Prefab/Button") as GameObject, new Vector3(), Quaternion.identity);
-                button.transform.SetParent(menu.tangibleObject.transform);
-               // button.transform.localPosition = new Vector3(0, 1.4f, 0);
-                float angle = i * Mathf.PI * 2f / (float)players.Count();
-                float radius = 1.5f;
-                button.transform.localPosition = new Vector3(Mathf.Sin(angle) * radius, Mathf.Cos(angle) * radius, 0);
-                button.transform.localScale = new Vector3(1, 1, 1);
-                button.transform.GetComponent<OnClickButton>().call = delegate { attackPlayerButtonClick(player.globalId); };
-                i++;
-            }
-            GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3(0, 0 - 5), Quaternion.identity);
-            helperConnection.transform.SetParent(menu.tangibleObject.transform);
-            helperConnection.name = "helper" + menu.globalId;
-            helperConnection.GetComponent<TextMeshPro>().text = menu.globalId;
-            helperConnection.transform.localPosition = new Vector3(0, 0, 0);
+            StartCoroutine(GetRequest(url + "/players/" + menu.globalId +  "/skills", menu ));
         }
+    }
+
+    public IEnumerator GetRequest(string uri, Menu menu)
+    {
+        string message = "";
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
+        {
+            // Request and wait for the desired page.
+            yield return webRequest.SendWebRequest();
+
+            string[] pages = uri.Split('/');
+            int page = pages.Length - 1;
+            
+
+            switch (webRequest.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.DataProcessingError:
+                    Debug.LogError(pages[page] + ": Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    message = webRequest.downloadHandler.text;
+                    break;
+            }
+        }
+        menu.listPagesButton = MenuBuilder.generatePages(menu.globalId, message);
+        MenuBuilder.InstantiateButton(menu);
+        MenuBuilder.DisplayPage(0, menu);
     }
 
     public async void attackPlayerButtonClick(string globalIDPlayer)
@@ -138,7 +164,6 @@ public class MenuManager : MonoBehaviour
     {
         return GetMenuWithId(idMenu).globalId != null;
     }
-
-
+    
 }
 
