@@ -8,18 +8,15 @@ public class OnClickButton : MonoBehaviour
 {
     private int counter;
     public UnityAction call;
-    public static int MAX_COUNTER = 1000;
+    public static int MAX_COUNTER = 15;
 
     public void onClick()
     {
-        GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("click button - " + "counter =" + counter);
         if (counter == 0)
         {
             
-            GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("before call != null");
             if (call != null)
             {
-                GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("ENTER click button");
                 call.Invoke();
                 counter = 1;
             }
@@ -35,7 +32,6 @@ public class OnClickButton : MonoBehaviour
 
         if (counter > MAX_COUNTER)
         {
-            GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("reset counter");
             counter = 0;
         }
     }

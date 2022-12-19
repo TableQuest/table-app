@@ -12,7 +12,6 @@ public class ButtonNavigation : ButtonAbstract
 
     public override void functionOnClick()
     {
-        GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("BUTTON NAVIGATION - " + page);
         MenuBuilder.DisplayPage(page, GameObject.Find("TableQuests").GetComponent<MenuManager>().GetMenuWithId(this.globalID));
     }
 
