@@ -108,9 +108,10 @@ public class MenuManager : MonoBehaviour
 
     public void populateMenu()
     {
+        string url = GameObject.Find("SocketClient").GetComponent<Socket>().requestURI;
         foreach (Menu menu in menuList)
         {
-            StartCoroutine(GetRequest("http://localhost:3000/players/" + menu.globalId +  "/skills", menu ));
+            StartCoroutine(GetRequest(url + "/players/" + menu.globalId +  "/skills", menu ));
         }
     }
 

@@ -12,10 +12,14 @@ public class OnClickButton : MonoBehaviour
 
     public void onClick()
     {
+        GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("click button - " + "counter =" + counter);
         if (counter == 0)
         {
+            
+            GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("before call != null");
             if (call != null)
             {
+                GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("ENTER click button");
                 call.Invoke();
                 counter = 1;
             }
@@ -31,6 +35,7 @@ public class OnClickButton : MonoBehaviour
 
         if (counter > MAX_COUNTER)
         {
+            GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("reset counter");
             counter = 0;
         }
     }

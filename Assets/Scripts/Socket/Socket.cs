@@ -63,6 +63,11 @@ public class Socket : MonoBehaviour
             }
         }
     }
+
+    public async void sendDebug(string message)
+    {
+        await client.EmitAsync("debugMessage", message);
+    }
     
     public void ClickConnect()
     {
