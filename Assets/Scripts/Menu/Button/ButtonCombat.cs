@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class ButtonCombat : ButtonAbstract
 {
-    bool display = false;
+    public bool display = false;
     List<ButtonAbstract> buttons = new List<ButtonAbstract>();
     string jsonSkills;
     bool initButton = false;

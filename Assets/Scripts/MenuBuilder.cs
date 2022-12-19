@@ -59,7 +59,8 @@ public class MenuBuilder : MonoBehaviour
             button.buttonObject.SetActive(false);
             if(button.prefabPath == "Prefab/ButtonCombat")
             {
-                button.functionOnClick();
+                ButtonCombat tmp = (ButtonCombat)button;
+                tmp.display = false;
             }
         }
     }
