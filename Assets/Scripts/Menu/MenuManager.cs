@@ -37,7 +37,7 @@ public class MenuManager : MonoBehaviour
         GetMenuWithId(id).Move(pos);
     }
 
-    public void HandleNotOnTable(string id)
+    public void HandleNotOnTableInit(string id)
     {
         zoneInitDict.Remove(id);
         GameObject.Destroy(GetMenuWithId(id).tangibleObject);
@@ -45,7 +45,7 @@ public class MenuManager : MonoBehaviour
      
     }
 
-    public void HandleNotOnTableBis(string id)
+    public void HandleNotOnTable(string id)
     {
         GetMenuWithId(id).tangibleObject.SetActive(false);
 

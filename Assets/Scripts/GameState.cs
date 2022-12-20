@@ -71,14 +71,15 @@ public class GameState : MonoBehaviour
 
 	public void HandleNotOnTable(string id)
     {
-		if (_menuManager.Exists(id) && _state == STATE.INIT && !_menuManager.hasPlayer(id)) 
+		if (_menuManager.Exists(id) && !_menuManager.hasPlayer(id)) 
+		{
+			_menuManager.HandleNotOnTableInit(id);
+		}
+		if (_menuManager.Exists(id) && _menuManager.hasPlayer(id))
 		{
 			_menuManager.HandleNotOnTable(id);
-		} else
-        {
-			_menuManager.HandleNotOnTableBis(id);
 		}
-    }
+	}
 
 	private void MoveMenuTangible(string id, Vector2 pos, float rotation)
 	{
