@@ -13,18 +13,7 @@ public class ButtonCombat : ButtonAbstract
     string jsonSkills;
     bool initButton = false;
 
-    public class Skill
-    {
-        public int id { get; set; }
-        public string name { get; set; }
-        public int manaCost { get; set; }
-        public int range { get; set; }
-        public int maxTarget { get; set; }
-        public string type { get; set; }
-        public int statModifier { get; set; }
-        public bool healing { get; set; }
-        public string image { get; set; }
-    }
+    
 
     public ButtonCombat(string prefabPath, string globalID, string jsonSkills) : base(prefabPath, globalID)
     {
@@ -38,11 +27,8 @@ public class ButtonCombat : ButtonAbstract
         foreach(Skill skill in skillList)
         {
             ButtonAction button = new ButtonAction(skill.image, globalID, "");
-            GameObject buttonObject = Instantiate(Resources.Load("Prefab/ButtonSkill") as GameObject, new Vector3(), Quaternion.identity);
-            buttonObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
-            buttonObject.transform.Find("Background").transform.Find("Icon").transform.localScale = new Vector3(1, 1, 1);
-           // buttonObject.transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
-            //buttonObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
+            GameObject buttonObject = Instantiate(Resources.Load("Prefab/skill") as GameObject, new Vector3(), Quaternion.identity);
+            buttonObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skill.image);
             buttonObject.transform.SetParent(this.buttonObject.transform);
             buttonObject.AddComponent<OnClickButton>();
             buttonObject.GetComponent<OnClickButton>().call = delegate 
@@ -84,13 +70,13 @@ public class ButtonCombat : ButtonAbstract
 
             socket._mainThreadhActions.Enqueue(() => 
             {
-                SkillUse skillUse = JsonUtility.FromJson<SkillUse>(str);
+                SkillUse skillUse = JsonConvert.DeserializeObject<SkillUse>(str);
                 foreach (Player potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
                 {
                     if (skillUse.targetsId.Contains(potentialTarget.globalId)) {
                         var button = potentialTarget.tangibleObject.transform.GetChild(0);
                         button.gameObject.SetActive(true);
-                        button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.id); };
+                        button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.globalId, button.gameObject); };
                     }
                 }
             });
@@ -106,11 +92,9 @@ public class ButtonCombat : ButtonAbstract
         await socket.client.EmitAsync("clickSkill", JsonConvert.SerializeObject(myData));
     }
 
-    private async void sendSkillUsage(int playerId, Skill skill, string targetId) {
+    private async void sendSkillUsage(string playerId, Skill skill, string targetId, GameObject buttonValidate) {
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
-        Debug.Log(playerId);
-        Debug.Log(skill.id);
-        Debug.Log(targetId);
+            
         var data = new 
         {
             playerId = playerId,
@@ -120,12 +104,28 @@ public class ButtonCombat : ButtonAbstract
 
         string jsonData = JsonConvert.SerializeObject(data);
         await socket.client.EmitAsync("useSkill", jsonData);
+        buttonValidate.SetActive(false);
+        buttonValidate.GetComponent<OnClickButton>().call = null;
+
     }
 
 }
 
 public class SkillUse {
-    public int playerId;
-    public ButtonCombat.Skill skill;
+    public string playerId;
+    public Skill skill;
     public string[] targetsId;
+}
+
+public class Skill
+{
+    public int id;
+    public string name;
+    public int manaCost;
+    public int range;
+    public int maxTarget;
+    public string type;
+    public int statModifier;
+    public bool healing;
+    public string image;
 }

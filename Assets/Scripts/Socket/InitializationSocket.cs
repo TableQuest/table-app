@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using SocketIOClient;
 using System.Threading;
-
+using Newtonsoft.Json;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -51,8 +51,8 @@ public class InitializationSocket : MonoBehaviour
                 case "FREE":
                     socket._mainThreadhActions.Enqueue(() =>
                     {
-                        GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.PLAYING;
-                        Debug.Log("changing : "+_gameState._state);
+                        _gameState._state = STATE.PLAYING;
+                        Debug.Log("changing to: "+_gameState._state);
                         if(firstSwitch) {
                             _gameState._menuManager.populateMenu();
                             firstSwitch = false;
@@ -63,8 +63,8 @@ public class InitializationSocket : MonoBehaviour
                 case "RESTRICTED":
                     socket._mainThreadhActions.Enqueue(() =>
                     {
-                        GameObject.Find("TableQuests").GetComponent<GameState>()._state = STATE.CONSTRAINT;
-                        Debug.Log("changing : "+_gameState._state);
+                        _gameState._state = STATE.CONSTRAINT;
+                        Debug.Log("changing to: "+_gameState._state);
                     });
                     break;
                 
@@ -72,7 +72,25 @@ public class InitializationSocket : MonoBehaviour
                     break;
             }
         });
+
+        _client.On("newNpc", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("Getting NPC data: " + data);
+                string str = data.GetValue<string>(0);
+                TempNpc npcData = JsonConvert.DeserializeObject<TempNpc>(str);
+                _gameState._entityManager.CreateNewNpc(npcData.id, npcData.name); //normalement cet ID c'est celui du monstre (10: Goblin, 11: Ogre)
+            });
+        });
     }
 
+}
 
+public class TempNpc {
+    public string description;
+    public int id;
+    public int life;
+    public int lifeMax;
+    public string name;
 }

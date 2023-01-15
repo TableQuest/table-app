@@ -8,6 +8,7 @@ public enum STATE
 	INIT,
 	PLAYING,
 	CONSTRAINT,
+	NEW_NPC,
 	WRONG
 }
 
@@ -35,7 +36,7 @@ public class GameState : MonoBehaviour
 		{
 			case STATE.INIT:
 				HandleEventInit(id, pos);
-				MovePawnTangible(id, pos, rotation);	
+				MovePawnTangible(id, pos, rotation);
 				break;
 			case STATE.PLAYING:
 				MovePawnTangible(id, pos, rotation);
@@ -45,6 +46,11 @@ public class GameState : MonoBehaviour
 				break;
 			case STATE.WRONG:
 				ReplaceTangible(id, pos, rotation);
+				break;
+			case STATE.NEW_NPC:
+				if (_entityManager.GetEntityWithId(id) == null) {
+					_entityManager.PlaceNewNpc(id, pos);
+				} //TODO maybe add an error message so the GM knows he's (somehow) using a wrong tangible
 				break;
 			default:
 				break;
