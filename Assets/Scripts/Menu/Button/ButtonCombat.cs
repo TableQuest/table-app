@@ -12,12 +12,15 @@ public class ButtonCombat : ButtonAbstract
     List<ButtonAbstract> buttons = new List<ButtonAbstract>();
     string jsonSkills;
     bool initButton = false;
+    bool isActivate = false;
+    GridManager _gridManager;
 
     
 
     public ButtonCombat(string prefabPath, string globalID, string jsonSkills) : base(prefabPath, globalID)
     {
         this.jsonSkills = jsonSkills;
+        _gridManager = GameObject.Find("GridManager").GetComponent<GridManager>();
     }
 
     private void InstantiateButtonSkills(string jsonSkills)
@@ -70,6 +73,17 @@ public class ButtonCombat : ButtonAbstract
 
             socket._mainThreadhActions.Enqueue(() => 
             {
+                Debug.Log("HIGHLIGHT TILES");
+                Player playerWhoAttack = GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.GetPlayerWithGlobalId(this.globalID);
+                Debug.Log(playerWhoAttack.globalId);
+                var tilePos = _gridManager.GetPosFromEntityPos(playerWhoAttack.tangibleObject.transform.position);
+                Debug.Log(tilePos.x + " : " + tilePos.y);
+                List<Tile> tiles = _gridManager.GetTilesAroundPosition(tilePos, skill.range);
+                _gridManager.tilesAttack = tiles;
+                foreach (var tile in tiles)
+                {
+                    tile.Highlight(Color.red);
+                }
                 Debug.Log(str);
                 SkillUse skillUse = JsonConvert.DeserializeObject<SkillUse>(str);
                 Debug.Log(skillUse.skill.id);
@@ -95,6 +109,8 @@ public class ButtonCombat : ButtonAbstract
     }
 
     private async void sendSkillUsage(string playerId, Skill skill, string targetId, GameObject buttonValidate) {
+        Debug.Log("JE RESET LES TILES");
+        _gridManager.resetTilesAttack();
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         Debug.Log(playerId);
         Debug.Log(skill.id);
@@ -108,20 +124,27 @@ public class ButtonCombat : ButtonAbstract
 
         string jsonData = JsonConvert.SerializeObject(data);
         await socket.client.EmitAsync("useSkill", jsonData);
-        
-        foreach (var pl in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
-        {
-            var button = pl.tangibleObject.transform.GetChild(0);
-            button.gameObject.SetActive(false);
-            button.GetComponent<OnClickButton>().call = null;
-        }
+
+        hideSkill();
         
         // buttonValidate.SetActive(false);
         // buttonValidate.GetComponent<OnClickButton>().call = null;
 
     }
 
+    private void hideSkill()
+    {
+        foreach (var pl in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+        {
+            var button = pl.tangibleObject.transform.GetChild(0);
+            button.gameObject.SetActive(false);
+            button.GetComponent<OnClickButton>().call = null;
+        }
+    }
+
 }
+
+
 
 public class SkillUse {
     public string playerId;

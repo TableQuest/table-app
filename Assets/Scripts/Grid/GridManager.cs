@@ -14,9 +14,8 @@ public class GridManager : MonoBehaviour
     private float HEIGHT_GRID_UNIT = 1/15f; //same but 14 tiles high
 
     [SerializeField] private Tile tile;
-
     [SerializeField] private GameObject gridObject;
-
+    public List<Tile> tilesAttack = new List<Tile>();
     private Dictionary<Vector2, Tile> tiles;
 
     void Start() {
@@ -52,6 +51,15 @@ public class GridManager : MonoBehaviour
         var yCoord = (int)(canvasPosition.y / Tile.HEIGHT);
         
         return new Vector2(xCoord, yCoord);
+    }
+
+    public void resetTilesAttack()
+    {
+        foreach (var tile in tilesAttack)
+        {
+            tile.PaintBaseColor();
+        }
+        tilesAttack = new List<Tile>();
     }
     
     public Vector2 GetCanvasPosition(Vector2 oscPos)
