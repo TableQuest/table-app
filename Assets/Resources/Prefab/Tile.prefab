@@ -185,8 +185,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 80
   height: 72
-  firstColor: {r: 0.20784314, g: 0.7529412, b: 0.40784314, a: 1}
-  secondColor: {r: 0.078431375, g: 0.5019608, b: 0.23529412, a: 1}
+  firstColor: {r: 0.20784314, g: 0.7529412, b: 0.40784314, a: 0}
+  secondColor: {r: 0.32600567, g: 0.6981132, b: 0.4638233, a: 0}
   tileRenderer: {fileID: 6839182376628926554}
   highlighter: {fileID: 4060673562509960201}
   tilePos: {x: 0, y: 0}

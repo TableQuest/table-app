@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 
 public class ButtonCombat : ButtonAbstract
-{
+{   
     public bool display = false;
     List<ButtonAbstract> buttons = new List<ButtonAbstract>();
     string jsonSkills;
@@ -70,7 +70,9 @@ public class ButtonCombat : ButtonAbstract
 
             socket._mainThreadhActions.Enqueue(() => 
             {
+                Debug.Log(str);
                 SkillUse skillUse = JsonConvert.DeserializeObject<SkillUse>(str);
+                Debug.Log(skillUse.skill.id);
                 foreach (Player potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
                 {
                     if (skillUse.targetsId.Contains(potentialTarget.globalId)) {
@@ -94,7 +96,9 @@ public class ButtonCombat : ButtonAbstract
 
     private async void sendSkillUsage(string playerId, Skill skill, string targetId, GameObject buttonValidate) {
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
-            
+        Debug.Log(playerId);
+        Debug.Log(skill.id);
+        Debug.Log(targetId);
         var data = new 
         {
             playerId = playerId,
@@ -104,8 +108,16 @@ public class ButtonCombat : ButtonAbstract
 
         string jsonData = JsonConvert.SerializeObject(data);
         await socket.client.EmitAsync("useSkill", jsonData);
-        buttonValidate.SetActive(false);
-        buttonValidate.GetComponent<OnClickButton>().call = null;
+        
+        foreach (var pl in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+        {
+            var button = pl.tangibleObject.transform.GetChild(0);
+            button.gameObject.SetActive(false);
+            button.GetComponent<OnClickButton>().call = null;
+        }
+        
+        // buttonValidate.SetActive(false);
+        // buttonValidate.GetComponent<OnClickButton>().call = null;
 
     }
 

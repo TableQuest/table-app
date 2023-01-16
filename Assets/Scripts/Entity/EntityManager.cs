@@ -81,7 +81,6 @@ public class EntityManager : MonoBehaviour
 
     public void CreateNewPlayer(string id, Vector2 pos, string idMenu)
     {
-        Debug.Log("Player: " + pos);
         Player player = new Player(id,  idMenu + id, _grid.GetPosFromEntityPos(pos));
         _players.Add(player);
         player.tangibleObject = Instantiate(Resources.Load("Prefab/Player") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
@@ -89,7 +88,7 @@ public class EntityManager : MonoBehaviour
 
         AddButtonTo(player);
 
-        GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(0,0,-5), Quaternion.identity);
+        GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-5), Quaternion.identity);
         helperConnection.transform.SetParent(player.tangibleObject.transform);
         helperConnection.name = "helper" + player.globalId;
         helperConnection.GetComponent<TextMeshPro>().text = player.globalId;
