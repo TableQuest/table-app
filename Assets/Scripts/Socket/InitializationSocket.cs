@@ -77,7 +77,6 @@ public class InitializationSocket : MonoBehaviour
         {
             socket._mainThreadhActions.Enqueue(() =>
             {
-                Debug.Log("Getting NPC data: " + data);
                 string str = data.GetValue<string>(0);
                 TempNpc npcData = JsonConvert.DeserializeObject<TempNpc>(str);
                 _gameState._entityManager.CreateNewNpc(npcData.id, npcData.name); //normalement cet ID c'est celui du monstre (10: Goblin, 11: Ogre)

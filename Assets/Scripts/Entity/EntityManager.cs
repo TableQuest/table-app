@@ -109,8 +109,8 @@ public class EntityManager : MonoBehaviour
         newNpc.pawnCode = tangibleId;
         newNpc.tilePosition = _grid.GetPosFromEntityPos(tangiblePosition);
         newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Monster") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
-        
-        if (newNpc.name == "Ogre"){
+
+        if (newNpc.name == "Ogre") {
             newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
         }
 
