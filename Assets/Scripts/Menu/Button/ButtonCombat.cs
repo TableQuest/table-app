@@ -65,6 +65,10 @@ public class ButtonCombat : ButtonAbstract
 
 
     private async void clickSkill(string playerId, Skill skill) {
+        if(isActivate)
+        {
+            hideButtonConfirm();
+        }
         Debug.Log(playerId + " clicked on " + skill.name);
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         socket.client.On("clickSkill", (data) => {
@@ -73,6 +77,7 @@ public class ButtonCombat : ButtonAbstract
 
             socket._mainThreadhActions.Enqueue(() => 
             {
+                _gridManager.resetTilesAttack();
                 Debug.Log("HIGHLIGHT TILES");
                 Player playerWhoAttack = GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.GetPlayerWithGlobalId(this.globalID);
                 Debug.Log(playerWhoAttack.globalId);
@@ -125,14 +130,14 @@ public class ButtonCombat : ButtonAbstract
         string jsonData = JsonConvert.SerializeObject(data);
         await socket.client.EmitAsync("useSkill", jsonData);
 
-        hideSkill();
+        hideButtonConfirm();
         
         // buttonValidate.SetActive(false);
         // buttonValidate.GetComponent<OnClickButton>().call = null;
 
     }
 
-    private void hideSkill()
+    private void hideButtonConfirm()
     {
         foreach (var pl in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
         {
