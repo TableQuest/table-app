@@ -29,12 +29,11 @@ public class EntityManager : MonoBehaviour
 
     public bool Exists(string id)
     {
-        return _players.Where(p => p.id == id).Count() > 0;
+        return _players.Where(p => p.id == id).Count() > 0 || _npcs.Where(n => n.pawnCode == id).Count() > 0;
     }
 
     public void Move(string id, Vector2 oscPos)
     {
-        Debug.Log("Tangible id: " + id);
         Entity entity = GetEntityWithId(id);
         Vector2 canvasPosition = GetCanvasPosition(oscPos);
         entity.Move(canvasPosition);
@@ -52,7 +51,7 @@ public class EntityManager : MonoBehaviour
 
     public void Rotate(string id, float degree)
     {
-        GetPlayerWithId(id).Rotate(degree);
+        GetEntityWithId(id).Rotate(degree);
     }
 
 
@@ -63,7 +62,7 @@ public class EntityManager : MonoBehaviour
     }
 
     public Npc GetNPCWithId(string id) {
-        Predicate<Npc> matchingId = delegate(Npc currentNpc) { return currentNpc.id == id; };
+        Predicate<Npc> matchingId = delegate(Npc currentNpc) { return currentNpc.pawnCode == id; };
         return _npcs.Find(matchingId);
     }
 
@@ -82,7 +81,7 @@ public class EntityManager : MonoBehaviour
 
     public void CreateNewPlayer(string id, Vector2 pos, string idMenu)
     {
-        
+        Debug.Log("Player: " + pos);
         Player player = new Player(id,  idMenu + id, _grid.GetPosFromEntityPos(pos));
         _players.Add(player);
         player.tangibleObject = Instantiate(Resources.Load("Prefab/Player") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
@@ -108,21 +107,19 @@ public class EntityManager : MonoBehaviour
 
     public async void PlaceNewNpc(string tangibleId, Vector2 tangiblePosition) {
         Npc newNpc = _npcs[_npcs.Count-1];
-        newNpc.id = tangibleId; //l'ID devient celui du tangible pour qu'il soit unique
-        Debug.Log(tangiblePosition);
+        newNpc.pawnCode = tangibleId;
         newNpc.tilePosition = _grid.GetPosFromEntityPos(tangiblePosition);
         newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Monster") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
         
-        //Gobelin
         if (newNpc.name == "Ogre"){
-            newNpc.tangibleObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Orc");
+            newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
         }
 
         AddButtonTo(newNpc);
 
         SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
-        Debug.Log("New NPC final: name: " + newNpc.name + ", id: " + newNpc.id);
-        await client.EmitAsync("newNpc", tangibleId);
+        Debug.Log("New NPC final: name: " + newNpc.name + ", id: " + newNpc.id + ", pawnId: " + newNpc.pawnCode);
+        await client.EmitAsync("newNpc", newNpc.pawnCode);
         
         GameState gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
         gameState._state = STATE.PLAYING;
