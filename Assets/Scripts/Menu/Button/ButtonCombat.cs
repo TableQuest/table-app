@@ -108,13 +108,13 @@ public class ButtonCombat : ButtonAbstract
                 Debug.Log(str);
                 SkillUse skillUse = JsonConvert.DeserializeObject<SkillUse>(str);
                 Debug.Log(skillUse.skill.id);
-                foreach (Player potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+                foreach (Entity potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.getEntities())
                 {
                     if (tilesPossible.Contains(_gridManager.GetPosFromEntityPos(potentialTarget.tangibleObject.transform.position)) &&
                     potentialTarget.tangibleObject.transform.position != playerWhoAttack.tangibleObject.transform.position)
                     {
                         Debug.Log("CREE LE BUTTON");
-                        var button = potentialTarget.tangibleObject.transform.GetChild(0);
+                        var button = potentialTarget.tangibleObject.transform.Find("buttonConfirm");
                         button.gameObject.SetActive(true);
                         button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.globalId, button.gameObject); };
                     }
@@ -160,9 +160,9 @@ public class ButtonCombat : ButtonAbstract
 
     private void hideButtonConfirm()
     {
-        foreach (var pl in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager._players)
+        foreach (var pl in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.getEntities())
         {
-            var button = pl.tangibleObject.transform.GetChild(0);
+            var button = pl.tangibleObject.transform.Find("buttonConfirm");
             button.gameObject.SetActive(false);
             button.GetComponent<OnClickButton>().call = null;
         }

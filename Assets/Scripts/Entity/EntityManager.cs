@@ -25,6 +25,14 @@ public class EntityManager : MonoBehaviour
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
 	}
 
+    public List<Entity> getEntities()
+    {
+        List<Entity> entities = new List<Entity>();
+        entities.AddRange(_players);
+        entities.AddRange(_npcs);
+        return entities;
+    }
+
 
 
     public bool Exists(string id)
@@ -110,11 +118,10 @@ public class EntityManager : MonoBehaviour
         newNpc.tilePosition = _grid.GetPosFromEntityPos(tangiblePosition);
         newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Monster") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
 
+        AddButtonTo(newNpc);
         if (newNpc.name == "Ogre") {
             newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
         }
-
-        AddButtonTo(newNpc);
 
         SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
         Debug.Log("New NPC final: name: " + newNpc.name + ", id: " + newNpc.id + ", pawnId: " + newNpc.pawnCode);
@@ -131,6 +138,7 @@ public class EntityManager : MonoBehaviour
         button.transform.SetParent(entity.tangibleObject.transform);
         button.transform.localPosition = new Vector3(0, 1.4f, 0);
         button.transform.localScale = new Vector3(1, 1, 1);
+        button.name = "buttonConfirm";
         button.SetActive(false);
     }
 
