@@ -60,15 +60,24 @@ public class ButtonCombat : ButtonAbstract
         {
             button.buttonObject.SetActive(!display);
         }
+        if(display && _gridManager.globalIDPlayerAttack == this.globalID)
+        {
+            hideButtonConfirm();
+            _gridManager.resetTilesAttack();
+        }
         display = !display;
     }
 
 
     private async void clickSkill(string playerId, Skill skill) {
-        if(isActivate)
+        _gridManager.resetTilesAttack();
+        if (isActivate  && _gridManager.globalIDPlayerAttack == this.globalID && _gridManager.currentSkillId == skill.id)
         {
             hideButtonConfirm();
+            return;
         }
+        _gridManager.currentSkillId = skill.id;
+        isActivate = !isActivate;
         Debug.Log(playerId + " clicked on " + skill.name);
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         socket.client.On("clickSkill", (data) => {
@@ -77,11 +86,11 @@ public class ButtonCombat : ButtonAbstract
 
             socket._mainThreadhActions.Enqueue(() => 
             {
-                _gridManager.resetTilesAttack();
                 Debug.Log("HIGHLIGHT TILES");
                 Player playerWhoAttack = GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.GetPlayerWithGlobalId(this.globalID);
                 Debug.Log(playerWhoAttack.globalId);
                 var tilePos = _gridManager.GetPosFromEntityPos(playerWhoAttack.tangibleObject.transform.position);
+                _gridManager.globalIDPlayerAttack = this.globalID;
                 Debug.Log(tilePos.x + " : " + tilePos.y);
                 List<Tile> tiles = _gridManager.GetTilesAroundPosition(tilePos, skill.range);
                 _gridManager.tilesAttack = tiles;
@@ -145,6 +154,8 @@ public class ButtonCombat : ButtonAbstract
             button.gameObject.SetActive(false);
             button.GetComponent<OnClickButton>().call = null;
         }
+        isActivate = !isActivate;
+        _gridManager.currentSkillId = -1;
     }
 
 }

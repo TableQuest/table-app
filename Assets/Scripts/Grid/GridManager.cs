@@ -16,10 +16,15 @@ public class GridManager : MonoBehaviour
     [SerializeField] private Tile tile;
     [SerializeField] private GameObject gridObject;
     public List<Tile> tilesAttack = new List<Tile>();
+    public string globalIDPlayerAttack;
+    public int currentSkillId = -1;
     private Dictionary<Vector2, Tile> tiles;
+    private Dictionary<Vector2, Tile> tilesInit;
+    private GameState _gameState;
 
     void Start() {
         GenerateGrid();
+        _gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
     }
 
     void GenerateGrid() {
@@ -27,17 +32,28 @@ public class GridManager : MonoBehaviour
         for (int x = 0; x < nbTilesWidth; x++) {
             for (int y = 0; y < nbTilesHeight; y++)
             {
-                var spawnedTile = Instantiate(tile,
-                                                new Vector3(x*Tile.WIDTH+Tile.WIDTH/2,
-                                                            y*Tile.HEIGHT+Tile.HEIGHT/2),
-                                                Quaternion.identity, gridObject.transform);
-                spawnedTile.tilePos = new Vector2(x, y);
-                spawnedTile.name = $"Tile {x} {y}";
+                if (x == 0 || x == nbTilesWidth - 1 || y == 0 || y == nbTilesHeight - 1 || y == nbTilesHeight - 2 ||
+                    (y == 5 && x >= 1 && x <= 4) ||
+                    ((y == 4 || y == 3) && x == 4) ||
+                    (x == 9 && (y >= 1 && y <= 9)) ||
+                    (x == 8 && (y >= 9 && y <=12)))    
+                {
+                    tiles[new Vector2(x, y)] = null;
+                }
+                else
+                {
+                    var spawnedTile = Instantiate(tile,
+                                                    new Vector3(x * Tile.WIDTH + Tile.WIDTH / 2,
+                                                                y * Tile.HEIGHT + Tile.HEIGHT / 2),
+                                                    Quaternion.identity, gridObject.transform);
+                    spawnedTile.tilePos = new Vector2(x, y);
+                    spawnedTile.name = $"Tile {x} {y}";
 
-                var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
-                spawnedTile.Init(isOffset);
-                
-                tiles[new Vector2(x, y)] = spawnedTile;
+                    var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
+                    spawnedTile.Init(isOffset);
+
+                    tiles[new Vector2(x, y)] = spawnedTile;
+                }
             }
         }
     }
@@ -90,14 +106,24 @@ public class GridManager : MonoBehaviour
     {
         List<Tile> list = new();
         Debug.Log($"Around pos {tilePos.ToString()} with a radius of {radius}");
-
+        List<Player> players = _gameState._entityManager._players;
+        List<Vector2> tilesTaken = new List<Vector2>();
+        foreach (Player player in players)
+        {
+            Vector2 tileTook = this.GetPosFromEntityPos(player.tangibleObject.transform.position);
+            tilesTaken.Add(tileTook);
+        }
         for (int x = (int)tilePos.x-radius; x <= tilePos.x+radius; x++)
         {
             for (int y = (int)tilePos.y-radius; y <= tilePos.y + radius; y++)
             {
                 if (x >= 0 && x < nbTilesWidth && y >= 0 && y < nbTilesHeight && !(x == (int)tilePos.x && y == (int)tilePos.y))
                 {
-                    list.Add(GetTileAtPosition(x, y));
+                    Tile tile = GetTileAtPosition(x, y);
+                    if (tile != null && !tilesTaken.Contains(tile.tilePos))
+                    {
+                        list.Add(tile);
+                    }
                 }
             }
         }
