@@ -304,6 +304,9 @@ MonoBehaviour:
   nbTilesHeight: 15
   tile: {fileID: 4124343863216307395, guid: 39a013ff98b71f64a87d8e398cc7e436, type: 3}
   gridObject: {fileID: 1978267610}
+  tilesAttack: []
+  globalIDPlayerAttack: 
+  currentSkillId: -1
 --- !u!114 &390484571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1062,7 +1065,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978267610}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 911.87085, y: 576.8152, z: 5.717663}
+  m_LocalPosition: {x: 911.87085, y: 576.8152, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -25,6 +25,8 @@ public class GridManager : MonoBehaviour
     void Start() {
         GenerateGrid();
         _gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
+        GameObject gridObject = GameObject.Find("Grid");
+        gridObject.transform.position = new Vector3(gridObject.transform.position.x, gridObject.transform.position.y, 4);
     }
 
     void GenerateGrid() {
@@ -107,12 +109,6 @@ public class GridManager : MonoBehaviour
         List<Tile> list = new();
         Debug.Log($"Around pos {tilePos.ToString()} with a radius of {radius}");
         List<Player> players = _gameState._entityManager._players;
-        List<Vector2> tilesTaken = new List<Vector2>();
-        foreach (Player player in players)
-        {
-            Vector2 tileTook = this.GetPosFromEntityPos(player.tangibleObject.transform.position);
-            tilesTaken.Add(tileTook);
-        }
         for (int x = (int)tilePos.x-radius; x <= tilePos.x+radius; x++)
         {
             for (int y = (int)tilePos.y-radius; y <= tilePos.y + radius; y++)
@@ -120,7 +116,7 @@ public class GridManager : MonoBehaviour
                 if (x >= 0 && x < nbTilesWidth && y >= 0 && y < nbTilesHeight && !(x == (int)tilePos.x && y == (int)tilePos.y))
                 {
                     Tile tile = GetTileAtPosition(x, y);
-                    if (tile != null && !tilesTaken.Contains(tile.tilePos))
+                    if (tile != null)
                     {
                         list.Add(tile);
                     }
