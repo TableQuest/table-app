@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class Entity
 {
 	public string id;
+	public Vector2 tilePosition;
 	public GameObject tangibleObject;
 
 	public Entity(string id)
