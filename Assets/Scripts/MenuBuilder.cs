@@ -8,7 +8,6 @@ public class MenuBuilder : MonoBehaviour
 {
     public static void InstantiateButton(Menu menu)
     {
-        Debug.Log(menu.listPagesButton.Length);
         foreach (List<ButtonAbstract> page in menu.listPagesButton)
         {
             int i = 0;

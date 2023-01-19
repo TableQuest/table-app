@@ -2,6 +2,7 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 
 public enum STATE
 {
@@ -9,6 +10,7 @@ public enum STATE
 	PLAYING,
 	CONSTRAINT,
 	NEW_NPC,
+	PAUSE,
 	WRONG
 }
 
@@ -19,6 +21,7 @@ public class GameState : MonoBehaviour
 	public GameObject WrongMove;
 
 	public STATE _state;
+	public STATE _previousState;
 
 	void Start()
 	{
@@ -121,11 +124,13 @@ public class GameState : MonoBehaviour
 			{
 				_state = STATE.WRONG;
 				WrongMove.SetActive(true);
+				WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = "Replace your pawn to its place !";
 			}
 			else if (playerMovement.CurMovement != null && playerMovement.CurMovement.Player != player) // If the current movement is not the right player who asked for. 
 			{
 				_state = STATE.WRONG;
 				WrongMove.SetActive(true);
+				WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = "Replace your pawn to its place !";
 			}
 			else if (playerMovement != null) // if the current player is the one who's trying to move in the zone.
 			{

@@ -101,6 +101,7 @@ public class EntityManager : MonoBehaviour
         _npcs.Add(npc);
 
         GameState gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
+        gameState._previousState = gameState._state;
         gameState._state = STATE.NEW_NPC;
     }
 
@@ -121,7 +122,7 @@ public class EntityManager : MonoBehaviour
         await client.EmitAsync("newNpc", newNpc.pawnCode);
         
         GameState gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
-        gameState._state = STATE.PLAYING;
+        gameState._state = gameState._previousState;
     }
 
 

@@ -2,6 +2,7 @@
 using SocketIOClient;
 using System.Threading;
 using Newtonsoft.Json;
+using TMPro;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -73,6 +74,7 @@ public class InitializationSocket : MonoBehaviour
             }
         });
 
+
         _client.On("newNpc", (data) =>
         {
             socket._mainThreadhActions.Enqueue(() =>
@@ -80,6 +82,42 @@ public class InitializationSocket : MonoBehaviour
                 string str = data.GetValue<string>(0);
                 TempNpc npcData = JsonConvert.DeserializeObject<TempNpc>(str);
                 _gameState._entityManager.CreateNewNpc(npcData.id, npcData.name); //normalement cet ID c'est celui du monstre (10: Goblin, 11: Ogre)
+            });
+        });
+
+        _client.On("pauseGame", (data) => 
+        {
+            string msg = data.GetValue<string>(0);
+
+            if(_gameState._state != STATE.PAUSE)
+            {   
+                socket._mainThreadhActions.Enqueue(() =>
+                {
+                    _gameState._previousState = _gameState._state;
+                    _gameState._state = STATE.PAUSE;
+                    _gameState.WrongMove.SetActive(true);
+                    Debug.Log("GameState changed to PAUSE");
+                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
+                });
+            }
+            else {
+                socket._mainThreadhActions.Enqueue(() =>
+                {
+                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
+                });
+                
+            }
+
+            
+        });
+
+        _client.On("resumeGame", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("Received resumeGame");
+                _gameState._state = _gameState._previousState;
+                _gameState.WrongMove.SetActive(false);
             });
         });
     }
