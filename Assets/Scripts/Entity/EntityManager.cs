@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SocketIOClient;
 using TMPro;
-using Unity.VisualScripting;
+using ZXing;
+using ZXing.QrCode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EntityManager : MonoBehaviour
 {
-
+    private Texture2D _storeEncodedTexture;
+    string serverUrl;
 	public List<Player> _players;
     public List<Npc> _npcs;
 
@@ -23,9 +27,8 @@ public class EntityManager : MonoBehaviour
 		_players = new List<Player>();
         _npcs = new List<Npc>();
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
+        serverUrl = GameObject.Find("SocketClient").GetComponent<Socket>().requestURI;
 	}
-
-
 
     public bool Exists(string id)
     {
@@ -88,11 +91,27 @@ public class EntityManager : MonoBehaviour
 
         AddButtonTo(player);
 
-        GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-5), Quaternion.identity);
+        /*GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-5), Quaternion.identity);
         helperConnection.transform.SetParent(player.tangibleObject.transform);
         helperConnection.name = "helper" + player.globalId;
         helperConnection.GetComponent<TextMeshPro>().text = player.globalId;
         player.helpConnection = helperConnection;
+        */
+
+        GameObject miniCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
+        miniCanvas.name = "canvas"+player.globalId;
+        GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
+        _rawImageReceiver.transform.SetParent(miniCanvas.transform);
+        miniCanvas.transform.SetParent(player.tangibleObject.transform);
+        _rawImageReceiver.name = "QrCode" + player.globalId;
+
+        string textToEncode = serverUrl + " " + player.globalId;
+        _storeEncodedTexture = new Texture2D(256, 256);
+        Color32[] _convertPixelToTexture = EncodeTextToQrCode(textToEncode, _storeEncodedTexture.width, _storeEncodedTexture.height);
+        _storeEncodedTexture.SetPixels32(_convertPixelToTexture);
+        _storeEncodedTexture.Apply();
+
+        _rawImageReceiver.GetComponent<RawImage>().texture = _storeEncodedTexture;
     }
 
     public void CreateNewNpc(int id, string name) {
@@ -133,6 +152,21 @@ public class EntityManager : MonoBehaviour
         button.transform.localPosition = new Vector3(0, 1.4f, 0);
         button.transform.localScale = new Vector3(1, 1, 1);
         button.SetActive(false);
+    }
+
+
+    private Color32[] EncodeTextToQrCode(string textToEncode, int width, int height)
+    {
+        BarcodeWriter writer = new BarcodeWriter
+        {
+            Format = BarcodeFormat.QR_CODE,
+            Options = new QrCodeEncodingOptions
+            {
+                Height = height,
+                Width = width
+            }
+        };
+        return writer.Write(textToEncode);
     }
 
     public void RemoveHelper(string playerId)
