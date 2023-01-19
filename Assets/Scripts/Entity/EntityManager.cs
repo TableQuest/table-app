@@ -91,13 +91,7 @@ public class EntityManager : MonoBehaviour
 
         AddButtonTo(player);
 
-        /*GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-5), Quaternion.identity);
-        helperConnection.transform.SetParent(player.tangibleObject.transform);
-        helperConnection.name = "helper" + player.globalId;
-        helperConnection.GetComponent<TextMeshPro>().text = player.globalId;
-        player.helpConnection = helperConnection;
-        */
-
+        //Not the best way to do it I guess but couldn't figure anything else yet
         GameObject miniCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
         miniCanvas.name = "canvas"+player.globalId;
         GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
@@ -114,6 +108,7 @@ public class EntityManager : MonoBehaviour
         _rawImageReceiver.GetComponent<RawImage>().texture = _storeEncodedTexture;
     }
 
+
     public void CreateNewNpc(int id, string name) {
         Debug.Log("Creating NPC " + name + " (" + id + ")");
         Npc npc = new Npc(id.ToString(), name);
@@ -123,6 +118,7 @@ public class EntityManager : MonoBehaviour
         gameState._previousState = gameState._state;
         gameState._state = STATE.NEW_NPC;
     }
+
 
     public async void PlaceNewNpc(string tangibleId, Vector2 tangiblePosition) {
         Npc newNpc = _npcs[_npcs.Count-1];
@@ -169,16 +165,17 @@ public class EntityManager : MonoBehaviour
         return writer.Write(textToEncode);
     }
 
+
     public void RemoveHelper(string playerId)
-    {
-        var helper = GameObject.Find("helper" + playerId);
+    {   
+        var helper = GameObject.Find("canvas" + playerId);
         if (helper != null)
         {
             Destroy(helper);
         }
         else
         {
-            Debug.LogError("Helper : "+  playerId+ " doesn't exists !");
+            Debug.LogError("Canvas : "+  playerId+ " doesn't exists !");
         }
     }
 
