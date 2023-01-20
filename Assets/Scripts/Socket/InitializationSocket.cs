@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using SocketIOClient;
+using System;
 using System.Threading;
 using Newtonsoft.Json;
 using TMPro;
@@ -103,13 +104,28 @@ public class InitializationSocket : MonoBehaviour
                 string errorMessage = "";
                 string[] everyDisconnectedPlayerIds = msg.Split(",");
 
+                Transform[] previousCanvas = new Transform[_gameState.WrongMove.transform.childCount-1]; //-1 to not remove the text
+                for (int i = 1; i < _gameState.WrongMove.transform.childCount; i++)
+                {
+                    previousCanvas[i-1] = _gameState.WrongMove.transform.GetChild(i);
+                }
+
+                foreach (Transform canvas in previousCanvas)
+                {
+                    Destroy(canvas.gameObject);
+                }
+
                 foreach (string playerId in everyDisconnectedPlayerIds)
                 {
                     errorMessage += "Player "+playerId+" has disconnected.\n";
-                    GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3(Screen.width/everyDisconnectedPlayerIds.Length, 0, -5), Quaternion.identity);
-                    qrCodeCanvas.name = "reconnection"+playerId;
-                    GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3(Screen.width/everyDisconnectedPlayerIds.Length, 0, -5), Quaternion.identity);
+                    int pos = Array.IndexOf(everyDisconnectedPlayerIds, playerId);
+
+                    GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
+                    qrCodeCanvas.name = "reconnectionCanvas";
+                    GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
+                    _rawImageReceiver.transform.SetParent(qrCodeCanvas.transform);
                     _rawImageReceiver.name = "qrCode"+playerId;
+                    qrCodeCanvas.transform.SetParent(_gameState.WrongMove.transform);
 
                     string textToEncode = _gameState._entityManager.serverUrl + " " + playerId;
                     Texture2D _storeEncodedTexture = new Texture2D(256, 256);
