@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using SocketIOClient;
 using System.Threading;
 using Newtonsoft.Json;
@@ -88,27 +89,39 @@ public class InitializationSocket : MonoBehaviour
         _client.On("pauseGame", (data) => 
         {
             string msg = data.GetValue<string>(0);
-
-            if(_gameState._state != STATE.PAUSE)
-            {   
-                socket._mainThreadhActions.Enqueue(() =>
-                {
+            
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if(_gameState._state != STATE.PAUSE)
+                {   
                     _gameState._previousState = _gameState._state;
                     _gameState._state = STATE.PAUSE;
                     _gameState.WrongMove.SetActive(true);
                     Debug.Log("GameState changed to PAUSE");
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
-                });
-            }
-            else {
-                socket._mainThreadhActions.Enqueue(() =>
-                {
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
-                });
-                
-            }
+                }
 
-            
+                string errorMessage = "";
+                string[] everyDisconnectedPlayerIds = msg.Split(",");
+
+                foreach (string playerId in everyDisconnectedPlayerIds)
+                {
+                    errorMessage += "Player "+playerId+" has disconnected.\n";
+                    GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3(Screen.width/everyDisconnectedPlayerIds.Length, 0, -5), Quaternion.identity);
+                    qrCodeCanvas.name = "reconnection"+playerId;
+                    GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3(Screen.width/everyDisconnectedPlayerIds.Length, 0, -5), Quaternion.identity);
+                    _rawImageReceiver.name = "qrCode"+playerId;
+
+                    string textToEncode = _gameState._entityManager.serverUrl + " " + playerId;
+                    Texture2D _storeEncodedTexture = new Texture2D(256, 256);
+                    Color32[] _convertPixelToTexture = _gameState._entityManager.EncodeTextToQrCode(textToEncode, _storeEncodedTexture.width, _storeEncodedTexture.height);
+                    _storeEncodedTexture.SetPixels32(_convertPixelToTexture);
+                    _storeEncodedTexture.Apply();
+
+                    _rawImageReceiver.GetComponent<RawImage>().texture = _storeEncodedTexture;
+                }
+                
+                _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = errorMessage;
+            });
         });
 
         _client.On("resumeGame", (data) =>

@@ -12,7 +12,7 @@ using UnityEngine.UI;
 public class EntityManager : MonoBehaviour
 {
     private Texture2D _storeEncodedTexture;
-    string serverUrl;
+    public string serverUrl;
 	public List<Player> _players;
     public List<Npc> _npcs;
 
@@ -151,7 +151,7 @@ public class EntityManager : MonoBehaviour
     }
 
 
-    private Color32[] EncodeTextToQrCode(string textToEncode, int width, int height)
+    public Color32[] EncodeTextToQrCode(string textToEncode, int width, int height)
     {
         BarcodeWriter writer = new BarcodeWriter
         {
