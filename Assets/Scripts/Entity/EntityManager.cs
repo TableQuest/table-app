@@ -27,8 +27,17 @@ public class EntityManager : MonoBehaviour
 		_players = new List<Player>();
         _npcs = new List<Npc>();
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
-        serverUrl = GameObject.Find("SocketClient").GetComponent<Socket>().requestURI;
 	}
+
+    public List<Entity> getEntities()
+    {
+        List<Entity> entities = new List<Entity>();
+        entities.AddRange(_players);
+        entities.AddRange(_npcs);
+        return entities;
+    }
+
+
 
     public bool Exists(string id)
     {
@@ -88,7 +97,9 @@ public class EntityManager : MonoBehaviour
         _players.Add(player);
         player.tangibleObject = Instantiate(Resources.Load("Prefab/Player") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
         player.tangibleObject.name = "Pawn" + id;
-
+        GameObject playerInfo = Instantiate(Resources.Load("Prefab/PlayerInfo") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
+        HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
+        healthHandler.Initialize(player);
         AddButtonTo(player);
 
         //Not the best way to do it I guess but couldn't figure anything else yet
@@ -122,15 +133,14 @@ public class EntityManager : MonoBehaviour
 
     public async void PlaceNewNpc(string tangibleId, Vector2 tangiblePosition) {
         Npc newNpc = _npcs[_npcs.Count-1];
-        newNpc.pawnCode = tangibleId;
+        newNpc.updatePawnCode(tangibleId);
         newNpc.tilePosition = _grid.GetPosFromEntityPos(tangiblePosition);
         newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Monster") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
 
+        AddButtonTo(newNpc);
         if (newNpc.name == "Ogre") {
             newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
         }
-
-        AddButtonTo(newNpc);
 
         SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
         Debug.Log("New NPC final: name: " + newNpc.name + ", id: " + newNpc.id + ", pawnId: " + newNpc.pawnCode);
@@ -147,6 +157,7 @@ public class EntityManager : MonoBehaviour
         button.transform.SetParent(entity.tangibleObject.transform);
         button.transform.localPosition = new Vector3(0, 1.4f, 0);
         button.transform.localScale = new Vector3(1, 1, 1);
+        button.name = "buttonConfirm";
         button.SetActive(false);
     }
 

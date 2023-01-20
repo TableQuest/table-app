@@ -7,7 +7,7 @@ public class Player : Entity
 	
 	public bool postionCheck = true;
 	
-	public Player(string id, string globalId, Vector2 tilePosition) : base(id)
+	public Player(string id, string globalId, Vector2 tilePosition) : base(id,globalId)
 	{
 		this.globalId = globalId;
 		this.tilePosition = tilePosition;

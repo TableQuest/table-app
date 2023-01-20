@@ -6,10 +6,16 @@ public abstract class Entity
 	public string id;
 	public Vector2 tilePosition;
 	public GameObject tangibleObject;
+	public string globalId;
+	public int manaMax;
+	public int mana;
+	public int lifeMax;
+	public int life;
 
-	public Entity(string id)
+	public Entity(string id, string globalId)
 	{
 		this.id = id;
+		this.globalId = globalId;
 	}
 
 	public void Move(Vector2 pos)
