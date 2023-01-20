@@ -32,16 +32,23 @@ public class MenuManager : MonoBehaviour
 
     public void Move(string id, Vector2 pos)
     {
+        GetMenuWithId(id).tangibleObject.SetActive(true);
         pos = GetCanvasPosition(pos);
         GetMenuWithId(id).Move(pos);
     }
 
-    public void HandleNotOnTable(string id)
+    public void HandleNotOnTableInit(string id)
     {
         zoneInitDict.Remove(id);
         GameObject.Destroy(GetMenuWithId(id).tangibleObject);
         menuList.Remove(GetMenuWithId(id));
-     
+
+    }
+
+    public void HandleNotOnTable(string id)
+    {
+        GetMenuWithId(id).tangibleObject.SetActive(false);
+
     }
 
     public void Rotate(string id, float degree)

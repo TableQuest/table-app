@@ -4,7 +4,7 @@ public abstract class TuioEntity
 {
     protected TuioState previousState;
     protected TuioState state;
-    public int type;
+    public int type = 1;
 
     public TuioState State
     {

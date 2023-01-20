@@ -8,7 +8,7 @@ public class OnClickButton : MonoBehaviour
 {
     private int counter;
     public UnityAction call;
-    public static int MAX_COUNTER = 15;
+    public static int MAX_COUNTER = 200;
 
     public void onClick()
     {

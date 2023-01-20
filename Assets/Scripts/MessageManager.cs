@@ -62,7 +62,7 @@ public class MessageManager : MonoBehaviour
                 Camera cam = Camera.main;
                 foreach (TuioEntity t in tuioEvents)
                 {
-                    if (t.type != null && t.type == 0)
+                    if (t.type == 0)
                     {
                         str += t;
                         //cast an invisible ray that will collide with the first object
