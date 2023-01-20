@@ -14,7 +14,7 @@ public class InitializationSocket : MonoBehaviour
     private Socket socket;
     private GameState _gameState;
     bool firstSwitch = true;
-    
+
     void Start()
     {
         socket = GameObject.Find("SocketClient").GetComponent<Socket>();
@@ -27,7 +27,7 @@ public class InitializationSocket : MonoBehaviour
     {
         var thread = new Thread(RouteThread);
         thread.Start();
-        
+
     }
 
     private void RouteThread()
@@ -37,28 +37,30 @@ public class InitializationSocket : MonoBehaviour
             _client = socket.client;
             Thread.Sleep(300);
         }
-        
+
         _client.On("playerConnection", (data) =>
         {
             string str = data.GetValue<string>(0);
-            
+
             socket._mainThreadhActions.Enqueue(() =>
             {
                 _gameState._entityManager.RemoveHelper(str);
             });
         });
-        
+
 
         _client.On("switchState", (data) =>
         {
             string str = data.GetValue<string>(0);
-            switch(str) {
+            switch (str)
+            {
                 case "FREE":
                     socket._mainThreadhActions.Enqueue(() =>
                     {
                         _gameState._state = STATE.PLAYING;
-                        Debug.Log("changing to: "+_gameState._state);
-                        if(firstSwitch) {
+                        Debug.Log("changing to: " + _gameState._state);
+                        if (firstSwitch)
+                        {
                             _gameState._menuManager.populateMenu();
                             firstSwitch = false;
                         }
@@ -69,11 +71,12 @@ public class InitializationSocket : MonoBehaviour
                     socket._mainThreadhActions.Enqueue(() =>
                     {
                         _gameState._state = STATE.CONSTRAINT;
-                        Debug.Log("changing to: "+_gameState._state);
+                        Debug.Log("changing to: " + _gameState._state);
                     });
                     break;
-                
-                default: Debug.Log("State " + str + " is wrong or not implemented yet.");
+
+                default:
+                    Debug.Log("State " + str + " is wrong or not implemented yet.");
                     break;
             }
         });
@@ -89,7 +92,8 @@ public class InitializationSocket : MonoBehaviour
             });
         });
 
-        _client.On("updateInfoCharacter", (data) => {
+        _client.On("updateInfoCharacter", (data) =>
+        {
             string str = data.GetValue<string>(0);
             Debug.Log("DATA EST :" + data);
             socket._mainThreadhActions.Enqueue(() =>
@@ -108,24 +112,34 @@ public class InitializationSocket : MonoBehaviour
                 _gameState._state = _gameState._previousState;
                 _gameState.WrongMove.SetActive(false);
             });
-        });
-    }
-}
-
-
-    [Serializable]
-    public class CharacterUpdateInfo
-    {
-        public CharacterUpdateInfo(string playerId, string variable, string value)
+        }); 
+        
+        _client.On("pauseGame", (data) =>
         {
-            this.playerId = playerId;
-            this.variable = variable;
-            this.value = value;
-        }
+            string msg = data.GetValue<string>(0);
 
-        public string playerId;
-        public string variable;
-        public string value;
+            if (_gameState._state != STATE.PAUSE)
+            {
+                socket._mainThreadhActions.Enqueue(() =>
+                {
+                    _gameState._previousState = _gameState._state;
+                    _gameState._state = STATE.PAUSE;
+                    _gameState.WrongMove.SetActive(true);
+                    Debug.Log("GameState changed to PAUSE");
+                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
+                });
+            }
+            else
+            {
+                socket._mainThreadhActions.Enqueue(() =>
+                {
+                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
+                });
+
+            }
+
+
+        });
     }
 
     public void updateInfoCharacter(string playerId, string variable, string value)
@@ -176,12 +190,12 @@ public class InitializationSocket : MonoBehaviour
                 break;
         }
 
-        _client.On("pauseGame", (data) => 
+        _client.On("pauseGame", (data) =>
         {
             string msg = data.GetValue<string>(0);
 
-            if(_gameState._state != STATE.PAUSE)
-            {   
+            if (_gameState._state != STATE.PAUSE)
+            {
                 socket._mainThreadhActions.Enqueue(() =>
                 {
                     _gameState._previousState = _gameState._state;
@@ -191,21 +205,42 @@ public class InitializationSocket : MonoBehaviour
                     _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
                 });
             }
-            else {
+            else
+            {
                 socket._mainThreadhActions.Enqueue(() =>
                 {
                     _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
                 });
-                
+
             }
 
-            
-        });
 
-public class TempNpc {
-    public string description;
-    public int id;
-    public int life;
-    public int lifeMax;
-    public string name;
+        });
+    }
+
+
+    [Serializable]
+    public class CharacterUpdateInfo
+    {
+        public CharacterUpdateInfo(string playerId, string variable, string value)
+        {
+            this.playerId = playerId;
+            this.variable = variable;
+            this.value = value;
+        }
+
+        public string playerId;
+        public string variable;
+        public string value;
+    }
+
+
+    public class TempNpc
+    {
+        public string description;
+        public int id;
+        public int life;
+        public int lifeMax;
+        public string name;
+    }
 }
