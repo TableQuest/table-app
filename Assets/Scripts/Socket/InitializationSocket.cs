@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -77,6 +78,7 @@ public class InitializationSocket : MonoBehaviour
             }
         });
 
+
         _client.On("newNpc", (data) =>
         {
             socket._mainThreadhActions.Enqueue(() =>
@@ -97,7 +99,18 @@ public class InitializationSocket : MonoBehaviour
                 //GameObject.Find("Canvas").GetComponent<CharacterSceneManager>().PrintCharacterPanel(character);
             });
         });
+
+        _client.On("resumeGame", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("Received resumeGame");
+                _gameState._state = _gameState._previousState;
+                _gameState.WrongMove.SetActive(false);
+            });
+        });
     }
+}
 
 
     [Serializable]
@@ -162,9 +175,32 @@ public class InitializationSocket : MonoBehaviour
                 }
                 break;
         }
-    }
 
-}
+        _client.On("pauseGame", (data) => 
+        {
+            string msg = data.GetValue<string>(0);
+
+            if(_gameState._state != STATE.PAUSE)
+            {   
+                socket._mainThreadhActions.Enqueue(() =>
+                {
+                    _gameState._previousState = _gameState._state;
+                    _gameState._state = STATE.PAUSE;
+                    _gameState.WrongMove.SetActive(true);
+                    Debug.Log("GameState changed to PAUSE");
+                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
+                });
+            }
+            else {
+                socket._mainThreadhActions.Enqueue(() =>
+                {
+                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
+                });
+                
+            }
+
+            
+        });
 
 public class TempNpc {
     public string description;

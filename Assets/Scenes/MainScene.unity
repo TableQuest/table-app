@@ -255,6 +255,7 @@ MonoBehaviour:
   _menuManager: {fileID: 0}
   WrongMove: {fileID: 1826768427}
   _state: 0
+  _previousState: 0
 --- !u!1 &390484568
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,7 +551,7 @@ GameObject:
   - component: {fileID: 1470973884}
   - component: {fileID: 1470973883}
   m_Layer: 0
-  m_Name: Text (TMP) (1)
+  m_Name: ErrorMessage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -596,7 +597,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Replace your pawn to his place !
+  m_text: Replace your pawn to its place !
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
