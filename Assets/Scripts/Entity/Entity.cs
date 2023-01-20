@@ -4,11 +4,14 @@ using UnityEngine;
 public abstract class Entity
 {
 	public string id;
+	public Vector2 tilePosition;
 	public GameObject tangibleObject;
+	public string globalId;
 
-	public Entity(string id)
+	public Entity(string id, string globalId)
 	{
 		this.id = id;
+		this.globalId = globalId;
 	}
 
 	public void Move(Vector2 pos)

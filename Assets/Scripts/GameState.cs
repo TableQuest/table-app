@@ -8,6 +8,7 @@ public enum STATE
 	INIT,
 	PLAYING,
 	CONSTRAINT,
+	NEW_NPC,
 	WRONG
 }
 
@@ -35,7 +36,7 @@ public class GameState : MonoBehaviour
 		{
 			case STATE.INIT:
 				HandleEventInit(id, pos);
-				MovePawnTangible(id, pos, rotation);	
+				MovePawnTangible(id, pos, rotation);
 				break;
 			case STATE.PLAYING:
 				MovePawnTangible(id, pos, rotation);
@@ -45,6 +46,10 @@ public class GameState : MonoBehaviour
 				break;
 			case STATE.WRONG:
 				ReplaceTangible(id, pos, rotation);
+				break;
+			case STATE.NEW_NPC:
+				HandleEventNewNpc(id, pos);
+				MovePawnTangible(id, pos, rotation);
 				break;
 			default:
 				break;
@@ -69,13 +74,26 @@ public class GameState : MonoBehaviour
 		}
 	}
 
+	//NEW_NPC state is used when the GM is creating an NPC. The NPC exists in the EntityManager but needs to be placed.
+	//That's what this method does with the first new tangible placed on the table. 
+	private void HandleEventNewNpc(string id, Vector2 pos) {
+		if (_entityManager.GetEntityWithId(id) == null)
+		{
+			_entityManager.PlaceNewNpc(id, pos);
+		} //TODO maybe add an error message so the GM knows he's (somehow) using a wrong tangible
+	}
+
 	public void HandleNotOnTable(string id)
-    {
-		if (_menuManager.Exists(id) && _state == STATE.INIT && !_menuManager.hasPlayer(id)) 
+	{
+		if (_menuManager.Exists(id) && !_menuManager.hasPlayer(id))
+		{
+			_menuManager.HandleNotOnTableInit(id);
+		}
+		if (_menuManager.Exists(id) && _menuManager.hasPlayer(id))
 		{
 			_menuManager.HandleNotOnTable(id);
 		}
-    }
+	}
 
 	private void MoveMenuTangible(string id, Vector2 pos, float rotation)
 	{
