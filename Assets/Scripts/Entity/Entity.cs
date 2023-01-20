@@ -7,6 +7,10 @@ public abstract class Entity
 	public Vector2 tilePosition;
 	public GameObject tangibleObject;
 	public string globalId;
+	public int manaMax;
+	public int mana;
+	public int lifeMax;
+	public int life;
 
 	public Entity(string id, string globalId)
 	{

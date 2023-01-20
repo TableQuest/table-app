@@ -13,6 +13,12 @@ public class Npc : Entity
 		this.name = name;
 	}
 
+	public void updatePawnCode(string pawnCode)
+    {
+		this.pawnCode = pawnCode;
+		this.globalId = pawnCode;
+	}
+
 
  
 }
