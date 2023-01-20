@@ -93,7 +93,9 @@ public class EntityManager : MonoBehaviour
         _players.Add(player);
         player.tangibleObject = Instantiate(Resources.Load("Prefab/Player") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
         player.tangibleObject.name = "Pawn" + id;
-
+        GameObject playerInfo = Instantiate(Resources.Load("Prefab/PlayerInfo") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
+        HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
+        healthHandler.Initialize(player);
         AddButtonTo(player);
 
         GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-5), Quaternion.identity);
@@ -114,7 +116,7 @@ public class EntityManager : MonoBehaviour
 
     public async void PlaceNewNpc(string tangibleId, Vector2 tangiblePosition) {
         Npc newNpc = _npcs[_npcs.Count-1];
-        newNpc.pawnCode = tangibleId;
+        newNpc.updatePawnCode(tangibleId);
         newNpc.tilePosition = _grid.GetPosFromEntityPos(tangiblePosition);
         newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Monster") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
 
