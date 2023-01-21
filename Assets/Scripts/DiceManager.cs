@@ -51,11 +51,11 @@ public class DiceManager : MonoBehaviour
         var player = gameState._entityManager.GetPlayerWithGlobalId(playerId);
         _currentPawnCodeId = player.id;
         
-        if (testName == "Dwarf")
+        if (player.name == "Dwarf")
         {
             playerImage.sprite = Resources.Load<Sprite>("Images/dwarf");
         }
-        else if (testName == "Elf")
+        else if (player.name == "Elf")
         {
             playerImage.sprite = Resources.Load<Sprite>("Images/elf");
         }
@@ -86,7 +86,7 @@ public class DiceManager : MonoBehaviour
     {
         failImage.SetActive(false);
         successImage.SetActive(false);
-        targetValueText.text = "";
+        targetValueText.text = "?";
         var diceValue = Random.Range(1, 20);
         diceValueText.text = diceValue.ToString();
         var myData = new

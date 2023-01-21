@@ -91,6 +91,13 @@ public class InitializationSocket : MonoBehaviour
                         Debug.Log("changing to: " + _gameState._state);
                     });
                     break;
+                case "TURN_ORDER":
+                    socket._mainThreadhActions.Enqueue(() =>
+                    {
+                        _gameState._state = STATE.TURN_ORDER;
+                        Debug.Log("changing to: " + _gameState._state);
+                    });
+                    break;
                 default:
                     Debug.Log("State " + str + " is wrong or not implemented yet.");
                     break;

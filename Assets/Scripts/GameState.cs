@@ -12,7 +12,8 @@ public enum STATE
 	NEW_NPC,
 	PAUSE,
 	WRONG,
-	INIT_TURN_ORDER
+	INIT_TURN_ORDER,
+	TURN_ORDER
 }
 
 public class GameState : MonoBehaviour
@@ -59,6 +60,9 @@ public class GameState : MonoBehaviour
 			case STATE.NEW_NPC:
 				HandleEventNewNpc(id, pos);
 				MovePawnTangible(id, pos, rotation);
+				break;
+			case STATE.TURN_ORDER:
+				HandleConstraintMove(id, pos, rotation);
 				break;
 			default:
 				break;
