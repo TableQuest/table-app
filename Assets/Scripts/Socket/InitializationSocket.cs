@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
+using Newtonsoft.Json;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -94,13 +95,24 @@ public class InitializationSocket : MonoBehaviour
 
         _client.On("updateInfoCharacter", (data) =>
         {
-            string str = data.GetValue<string>(0);
-            Debug.Log("DATA EST :" + data);
+           
             socket._mainThreadhActions.Enqueue(() =>
             {
-                CharacterUpdateInfo cui = JsonConvert.DeserializeObject<CharacterUpdateInfo>(str);
-                updateInfoCharacter(cui.playerId, cui.variable, cui.value);
-                //GameObject.Find("Canvas").GetComponent<CharacterSceneManager>().PrintCharacterPanel(character);
+                List<CharacterUpdateInfo> myObjectList = JsonConvert.DeserializeObject<List<CharacterUpdateInfo>>(data.ToString());
+                CharacterUpdateInfo cui = myObjectList[0];
+                updateInfoCharacter(cui.playerId, cui.variable, cui.value,false);
+            });
+        });
+
+        _client.On("updateInfoNpc", (data) =>
+        {
+
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("updateInfoNpc : " + data.ToString());
+                List<CharacterUpdateInfo> myObjectList = JsonConvert.DeserializeObject<List<CharacterUpdateInfo>>(data.ToString());
+                CharacterUpdateInfo cui = myObjectList[0];
+                updateInfoCharacter(cui.playerId, cui.variable, cui.value,true);
             });
         });
 
@@ -142,15 +154,19 @@ public class InitializationSocket : MonoBehaviour
         });
     }
 
-    public void updateInfoCharacter(string playerId, string variable, string value)
+    public void updateInfoCharacter(string playerId, string variable, string value, bool isNpc)
     {
-        Player character = _gameState._entityManager.GetPlayerWithGlobalId(playerId);
+        Debug.Log("ID : " + playerId + " variable : " + variable + "value : " + value + "bool :" + isNpc); 
+        Entity character = isNpc ? _gameState._entityManager.GetNPCWithId(playerId) : _gameState._entityManager.GetPlayerWithGlobalId(playerId);
+        Debug.Log("CHARACTER EST NULL" + character.globalId);
         switch (variable)
         {
             case "life":
                 try
                 {
-                    character.life = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.life = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -160,7 +176,9 @@ public class InitializationSocket : MonoBehaviour
             case "lifeMax":
                 try
                 {
-                    character.lifeMax = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.lifeMax = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -170,8 +188,9 @@ public class InitializationSocket : MonoBehaviour
             case "mana":
                 try
                 {
-                    Debug.Log(value);
-                    character.mana = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.mana = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -181,7 +200,9 @@ public class InitializationSocket : MonoBehaviour
             case "manaMax":
                 try
                 {
-                    character.manaMax = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.manaMax = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -189,34 +210,10 @@ public class InitializationSocket : MonoBehaviour
                 }
                 break;
         }
-
-        _client.On("pauseGame", (data) =>
-        {
-            string msg = data.GetValue<string>(0);
-
-            if (_gameState._state != STATE.PAUSE)
-            {
-                socket._mainThreadhActions.Enqueue(() =>
-                {
-                    _gameState._previousState = _gameState._state;
-                    _gameState._state = STATE.PAUSE;
-                    _gameState.WrongMove.SetActive(true);
-                    Debug.Log("GameState changed to PAUSE");
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
-                });
-            }
-            else
-            {
-                socket._mainThreadhActions.Enqueue(() =>
-                {
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
-                });
-
-            }
-
-
-        });
+        Debug.Log("MA VIE EST :" + character.life);
     }
+
+    
 
 
     [Serializable]

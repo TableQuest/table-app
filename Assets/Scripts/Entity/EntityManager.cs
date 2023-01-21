@@ -95,7 +95,7 @@ public class EntityManager : MonoBehaviour
         player.tangibleObject.name = "Pawn" + id;
         GameObject playerInfo = Instantiate(Resources.Load("Prefab/PlayerInfo") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
         HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
-        healthHandler.Initialize(player);
+        healthHandler.Initialize(player,true);
         AddButtonTo(player);
 
         GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-5), Quaternion.identity);
@@ -121,12 +121,16 @@ public class EntityManager : MonoBehaviour
         newNpc.tilePosition = _grid.GetPosFromEntityPos(tangiblePosition);
         newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Monster") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
 
+        GameObject playerInfo = Instantiate(Resources.Load("Prefab/PlayerInfo") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
+        HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
+        healthHandler.Initialize(newNpc, false);
         AddButtonTo(newNpc);
         if (newNpc.name == "Ogre") {
             newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
         }
 
         SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
+        Debug.Log("Tangible ID " + tangibleId);
         Debug.Log("New NPC final: name: " + newNpc.name + ", id: " + newNpc.id + ", pawnId: " + newNpc.pawnCode);
         await client.EmitAsync("newNpc", newNpc.pawnCode);
         
