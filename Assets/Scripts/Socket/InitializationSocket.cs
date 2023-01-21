@@ -4,10 +4,6 @@ using SocketIOClient;
 using System;
 using System.Threading;
 using Newtonsoft.Json;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using TMPro;
 
 public class InitializationSocket : MonoBehaviour
@@ -106,92 +102,6 @@ public class InitializationSocket : MonoBehaviour
             });
         });
 
-        _client.On("resumeGame", (data) =>
-        {
-            socket._mainThreadhActions.Enqueue(() =>
-            {
-                Debug.Log("Received resumeGame");
-                _gameState._state = _gameState._previousState;
-                _gameState.WrongMove.SetActive(false);
-            });
-        }); 
-        
-        _client.On("pauseGame", (data) =>
-        {
-            string msg = data.GetValue<string>(0);
-
-            if (_gameState._state != STATE.PAUSE)
-            {
-                socket._mainThreadhActions.Enqueue(() =>
-                {
-                    _gameState._previousState = _gameState._state;
-                    _gameState._state = STATE.PAUSE;
-                    _gameState.WrongMove.SetActive(true);
-                    Debug.Log("GameState changed to PAUSE");
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
-                });
-            }
-            else
-            {
-                socket._mainThreadhActions.Enqueue(() =>
-                {
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
-                });
-
-            }
-
-
-        });
-    }
-
-    public void updateInfoCharacter(string playerId, string variable, string value)
-    {
-        Player character = _gameState._entityManager.GetPlayerWithGlobalId(playerId);
-        switch (variable)
-        {
-            case "life":
-                try
-                {
-                    character.life = Int32.Parse(value);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log("Life value is not numerical: " + e);
-                }
-                break;
-            case "lifeMax":
-                try
-                {
-                    character.lifeMax = Int32.Parse(value);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log("LifeMax value is not numerical: " + e);
-                }
-                break;
-            case "mana":
-                try
-                {
-                    Debug.Log(value);
-                    character.mana = Int32.Parse(value);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log("Mana value is not numerical: " + e);
-                }
-                break;
-            case "manaMax":
-                try
-                {
-                    character.manaMax = Int32.Parse(value);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log("ManaMax value is not numerical: " + e);
-                }
-                break;
-        }
-
         _client.On("pauseGame", (data) =>
         {
             string msg = data.GetValue<string>(0);
@@ -243,6 +153,68 @@ public class InitializationSocket : MonoBehaviour
                 _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = errorMessage;
             });
         });
+
+        _client.On("resumeGame", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("Received resumeGame");
+                _gameState._state = _gameState._previousState;
+                _gameState.WrongMove.SetActive(false);
+            });
+        }); 
+        
+    }
+
+    public void updateInfoCharacter(string playerId, string variable, string value)
+    {
+        Player character = _gameState._entityManager.GetPlayerWithGlobalId(playerId);
+        switch (variable)
+        {
+            case "life":
+                try
+                {
+                    character.life = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("Life value is not numerical: " + e);
+                }
+                break;
+            case "lifeMax":
+                try
+                {
+                    character.lifeMax = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("LifeMax value is not numerical: " + e);
+                }
+                break;
+            case "mana":
+                try
+                {
+                    Debug.Log(value);
+                    character.mana = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("Mana value is not numerical: " + e);
+                }
+                break;
+            case "manaMax":
+                try
+                {
+                    character.manaMax = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("ManaMax value is not numerical: " + e);
+                }
+                break;
+        }
+
+        
     }
 
 
