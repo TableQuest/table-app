@@ -24,6 +24,11 @@ public class GameState : MonoBehaviour
 	public STATE _state;
 	public STATE _previousState;
 
+	void Awake () {
+		QualitySettings.vSyncCount = 0;  // VSync must be disabled
+		Application.targetFrameRate = 45;
+	}
+
 	void Start()
 	{
 		_state = STATE.INIT;
