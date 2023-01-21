@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using Newtonsoft.Json;
 using TMPro;
+using Newtonsoft.Json;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class InitializationSocket : MonoBehaviour
     private Socket socket;
     private GameState _gameState;
     bool firstSwitch = true;
+    TurnOrderHandler turnOrderHandler;
 
     void Start()
     {
@@ -55,6 +57,10 @@ public class InitializationSocket : MonoBehaviour
                 case "FREE":
                     socket._mainThreadhActions.Enqueue(() =>
                     {
+                        if (_gameState._state == STATE.INIT_TURN_ORDER)
+                        {
+                            resetTurnOrder();
+                        }
                         _gameState._state = STATE.PLAYING;
                         Debug.Log("changing to: " + _gameState._state);
                         if (firstSwitch)
@@ -68,11 +74,28 @@ public class InitializationSocket : MonoBehaviour
                 case "RESTRICTED":
                     socket._mainThreadhActions.Enqueue(() =>
                     {
+                        if(_gameState._state == STATE.INIT_TURN_ORDER)
+                        {
+                            resetTurnOrder();
+                        }
                         _gameState._state = STATE.CONSTRAINT;
                         Debug.Log("changing to: " + _gameState._state);
                     });
                     break;
-
+                case "INIT_TURN_ORDER":
+                    socket._mainThreadhActions.Enqueue(() =>
+                    {
+                        _gameState._state = STATE.INIT_TURN_ORDER;
+                        Debug.Log("changing to: " + _gameState._state);
+                    });
+                    break;
+                case "TURN_ORDER":
+                    socket._mainThreadhActions.Enqueue(() =>
+                    {
+                        _gameState._state = STATE.TURN_ORDER;
+                        Debug.Log("changing to: " + _gameState._state);
+                    });
+                    break;
                 default:
                     Debug.Log("State " + str + " is wrong or not implemented yet.");
                     break;
@@ -92,13 +115,54 @@ public class InitializationSocket : MonoBehaviour
 
         _client.On("updateInfoCharacter", (data) =>
         {
-            string str = data.GetValue<string>(0);
-            Debug.Log("DATA EST :" + data);
+           
             socket._mainThreadhActions.Enqueue(() =>
             {
-                CharacterUpdateInfo cui = JsonConvert.DeserializeObject<CharacterUpdateInfo>(str);
-                updateInfoCharacter(cui.playerId, cui.variable, cui.value);
-                //GameObject.Find("Canvas").GetComponent<CharacterSceneManager>().PrintCharacterPanel(character);
+                List<CharacterUpdateInfo> myObjectList = JsonConvert.DeserializeObject<List<CharacterUpdateInfo>>(data.ToString());
+                CharacterUpdateInfo cui = myObjectList[0];
+                updateInfoCharacter(cui.playerId, cui.variable, cui.value,false);
+            });
+        });
+
+        _client.On("updateInfoNpc", (data) =>
+        {
+
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                List<CharacterUpdateInfo> myObjectList = JsonConvert.DeserializeObject<List<CharacterUpdateInfo>>(data.ToString());
+                CharacterUpdateInfo cui = myObjectList[0];
+                updateInfoCharacter(cui.playerId, cui.variable, cui.value,true);
+            });
+        });
+
+        _client.On("turnOrder", (data) =>
+        {
+
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                List<TurnOrderList> myObjectList = JsonConvert.DeserializeObject<List<TurnOrderList>>(data.ToString());
+                TurnOrderList turnOrderList = myObjectList[0];
+                createTurnOrder(turnOrderList.list);
+            });
+        });
+
+        _client.On("characterSelection", (data) =>
+        {
+
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                List<CharacterSelection> myObjectList = JsonConvert.DeserializeObject<List<CharacterSelection>>(data.ToString());
+                CharacterSelection characterSelection = myObjectList[0];
+                _gameState._entityManager.GetPlayerWithGlobalId(characterSelection.playerId).name = characterSelection.character;    
+            });
+        });
+
+        _client.On("turnOrderNext", (data) =>
+        {
+
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                turnOrderHandler.TurnOrderNext();
             });
         });
 
@@ -171,15 +235,17 @@ public class InitializationSocket : MonoBehaviour
         
     }
 
-    public void updateInfoCharacter(string playerId, string variable, string value)
+    public void updateInfoCharacter(string playerId, string variable, string value, bool isNpc)
     {
-        Player character = _gameState._entityManager.GetPlayerWithGlobalId(playerId);
+        Entity character = isNpc ? _gameState._entityManager.GetNPCWithId(playerId) : _gameState._entityManager.GetPlayerWithGlobalId(playerId);
         switch (variable)
         {
             case "life":
                 try
                 {
-                    character.life = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.life = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -189,7 +255,9 @@ public class InitializationSocket : MonoBehaviour
             case "lifeMax":
                 try
                 {
-                    character.lifeMax = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.lifeMax = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -199,8 +267,9 @@ public class InitializationSocket : MonoBehaviour
             case "mana":
                 try
                 {
-                    Debug.Log(value);
-                    character.mana = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.mana = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -210,7 +279,9 @@ public class InitializationSocket : MonoBehaviour
             case "manaMax":
                 try
                 {
-                    character.manaMax = Int32.Parse(value);
+                    Debug.Log("CHARACTER LIFE : " + variable);
+                    Debug.Log("CHARACTER LIFE : " + value);
+                    character.manaMax = int.Parse(value);
                 }
                 catch (Exception e)
                 {
@@ -218,9 +289,50 @@ public class InitializationSocket : MonoBehaviour
                 }
                 break;
         }
-
-        
     }
+
+    public void createTurnOrder(List<string> listID)
+    {
+        GameObject canvas = GameObject.Find("CanvasTurnOrder");
+        GameObject cardTemplate = Resources.Load("Prefab/EntityCard", typeof(GameObject)) as GameObject;
+        Transform panelTransform = canvas.transform.GetChild(0);
+        GameObject g;
+        canvas.GetComponent<Canvas>().enabled = true;
+        turnOrderHandler = new TurnOrderHandler();
+        List<Entity> turnOrderListEntity = new List<Entity>();
+        foreach (string id in listID)
+        {
+            Entity entity = _gameState._entityManager.GetEntityWithGlobalId(id);
+            if(entity != null)
+            {
+                turnOrderListEntity.Add(entity);
+                g = Instantiate(cardTemplate, panelTransform);
+                CardHandler cardHandler = g.AddComponent<CardHandler>();
+                cardHandler.turnOrderHandler = turnOrderHandler;
+                if (entity.manaMax == 0)
+                {
+                    cardHandler.Initialize(entity, false);
+                } else
+                {
+                    cardHandler.Initialize(entity, true);
+                }
+            }
+        }
+        turnOrderHandler.TurnOrderOn(turnOrderListEntity);
+    }
+
+    public void resetTurnOrder()
+    {
+        GameObject canvas = GameObject.Find("CanvasTurnOrder");
+        foreach (Transform child in canvas.transform.GetChild(0).transform)
+        {
+            Destroy(child.gameObject);
+        }
+        canvas.GetComponent<Canvas>().enabled = false;
+    }
+}
+
+    
 
 
     [Serializable]
@@ -236,6 +348,28 @@ public class InitializationSocket : MonoBehaviour
         public string playerId;
         public string variable;
         public string value;
+    }
+
+    public class TurnOrderList
+    {
+        public TurnOrderList(List<string> list)
+        {
+            this.list = list;
+        }
+
+        public List<string> list;
+    }
+
+    public class CharacterSelection
+    {
+        public CharacterSelection(string playerId, string character)
+        {
+            this.playerId = playerId;
+            this.character = character;
+        }
+
+        public string playerId;
+        public string character;
     }
 
 
