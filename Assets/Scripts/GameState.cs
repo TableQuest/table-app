@@ -52,7 +52,15 @@ public class GameState : MonoBehaviour
 				MovePawnTangible(id, pos, rotation);
 				break;
 			case STATE.CONSTRAINT:
-				HandleConstraintMove(id, pos, rotation);
+				if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
+				{
+					MovePawnTangible(id, pos, rotation);
+				}
+				if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
+				{
+					HandleConstraintMove(id, pos, rotation);
+				}
+				//HandleConstraintMove(id, pos, rotation);
 				break;
 			case STATE.WRONG:
 				ReplaceTangible(id, pos, rotation);
@@ -62,7 +70,14 @@ public class GameState : MonoBehaviour
 				MovePawnTangible(id, pos, rotation);
 				break;
 			case STATE.TURN_ORDER:
-				HandleConstraintMove(id, pos, rotation);
+				if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
+				{
+					MovePawnTangible(id, pos, rotation);
+				}
+				if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
+				{
+					HandleConstraintMove(id, pos, rotation);
+				}
 				break;
 			default:
 				break;
@@ -130,6 +145,7 @@ public class GameState : MonoBehaviour
 	private void HandleConstraintMove(string id, Vector2 pos, float rotation)
 	{
 		var player = _entityManager.GetPlayerWithId(id);
+		
 		var playerMovement = GameObject.Find("GridManager").GetComponent<PlayerMovement>();
 		
 		if (_entityManager.Exists(id) && playerMovement.TilePositionChanged(player, pos))
