@@ -27,6 +27,7 @@ public class DiceManager : MonoBehaviour
     
     private int _currentTargetValue;
     private string _currentPlayerId;
+    private string _currentPawnCodeId;
 
     private void Start()
     {
@@ -39,6 +40,7 @@ public class DiceManager : MonoBehaviour
             failImage.SetActive(false);
             close.SetActive(false);
         };
+        socket = GameObject.Find("SocketClient").GetComponent<Socket>();
     }
 
     public void OpenPanel(string playerId, int targetValue)
@@ -47,6 +49,7 @@ public class DiceManager : MonoBehaviour
         _currentTargetValue = targetValue;
         
         var player = gameState._entityManager.GetPlayerWithGlobalId(playerId);
+        _currentPawnCodeId = player.id;
         
         if (testName == "Dwarf")
         {
@@ -88,7 +91,7 @@ public class DiceManager : MonoBehaviour
         diceValueText.text = diceValue.ToString();
         var myData = new
         {
-            playerId = _currentPlayerId,
+            playerId = _currentPawnCodeId,
             diceId = 4,
             value = diceValue
         };

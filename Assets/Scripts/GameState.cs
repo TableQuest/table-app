@@ -11,7 +11,8 @@ public enum STATE
 	CONSTRAINT,
 	NEW_NPC,
 	PAUSE,
-	WRONG
+	WRONG,
+	INIT_TURN_ORDER
 }
 
 public class GameState : MonoBehaviour
