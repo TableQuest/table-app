@@ -23,7 +23,8 @@ public class ButtonAction : ButtonAbstract
             var diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
             if (diceManager != null)
             {
-                // diceManager;
+                diceManager.OpenPanel(this.globalID, 15);
+                diceManager.DiceRollWithoutTarget();
             }
         }
         else if (endpoint != "")
