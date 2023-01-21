@@ -7,8 +7,9 @@ using UnityEngine.Events;
 public class OnClickButton : MonoBehaviour
 {
     private int counter;
+    [SerializeField] 
     public UnityAction call;
-    public static int MAX_COUNTER = 200;
+    public static int MAX_COUNTER = 20;
 
     public void onClick()
     {
