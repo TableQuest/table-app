@@ -85,7 +85,11 @@ public class EntityManager : MonoBehaviour
         return (entity != null ? entity : GetNPCWithId(id));
     }
 
-
+    public Entity GetEntityWithGlobalId(string id)
+    {
+        Player entity = GetPlayerWithGlobalId(id);
+        return (entity != null ? entity : GetNPCWithId(id));
+    }
 
     public void CreateNewPlayer(string id, Vector2 pos, string idMenu)
     {

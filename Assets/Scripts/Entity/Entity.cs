@@ -11,6 +11,8 @@ public abstract class Entity
 	public int mana;
 	public int lifeMax;
 	public int life;
+	public bool isTurn;
+	public string name;
 
 	public Entity(string id, string globalId)
 	{

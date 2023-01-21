@@ -64,7 +64,8 @@ public class Socket : MonoBehaviour
         }
     }
 
-    public async void sendDebug(string message)
+    public async void send
+        (string message)
     {
         await client.EmitAsync("debugMessage", message);
     }

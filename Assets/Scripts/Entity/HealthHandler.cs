@@ -38,7 +38,6 @@ public class HealthHandler : MonoBehaviour
         //   StartCoroutine(GetRequest(url + "/players/" + menu.globalId + "/skills", menu));
         if (entity.lifeMax != 0)
         {
-            Debug.Log("RESULTAT CALCUL :" + ((((float)entity.life / (float)entity.lifeMax) * 100.0f) / 100.0f) * numberPourcentage);
             gameObject.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().fillAmount = ((((float)entity.life / (float)entity.lifeMax) * 100.0f) / 100.0f) * numberPourcentage;
             if (hasMana)
             {
