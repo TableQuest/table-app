@@ -138,8 +138,13 @@ public class InitializationSocket : MonoBehaviour
                     GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
                     qrCodeCanvas.name = "reconnectionCanvas";
                     GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
-                    _rawImageReceiver.transform.SetParent(qrCodeCanvas.transform);
                     _rawImageReceiver.name = "qrCode"+playerId;
+                    GameObject _playerIdText = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length+50, 220, -5), Quaternion.identity);
+                    _rawImageReceiver.name = "QrCode" + playerId;
+                    _playerIdText.name = playerId;
+                    _playerIdText.GetComponent<TextMeshPro>().text = playerId;
+                    _playerIdText.transform.SetParent(qrCodeCanvas.transform);
+                    _rawImageReceiver.transform.SetParent(qrCodeCanvas.transform);
                     qrCodeCanvas.transform.SetParent(_gameState.WrongMove.transform);
 
                     string textToEncode = _gameState._entityManager.serverUrl + " " + playerId;

@@ -103,12 +103,16 @@ public class EntityManager : MonoBehaviour
         AddButtonTo(player);
 
         //Not the best way to do it I guess but couldn't figure anything else yet
-        GameObject miniCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
-        miniCanvas.name = "canvas"+player.globalId;
+        GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
+        qrCodeCanvas.name = "canvas"+player.globalId;
         GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
-        _rawImageReceiver.transform.SetParent(miniCanvas.transform);
-        miniCanvas.transform.SetParent(player.tangibleObject.transform);
+        GameObject _playerIdText = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3(-70, -80, -5), Quaternion.identity);
         _rawImageReceiver.name = "QrCode" + player.globalId;
+        _playerIdText.name = player.globalId;
+        _playerIdText.GetComponent<TextMeshPro>().text = player.globalId;
+        _playerIdText.transform.SetParent(qrCodeCanvas.transform);
+        _rawImageReceiver.transform.SetParent(qrCodeCanvas.transform);
+        qrCodeCanvas.transform.SetParent(player.tangibleObject.transform);
 
         string textToEncode = serverUrl + " " + player.globalId;
         _storeEncodedTexture = new Texture2D(256, 256);
