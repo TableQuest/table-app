@@ -3,9 +3,9 @@ using UnityEngine.UI;
 using SocketIOClient;
 using System;
 using System.Threading;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
-using Newtonsoft.Json;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -381,4 +381,3 @@ public class InitializationSocket : MonoBehaviour
         public int lifeMax;
         public string name;
     }
-}
