@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using SocketIOClient;
-using System.Threading;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
-using TMPro;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using TMPro;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -168,6 +166,63 @@ public class InitializationSocket : MonoBehaviour
             });
         });
 
+        _client.On("pauseGame", (data) =>
+        {
+            string msg = data.GetValue<string>(0);
+            
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if(_gameState._state != STATE.PAUSE)
+                {   
+                    _gameState._previousState = _gameState._state;
+                    _gameState._state = STATE.PAUSE;
+                    _gameState.WrongMove.SetActive(true);
+                    Debug.Log("GameState changed to PAUSE");
+                }
+
+                string errorMessage = "";
+                string[] everyDisconnectedPlayerIds = msg.Split(",");
+
+                Transform[] previousCanvas = new Transform[_gameState.WrongMove.transform.childCount-1]; //-1 to not remove the text
+                for (int i = 1; i < _gameState.WrongMove.transform.childCount; i++)
+                {
+                    previousCanvas[i-1] = _gameState.WrongMove.transform.GetChild(i);
+                }
+
+                foreach (Transform canvas in previousCanvas)
+                {
+                    Destroy(canvas.gameObject);
+                }
+
+                foreach (string playerId in everyDisconnectedPlayerIds)
+                {
+                    errorMessage += "Player "+playerId+" has disconnected.\n";
+                    int pos = Array.IndexOf(everyDisconnectedPlayerIds, playerId);
+
+                    GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
+                    qrCodeCanvas.name = "reconnectionCanvas";
+                    GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
+                    _rawImageReceiver.name = "qrCode"+playerId;
+                    GameObject _playerIdText = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length+50, 220, -5), Quaternion.identity);
+                    _rawImageReceiver.name = "QrCode" + playerId;
+                    _playerIdText.name = playerId;
+                    _playerIdText.GetComponent<TextMeshPro>().text = playerId;
+                    _playerIdText.transform.SetParent(qrCodeCanvas.transform);
+                    _rawImageReceiver.transform.SetParent(qrCodeCanvas.transform);
+                    qrCodeCanvas.transform.SetParent(_gameState.WrongMove.transform);
+
+                    string textToEncode = _gameState._entityManager.serverUrl + " " + playerId;
+                    Texture2D _storeEncodedTexture = new Texture2D(256, 256);
+                    Color32[] _convertPixelToTexture = _gameState._entityManager.EncodeTextToQrCode(textToEncode, _storeEncodedTexture.width, _storeEncodedTexture.height);
+                    _storeEncodedTexture.SetPixels32(_convertPixelToTexture);
+                    _storeEncodedTexture.Apply();
+
+                    _rawImageReceiver.GetComponent<RawImage>().texture = _storeEncodedTexture;
+                }
+                _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = errorMessage;
+            });
+        });
+
         _client.On("resumeGame", (data) =>
         {
             socket._mainThreadhActions.Enqueue(() =>
@@ -178,32 +233,6 @@ public class InitializationSocket : MonoBehaviour
             });
         }); 
         
-        _client.On("pauseGame", (data) =>
-        {
-            string msg = data.GetValue<string>(0);
-
-            if (_gameState._state != STATE.PAUSE)
-            {
-                socket._mainThreadhActions.Enqueue(() =>
-                {
-                    _gameState._previousState = _gameState._state;
-                    _gameState._state = STATE.PAUSE;
-                    _gameState.WrongMove.SetActive(true);
-                    Debug.Log("GameState changed to PAUSE");
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text = msg;
-                });
-            }
-            else
-            {
-                socket._mainThreadhActions.Enqueue(() =>
-                {
-                    _gameState.WrongMove.transform.Find("ErrorMessage").GetComponent<TextMeshPro>().text += "\n" + msg;
-                });
-
-            }
-
-
-        });
     }
 
     public void updateInfoCharacter(string playerId, string variable, string value, bool isNpc)
@@ -301,6 +330,7 @@ public class InitializationSocket : MonoBehaviour
         }
         canvas.GetComponent<Canvas>().enabled = false;
     }
+}
 
     
 
@@ -351,4 +381,3 @@ public class InitializationSocket : MonoBehaviour
         public int lifeMax;
         public string name;
     }
-}

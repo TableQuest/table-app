@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SocketIOClient;
 using TMPro;
-using Unity.VisualScripting;
+using ZXing;
+using ZXing.QrCode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EntityManager : MonoBehaviour
 {
-
+    private Texture2D _storeEncodedTexture;
+    public string serverUrl;
 	public List<Player> _players;
     public List<Npc> _npcs;
 
@@ -102,12 +106,27 @@ public class EntityManager : MonoBehaviour
         healthHandler.Initialize(player,true);
         AddButtonTo(player);
 
-        GameObject helperConnection = Instantiate(Resources.Load("Prefab/textID") as GameObject,new Vector3(-20,0,-5), Quaternion.identity);
-        helperConnection.transform.SetParent(player.tangibleObject.transform);
-        helperConnection.name = "helper" + player.globalId;
-        helperConnection.GetComponent<TextMeshPro>().text = player.globalId;
-        player.helpConnection = helperConnection;
+        //Not the best way to do it I guess but couldn't figure anything else yet
+        GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
+        qrCodeCanvas.name = "canvas"+player.globalId;
+        GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3(-120, 0, -5), Quaternion.identity);
+        GameObject _playerIdText = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3(-70, -80, -5), Quaternion.identity);
+        _rawImageReceiver.name = "QrCode" + player.globalId;
+        _playerIdText.name = player.globalId;
+        _playerIdText.GetComponent<TextMeshPro>().text = player.globalId;
+        _playerIdText.transform.SetParent(qrCodeCanvas.transform);
+        _rawImageReceiver.transform.SetParent(qrCodeCanvas.transform);
+        qrCodeCanvas.transform.SetParent(player.tangibleObject.transform);
+
+        string textToEncode = serverUrl + " " + player.globalId;
+        _storeEncodedTexture = new Texture2D(256, 256);
+        Color32[] _convertPixelToTexture = EncodeTextToQrCode(textToEncode, _storeEncodedTexture.width, _storeEncodedTexture.height);
+        _storeEncodedTexture.SetPixels32(_convertPixelToTexture);
+        _storeEncodedTexture.Apply();
+
+        _rawImageReceiver.GetComponent<RawImage>().texture = _storeEncodedTexture;
     }
+
 
     public void CreateNewNpc(int id, string name) {
         Debug.Log("Creating NPC " + name + " (" + id + ")");
@@ -118,6 +137,7 @@ public class EntityManager : MonoBehaviour
         gameState._previousState = gameState._state;
         gameState._state = STATE.NEW_NPC;
     }
+
 
     public async void PlaceNewNpc(string tangibleId, Vector2 tangiblePosition) {
         Npc newNpc = _npcs[_npcs.Count-1];
@@ -153,16 +173,32 @@ public class EntityManager : MonoBehaviour
         button.SetActive(false);
     }
 
-    public void RemoveHelper(string playerId)
+
+    public Color32[] EncodeTextToQrCode(string textToEncode, int width, int height)
     {
-        var helper = GameObject.Find("helper" + playerId);
+        BarcodeWriter writer = new BarcodeWriter
+        {
+            Format = BarcodeFormat.QR_CODE,
+            Options = new QrCodeEncodingOptions
+            {
+                Height = height,
+                Width = width
+            }
+        };
+        return writer.Write(textToEncode);
+    }
+
+
+    public void RemoveHelper(string playerId)
+    {   
+        var helper = GameObject.Find("canvas" + playerId);
         if (helper != null)
         {
             Destroy(helper);
         }
         else
         {
-            Debug.LogError("Helper : "+  playerId+ " doesn't exists !");
+            Debug.LogError("Canvas : "+  playerId+ " doesn't exists !");
         }
     }
 

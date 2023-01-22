@@ -12,7 +12,7 @@ public class ButtonCombat : ButtonAbstract
     List<ButtonAbstract> buttons = new List<ButtonAbstract>();
     string jsonSkills;
     bool initButton = false;
-    bool isActivate = false;
+    public bool isActivate = false;
     GridManager _gridManager;
 
     
@@ -73,6 +73,23 @@ public class ButtonCombat : ButtonAbstract
 
     private async void clickSkill(string playerId, Skill skill)
     {
+        PlayerMovement playerMovement = _gridManager.GetComponent<PlayerMovement>();
+        if (_gridManager._gameState._state != STATE.CONSTRAINT || playerMovement.CurMovement == null)
+        {
+            _gridManager.resetTiles();
+        }
+        else
+        {
+            if (_gridManager._gameState._state != STATE.WRONG && playerMovement.CurMovement.IsInInitialPosition(_gridManager.GetPosFromEntityPos(playerMovement.currPlayer.tangibleObject.transform.position)))
+            {
+                playerMovement.CurMovement.DeactivateMove();
+                playerMovement. CurMovement = null;
+                _gridManager.resetTiles();
+            } else
+            {
+                return;
+            }
+        }
         hideButtonConfirm();
         _gridManager.resetTilesAttack();
         if (isActivate && _gridManager.globalIDPlayerAttack == this.globalID && _gridManager.currentSkillId == skill.id)
