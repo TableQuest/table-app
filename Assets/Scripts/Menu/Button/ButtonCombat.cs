@@ -73,34 +73,7 @@ public class ButtonCombat : ButtonAbstract
 
     private async void clickSkill(string playerId, Skill skill)
     {
-        PlayerMovement playerMovement = _gridManager.GetComponent<PlayerMovement>();
-        if (_gridManager._gameState._state != STATE.CONSTRAINT || playerMovement.CurMovement == null)
-        {
-            _gridManager.resetTiles();
-        }
-        else
-        {
-            if (_gridManager._gameState._state != STATE.WRONG && playerMovement.CurMovement.IsInInitialPosition(_gridManager.GetPosFromEntityPos(playerMovement.currPlayer.tangibleObject.transform.position)))
-            {
-                playerMovement.CurMovement.DeactivateMove();
-                playerMovement. CurMovement = null;
-                _gridManager.resetTiles();
-            } else
-            {
-                return;
-            }
-        }
-        hideButtonConfirm();
-        _gridManager.resetTilesAttack();
-        if (isActivate && _gridManager.globalIDPlayerAttack == this.globalID && _gridManager.currentSkillId == skill.id)
-        {
-            isActivate = false;
-            _gridManager.currentSkillId = -1;
-            return;
-        }
-        _gridManager.currentSkillId = skill.id;
-        isActivate = true;
-        Debug.Log(playerId + " clicked on " + skill.name);
+        
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         socket.client.On("clickSkill", (data) => {
 
@@ -108,6 +81,41 @@ public class ButtonCombat : ButtonAbstract
 
             socket._mainThreadhActions.Enqueue(() =>
             {
+                if (_gridManager.tilesAttack.Count == 0)
+                {
+                    isActivate = false;
+                    _gridManager.currentSkillId = -1;
+                }
+                PlayerMovement playerMovement = _gridManager.GetComponent<PlayerMovement>();
+                if (_gridManager._gameState._state != STATE.CONSTRAINT && _gridManager._gameState._state != STATE.WRONG && _gridManager._gameState._state != STATE.INIT_TURN_ORDER && _gridManager._gameState._state != STATE.TURN_ORDER || playerMovement.CurMovement == null)
+                {
+                    _gridManager.resetTiles();
+                }
+                else
+                {
+                    if (_gridManager._gameState._state != STATE.WRONG && playerMovement.CurMovement.IsInInitialPosition(_gridManager.GetPosFromEntityPos(playerMovement.currPlayer.tangibleObject.transform.position)))
+                    {
+                        playerMovement.CurMovement.DeactivateMove();
+                        playerMovement.CurMovement = null;
+                        _gridManager.resetTiles();
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                Debug.Log(playerId + " clicked on " + skill.name);
+                hideButtonConfirm();
+                _gridManager.resetTilesAttack();
+                if (isActivate && _gridManager.globalIDPlayerAttack == this.globalID && _gridManager.currentSkillId == skill.id)
+                {
+                    isActivate = false;
+                    _gridManager.currentSkillId = -1;
+                    return;
+                }
+                playerMovement.CurMovement = null;
+                _gridManager.currentSkillId = skill.id;
+                isActivate = true;
                 Player playerWhoAttack = GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.GetPlayerWithGlobalId(this.globalID);
                 var tilePos = _gridManager.GetPosFromEntityPos(playerWhoAttack.tangibleObject.transform.position);
                 _gridManager.globalIDPlayerAttack = this.globalID;
@@ -117,7 +125,7 @@ public class ButtonCombat : ButtonAbstract
                 foreach (var tile in tiles)
                 {
                     tilesPossible.Add(tile.tilePos);
-                    tile.Highlight(Color.red);
+                    tile.Highlight(Color.white, playerWhoAttack.name);
                 }
                 SkillUse skillUse = JsonConvert.DeserializeObject<SkillUse>(str);
                 foreach (Entity potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.getEntities())
