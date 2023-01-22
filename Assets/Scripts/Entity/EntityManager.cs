@@ -143,15 +143,22 @@ public class EntityManager : MonoBehaviour
         Npc newNpc = _npcs[_npcs.Count-1];
         newNpc.updatePawnCode(tangibleId);
         newNpc.tilePosition = _grid.GetPosFromEntityPos(tangiblePosition);
-        newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Monster") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
+        if (newNpc.id == 10.ToString())
+        {
+            newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Gobelin") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
+        }
+        if (newNpc.id == 11.ToString())
+        {
+            newNpc.tangibleObject = Instantiate(Resources.Load("Prefab/Ogre") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
+        }
 
         GameObject playerInfo = Instantiate(Resources.Load("Prefab/PlayerInfo") as GameObject, new Vector3(tangiblePosition.x, tangiblePosition.y, -10), Quaternion.identity);
         HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
         healthHandler.Initialize(newNpc, false);
         AddButtonTo(newNpc);
-        if (newNpc.name == "Ogre") {
-            newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
-        }
+        //if (newNpc.name == "Ogre") {
+        //    newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
+        //}
 
         SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
         Debug.Log("Tangible ID " + tangibleId);
