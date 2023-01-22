@@ -54,6 +54,8 @@ public class DiceManager : MonoBehaviour
     {
         _currentPlayerId = playerId;
         _currentTargetValue = targetValue;
+        failImage.SetActive(false);
+        successImage.SetActive(false);
         
         var player = gameState._entityManager.GetPlayerWithGlobalId(playerId);
         _currentPawnCodeId = player.id;
