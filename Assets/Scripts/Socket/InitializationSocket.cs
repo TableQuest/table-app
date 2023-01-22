@@ -266,10 +266,17 @@ public class InitializationSocket : MonoBehaviour
         _client.On("attackApply", (data) =>
         {
             Debug.Log("attack launch "+data.GetValue<string>(0));
-            Debug.Log(GameObject.Find("SoundManager"));
-            Debug.Log(GameObject.Find("SoundManager").GetComponent<SoundManager>());
-            Debug.Log("tu te fous de ma geule !");
-            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/sword"));
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (data.GetValue<string>(0) == "true")
+                {
+                    StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/heal"),3));
+                }
+                else
+                {
+                    var corout = StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/sword"),3));
+                }
+            });
         });
     }
 
