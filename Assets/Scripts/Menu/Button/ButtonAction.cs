@@ -17,21 +17,26 @@ public class ButtonAction : ButtonAbstract
 
     public override async void functionOnClick()
     {
-        GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("BUTTON ACTION : before if : click " + endpoint);
         if (endpoint == "dice")
         {
             var diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
             if (diceManager != null)
             {
-                diceManager.OpenPanel(this.globalID, 15);
-                diceManager.DiceRollWithoutTarget();
+                if (diceManager.waitingSkill)
+                {
+                    diceManager.DiceRoll();
+                }
+                else
+                {
+                    diceManager.OpenPanel(this.globalID, 15);
+                    diceManager.DiceRollWithoutTarget();
+                }
             }
         }
         else if (endpoint != "")
         {
             SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
             await client.EmitAsync(endpoint, globalID);
-            GameObject.Find("SocketClient").GetComponent<Socket>().sendDebug("BUTTON ACTION : emit click " +  endpoint);
         }
     }
 }
