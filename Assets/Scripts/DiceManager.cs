@@ -29,7 +29,8 @@ public class DiceManager : MonoBehaviour
     private string _currentPlayerId;
     private string _currentPawnCodeId;
 
-    public bool waitingSkill; 
+    public bool waitingSkill;
+
     private void Start()
     {
         socket = GameObject.Find("SocketClient").GetComponent<Socket>();
@@ -125,5 +126,12 @@ public class DiceManager : MonoBehaviour
     public void TestDrag()
     {
         Debug.Log("DRAGGING ! ");
+    }
+
+    public void MovePanel(string id, Vector2 pos)
+    {
+        var vec = new Vector3(pos.x, pos.y, -10);
+        Debug.Log("Moving Dice Panel : "+vec);
+        dicePanel.transform.position = new Vector3(pos.x-30, pos.y-55, -10);
     }
 }
