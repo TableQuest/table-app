@@ -49,6 +49,7 @@ public class MenuBuilder : MonoBehaviour
         }
         HidePage(menu.currentPage, menu);
         menu.currentPage = pageIndex;
+        GameObject.Find("DiceManager").GetComponent<DiceManager>().CancelIfWaiting();
     }
 
     public static void HidePage(int pageIndex, Menu menu)
