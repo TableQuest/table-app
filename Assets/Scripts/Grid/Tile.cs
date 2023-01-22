@@ -24,14 +24,16 @@ public class Tile : MonoBehaviour
         _baseColor = tileRenderer.color;
     }
 
-    public void Highlight(Color color)
+    public void Highlight(Color color, string name)
     {
         tileRenderer.color = color;
+        tileRenderer.sprite = Resources.Load<Sprite>("Images/case" + name) ;
     }
     
     public void PaintBaseColor()
     {
         tileRenderer.color = _baseColor;
+        tileRenderer.sprite = null;
     }
     
     void OnMouseEnter() {
