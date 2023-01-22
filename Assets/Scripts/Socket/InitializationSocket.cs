@@ -161,7 +161,8 @@ public class InitializationSocket : MonoBehaviour
             {
                 List<CharacterSelection> myObjectList = JsonConvert.DeserializeObject<List<CharacterSelection>>(data.ToString());
                 CharacterSelection characterSelection = myObjectList[0];
-                _gameState._entityManager.GetPlayerWithGlobalId(characterSelection.playerId).name = characterSelection.character;    
+                _gameState._entityManager.GetPlayerWithGlobalId(characterSelection.playerId).name = characterSelection.character;
+                _gameState._entityManager.GetPlayerWithGlobalId(characterSelection.playerId).tangibleObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Table" + characterSelection.character);
             });
         });
 
