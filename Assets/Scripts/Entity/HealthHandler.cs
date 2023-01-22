@@ -33,6 +33,11 @@ public class HealthHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (entity.name != null && gameObject.transform.localScale != new Vector3(1,1,1))
+        {
+            gameObject.transform.localScale = new Vector3(1, 1, 1);
+        }
+        
         gameObject.transform.GetChild(0).position = entity.tangibleObject.transform.position;
         gameObject.transform.GetChild(1).position = entity.tangibleObject.transform.position;
         //   StartCoroutine(GetRequest(url + "/players/" + menu.globalId + "/skills", menu));
