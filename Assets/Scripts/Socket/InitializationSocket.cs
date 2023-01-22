@@ -278,6 +278,21 @@ public class InitializationSocket : MonoBehaviour
                 }
             });
         });
+        
+        _client.On("npcAttack", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (data.GetValue<string>(0) == "True" || data.GetValue<string>(0) == "true")
+                {
+                    StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/heal"),0));
+                }
+                else
+                {
+                    var corout = StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/sword"),0));
+                }
+            });
+        });
     }
 
     public void updateInfoCharacter(string playerId, string variable, string value, bool isNpc)
