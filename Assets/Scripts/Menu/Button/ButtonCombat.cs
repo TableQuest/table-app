@@ -135,6 +135,19 @@ public class ButtonCombat : ButtonAbstract
                     potentialTarget.tangibleObject.transform.position != playerWhoAttack.tangibleObject.transform.position)
                     {
                         var button = potentialTarget.tangibleObject.transform.Find("buttonConfirm");
+                        button.transform.localPosition = playerMovement.GetValidePostion(potentialTarget);
+                        if (potentialTarget.name == "Dwarf")
+                        {
+                            button.GetChild(0).Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/dwarf");
+                        }
+                        else if (potentialTarget.name == "Elf")
+                        {
+                            button.GetChild(0).Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/elf");
+                        }
+                        else
+                        {
+                            button.GetChild(0).Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/"+potentialTarget.name);
+                        }
                         button.gameObject.SetActive(true);
                         button.GetComponent<OnClickButton>().call = delegate
                         {

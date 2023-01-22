@@ -172,19 +172,16 @@ public class EntityManager : MonoBehaviour
         GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/npc"));
 
     }
-
-
-
+    
     public void AddButtonTo(Entity entity) {
         var button = Instantiate(Resources.Load("Prefab/Button") as GameObject, new Vector3(), Quaternion.identity);
         button.transform.SetParent(entity.tangibleObject.transform);
-        button.transform.localPosition = new Vector3(0, 1.4f, 0);
+        button.transform.localPosition = new Vector3(0, -1.4f, 0);
         button.transform.localScale = new Vector3(1, 1, 1);
         button.name = "buttonConfirm";
         button.SetActive(false);
     }
-
-
+    
     public Color32[] EncodeTextToQrCode(string textToEncode, int width, int height)
     {
         BarcodeWriter writer = new BarcodeWriter

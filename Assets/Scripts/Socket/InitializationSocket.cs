@@ -141,6 +141,7 @@ public class InitializationSocket : MonoBehaviour
                 Debug.Log("REMOVE NPC " + data);
                 string str = data.GetValue<string>(0);
                 _gameState._entityManager.RemoveNpc(str);
+                StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/death_npc"),3));
             });
         });
 
