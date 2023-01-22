@@ -24,6 +24,9 @@ public class DiceManager : MonoBehaviour
     public TextMeshProUGUI diceValueText;
     public TextMeshProUGUI targetValueText;
 
+    public AudioClip failEffect;
+    public AudioClip successEffect;
+    
     public string testName;
     
     private int _currentTargetValue;
@@ -79,12 +82,14 @@ public class DiceManager : MonoBehaviour
         if (diceValue >= _currentTargetValue)
         {
             successImage.SetActive(true);
-            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/success"));
+            Debug.Log("Fail Attack");
+            StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/success"),1));
         }
         else
         {
             failImage.SetActive(true);
-            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/fail"));
+            Debug.Log("Fail Attack");
+            StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/fail"), 1));
         }
         var myData = new
         {

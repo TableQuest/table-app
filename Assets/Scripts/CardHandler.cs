@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -48,9 +49,10 @@ public class CardHandler : MonoBehaviour
                 ManaBar.GetComponent<Image>().fillAmount = ((((float)entity.mana / (float)entity.manaMax) * 100.0f) / 100.0f) * numberPourcentage;
             }
         }
-        if(entity.life == 0)
+        if(entity.life <= 0)
         {
             turnOrderHandler.removeEntity(entity);
+            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/death_npc"));
             GameObject.Destroy(gameObject);
         }
         if(turnOrderHandler.getEntityTurn().globalId == entity.globalId)

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using DefaultNamespace;
 using Newtonsoft.Json;
 using TMPro;
+using Unity.VisualScripting;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -262,9 +263,12 @@ public class InitializationSocket : MonoBehaviour
             });
         });
         
-        _client.On("attackLaunch", (data) =>
+        _client.On("attackApply", (data) =>
         {
             Debug.Log("attack launch "+data.GetValue<string>(0));
+            Debug.Log(GameObject.Find("SoundManager"));
+            Debug.Log(GameObject.Find("SoundManager").GetComponent<SoundManager>());
+            Debug.Log("tu te fous de ma geule !");
             GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/sword"));
         });
     }
