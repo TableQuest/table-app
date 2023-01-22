@@ -92,11 +92,20 @@ public class InitializationSocket : MonoBehaviour
                     Debug.Log("Reset Turn Order !");
                 }
 
+                
+
                 if (_gameState._state == STATE.INIT && state != STATE.INIT)
                 {
-                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/quit_init"));
+                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/init"));
                 }
-                
+                else
+                {
+                    if (_gameState._state != state && state != STATE.INIT_TURN_ORDER && state != STATE.TURN_ORDER)
+                    {
+                        GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/change_state"));
+                    }
+                }
+
                 _gameState._state = state;
                 Debug.Log("changing to: " + _gameState._state);
                 
