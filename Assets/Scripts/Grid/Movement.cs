@@ -30,7 +30,7 @@ public class Movement
     {
         foreach (var tile in _tiles)
         {
-            tile.Highlight(Color.white);
+            tile.Highlight(Color.white, Player.name);
         }
     }
 

@@ -125,7 +125,7 @@ public class ButtonCombat : ButtonAbstract
                 foreach (var tile in tiles)
                 {
                     tilesPossible.Add(tile.tilePos);
-                    tile.Highlight(Color.white);
+                    tile.Highlight(Color.white, playerWhoAttack.name);
                 }
                 SkillUse skillUse = JsonConvert.DeserializeObject<SkillUse>(str);
                 foreach (Entity potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.getEntities())
