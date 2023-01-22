@@ -40,9 +40,14 @@ public class HealthHandler : MonoBehaviour
             GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/test"));
 
         }
-        
-        gameObject.transform.GetChild(0).position = entity.tangibleObject.transform.position;
-        gameObject.transform.GetChild(1).position = entity.tangibleObject.transform.position;
+        if (entity.tangibleObject != null)
+        {
+            gameObject.transform.GetChild(0).position = entity.tangibleObject.transform.position;
+            gameObject.transform.GetChild(1).position = entity.tangibleObject.transform.position;
+        } else
+        {
+            GameObject.Destroy(gameObject);
+        }
         //   StartCoroutine(GetRequest(url + "/players/" + menu.globalId + "/skills", menu));
         if (entity.lifeMax != 0)
         {

@@ -42,6 +42,13 @@ public class CardHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (entity.life == 0 || entity.tangibleObject == null)
+        {
+            turnOrderHandler.removeEntity(entity);
+            GameObject.Destroy(turnHighlight);
+            GameObject.Destroy(gameObject);
+            return;
+        } 
         turnHighlight.transform.position = new Vector3(entity.tangibleObject.transform.position.x, entity.tangibleObject.transform.position.y, 0);
         if (entity.lifeMax != 0)
         {
@@ -50,11 +57,6 @@ public class CardHandler : MonoBehaviour
             {
                 ManaBar.GetComponent<Image>().fillAmount = ((((float)entity.mana / (float)entity.manaMax) * 100.0f) / 100.0f) * numberPourcentage;
             }
-        }
-        if(entity.life == 0)
-        {
-            turnOrderHandler.removeEntity(entity);
-            GameObject.Destroy(gameObject);
         }
         if(turnOrderHandler.getEntityTurn().globalId == entity.globalId)
         {

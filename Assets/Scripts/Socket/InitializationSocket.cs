@@ -128,9 +128,9 @@ public class InitializationSocket : MonoBehaviour
         {
             socket._mainThreadhActions.Enqueue(() =>
             {
+                Debug.Log("REMOVE NPC " + data);
                 string str = data.GetValue<string>(0);
-                RemoveNpc npcData = JsonConvert.DeserializeObject<RemoveNpc>(str);
-                _gameState._entityManager.RemoveNpc(npcData.pawnCode);
+                _gameState._entityManager.RemoveNpc(str);
             });
         });
 
