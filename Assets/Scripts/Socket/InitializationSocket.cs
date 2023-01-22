@@ -85,7 +85,10 @@ public class InitializationSocket : MonoBehaviour
                     _gameState._menuManager.populateMenu();
                     firstSwitch = false;
                 }
-                
+                if(_gameState._state == STATE.PLAYING)
+                {
+                    resetTurnOrder();
+                }
                 if(_gameState._state == STATE.INIT_TURN_ORDER || _gameState._state == STATE.TURN_ORDER)
                 {
                     resetTurnOrder();
