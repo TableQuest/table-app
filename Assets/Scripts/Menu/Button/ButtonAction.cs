@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using SocketIOClient;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
@@ -20,6 +21,7 @@ public class ButtonAction : ButtonAbstract
         if (endpoint == "dice")
         {
             var diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
+            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/dice"));
             if (diceManager != null)
             {
                 if (diceManager.waitingSkill)

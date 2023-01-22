@@ -25,5 +25,10 @@ namespace DefaultNamespace
         {
             _effectsSource.PlayOneShot(clip);
         }
+
+        public void PlayDelayed(AudioClip clip)
+        {
+            _effectsSource.PlayDelayed(1);
+        }
     }
 }

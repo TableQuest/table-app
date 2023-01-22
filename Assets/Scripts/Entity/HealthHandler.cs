@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -36,6 +37,8 @@ public class HealthHandler : MonoBehaviour
         if (entity.name != null && gameObject.transform.localScale != new Vector3(1,1,1))
         {
             gameObject.transform.localScale = new Vector3(1, 1, 1);
+            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/test"));
+
         }
         
         gameObject.transform.GetChild(0).position = entity.tangibleObject.transform.position;

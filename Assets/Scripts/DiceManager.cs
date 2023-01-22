@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using Mono.Cecil;
 using Newtonsoft.Json;
 using TMPro;
@@ -90,10 +91,12 @@ public class DiceManager : MonoBehaviour
         if (diceValue >= _currentTargetValue)
         {
             successImage.SetActive(true);
+            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/success"));
         }
         else
         {
             failImage.SetActive(true);
+            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/fail"));
         }
         var myData = new
         {
