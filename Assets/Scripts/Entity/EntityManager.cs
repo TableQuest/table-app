@@ -8,6 +8,7 @@ using ZXing;
 using ZXing.QrCode;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class EntityManager : MonoBehaviour
 {
@@ -104,6 +105,7 @@ public class EntityManager : MonoBehaviour
         GameObject playerInfo = Instantiate(Resources.Load("Prefab/PlayerInfo") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
         HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
         healthHandler.Initialize(player,true);
+        playerInfo.transform.localScale = new Vector3(0, 0, 0);
         AddButtonTo(player);
 
         //Not the best way to do it I guess but couldn't figure anything else yet
