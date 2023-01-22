@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DefaultNamespace;
 using UnityEngine;
 
 public class ButtonCombat : ButtonAbstract
@@ -135,7 +136,10 @@ public class ButtonCombat : ButtonAbstract
                     {
                         var button = potentialTarget.tangibleObject.transform.Find("buttonConfirm");
                         button.gameObject.SetActive(true);
-                        button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.globalId, button.gameObject); };
+                        button.GetComponent<OnClickButton>().call = delegate
+                        {
+                            sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.globalId, button.gameObject);
+                        };
                     }
                 }
             });

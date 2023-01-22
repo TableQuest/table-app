@@ -4,6 +4,7 @@ using SocketIOClient;
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using DefaultNamespace;
 using Newtonsoft.Json;
 using TMPro;
 
@@ -91,8 +92,20 @@ public class InitializationSocket : MonoBehaviour
                     Debug.Log("Reset Turn Order !");
                 }
 
+                if (_gameState._state == STATE.INIT && state != STATE.INIT)
+                {
+                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/quit_init"));
+                }
+                
                 _gameState._state = state;
                 Debug.Log("changing to: " + _gameState._state);
+                
+                if (_gameState._state == STATE.INIT_TURN_ORDER)
+                {
+                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/init_turn_order"));
+                    //GameObject.Find("Canvas").AddComponent<TextMeshProUGUI>().text = "Roll your dice !!";
+                    // TODO afficher "lancez vos dés" sur un panel qui s'enlève tous seul ou avec un click
+                }
             });
             
         });
@@ -238,6 +251,12 @@ public class InitializationSocket : MonoBehaviour
                 SkillDice skillDice = myObjectList[0];
                 GameObject.Find("DiceManager").GetComponent<DiceManager>().WaitForSkill(skillDice.playerId, skillDice.skillName, skillDice.targetValue);
             });
+        });
+        
+        _client.On("attackLaunch", (data) =>
+        {
+            Debug.Log("attack launch "+data.GetValue<string>(0));
+            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/sword"));
         });
     }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace;
 using SocketIOClient;
 using TMPro;
 using ZXing;
@@ -166,6 +167,8 @@ public class EntityManager : MonoBehaviour
         
         GameState gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
         gameState._state = gameState._previousState;
+        GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/npc2"));
+
     }
 
 
