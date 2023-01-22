@@ -212,7 +212,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 854455685}
     m_Modifications:
     - target: {fileID: 2107053538139610301, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -224,31 +224,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 44.358227
+      value: 295.7215
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 44.358227
+      value: 295.7215
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 44.358227
+      value: 295.7215
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1142.844
+      value: 772.2932
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 603.8441
+      value: 365.6274
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: -66.66666
       objectReference: {fileID: 0}
     - target: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -282,6 +282,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7844690907366898006, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8053791441750200272, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
       propertyPath: m_Name
       value: Close
@@ -290,12 +294,61 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 7844690907366898006, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
 --- !u!1 &104953605 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8053791441750200272, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
+  m_PrefabInstance: {fileID: 104953603}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &104953606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 104953605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 170c0b5a6348a084ba8146d9bb4d6670, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnClickDown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClickUp:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDrag:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 479384162}
+        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+        m_MethodName: TestDrag
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnLongClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &104953610 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2297983738805972507, guid: 5300c95d1a9cc654a83762b16226adb7, type: 3}
   m_PrefabInstance: {fileID: 104953603}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &120342308
@@ -475,6 +528,7 @@ MonoBehaviour:
   tilesAttack: []
   globalIDPlayerAttack: 
   currentSkillId: -1
+  _gameState: {fileID: 0}
 --- !u!114 &390484571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,6 +581,7 @@ MonoBehaviour:
   diceValueText: {fileID: 1846972672}
   targetValueText: {fileID: 808304720}
   testName: Dwarf
+  waitingSkill: 0
 --- !u!4 &479384163
 Transform:
   m_ObjectHideFlags: 0
@@ -540,7 +595,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &498928501
 GameObject:
@@ -1043,7 +1098,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &854455685
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1064,6 +1119,7 @@ RectTransform:
   - {fileID: 808304719}
   - {fileID: 1846972671}
   - {fileID: 994586401}
+  - {fileID: 104953610}
   m_Father: {fileID: 794245117}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1262,7 +1318,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1431447161952994664, guid: 9a8f05106b22d9442bf8e98256b57284, type: 3}
       propertyPath: m_RootOrder
-      value: 14
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 1431447161952994664, guid: 9a8f05106b22d9442bf8e98256b57284, type: 3}
       propertyPath: m_AnchorMax.x

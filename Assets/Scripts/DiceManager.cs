@@ -29,8 +29,10 @@ public class DiceManager : MonoBehaviour
     private string _currentPlayerId;
     private string _currentPawnCodeId;
 
+    public bool waitingSkill; 
     private void Start()
     {
+        socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         close.AddComponent<OnClickButton>();
         close.GetComponent<OnClickButton>().call = delegate
         {
@@ -39,10 +41,22 @@ public class DiceManager : MonoBehaviour
             successImage.SetActive(false);
             failImage.SetActive(false);
             close.SetActive(false);
+            if (waitingSkill)
+            {
+                socket.client.EmitAsync("cancelPendingSkill", "");
+                waitingSkill = false;
+            }
         };
-        socket = GameObject.Find("SocketClient").GetComponent<Socket>();
+        
+        waitingSkill = false;
     }
 
+    public void WaitForSkill(string playerId, string skillName, int targetValue)
+    {
+        waitingSkill = true;
+        OpenPanel(playerId, targetValue);
+    }
+    
     public void OpenPanel(string playerId, int targetValue)
     {
         _currentPlayerId = playerId;
@@ -66,7 +80,7 @@ public class DiceManager : MonoBehaviour
         close.SetActive(true);
     }
 
-    public void DiceRoll()
+    public async void DiceRoll()
     {
         failImage.SetActive(false);
         successImage.SetActive(false);
@@ -80,6 +94,15 @@ public class DiceManager : MonoBehaviour
         {
             failImage.SetActive(true);
         }
+        var myData = new
+        {
+            playerId = _currentPawnCodeId,
+            diceId = 4,
+            value = diceValue,
+            targetValue = _currentTargetValue
+        };
+        waitingSkill = false;
+        await socket.client.EmitAsync("skillDice", JsonConvert.SerializeObject(myData));
     }
 
     public async void DiceRollWithoutTarget()
@@ -96,5 +119,11 @@ public class DiceManager : MonoBehaviour
             value = diceValue
         };
         await socket.client.EmitAsync("dice", JsonConvert.SerializeObject(myData));
+    }
+    
+    
+    public void TestDrag()
+    {
+        Debug.Log("DRAGGING ! ");
     }
 }
