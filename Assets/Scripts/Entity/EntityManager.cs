@@ -169,7 +169,7 @@ public class EntityManager : MonoBehaviour
         
         GameState gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
         gameState._state = gameState._previousState;
-        GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/npc2"));
+        GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/npc"));
 
     }
 

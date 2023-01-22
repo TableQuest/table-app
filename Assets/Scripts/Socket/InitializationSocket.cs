@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using DefaultNamespace;
 using Newtonsoft.Json;
 using TMPro;
+using Unity.VisualScripting;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -95,11 +96,20 @@ public class InitializationSocket : MonoBehaviour
                     Debug.Log("Reset Turn Order !");
                 }
 
+                
+
                 if (_gameState._state == STATE.INIT && state != STATE.INIT)
                 {
-                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/quit_init"));
+                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/init"));
                 }
-                
+                else
+                {
+                    if (_gameState._state != state && state != STATE.INIT_TURN_ORDER && state != STATE.TURN_ORDER)
+                    {
+                        GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/change_state"));
+                    }
+                }
+
                 _gameState._state = state;
                 Debug.Log("changing to: " + _gameState._state);
                 
@@ -267,10 +277,35 @@ public class InitializationSocket : MonoBehaviour
             });
         });
         
-        _client.On("attackLaunch", (data) =>
+        _client.On("attackApply", (data) =>
         {
             Debug.Log("attack launch "+data.GetValue<string>(0));
-            GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/sword"));
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (data.GetValue<string>(0) == "true")
+                {
+                    StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/heal"),3));
+                }
+                else
+                {
+                    var corout = StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/sword"),3));
+                }
+            });
+        });
+        
+        _client.On("npcAttack", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (data.GetValue<string>(0) == "True" || data.GetValue<string>(0) == "true")
+                {
+                    StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/heal"),0));
+                }
+                else
+                {
+                    var corout = StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/sword"),0));
+                }
+            });
         });
     }
 

@@ -536,6 +536,8 @@ MonoBehaviour:
   playerNameText: {fileID: 1207363934}
   diceValueText: {fileID: 1846972672}
   targetValueText: {fileID: 808304720}
+  failEffect: {fileID: 8300000, guid: 5f986676a4beaf74293ccff28a212844, type: 3}
+  successEffect: {fileID: 8300000, guid: ee603269b52b0e34ebff41af4b6e629a, type: 3}
   testName: Dwarf
   waitingSkill: 0
 --- !u!4 &479384163

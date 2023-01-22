@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace DefaultNamespace
 {
@@ -26,9 +27,11 @@ namespace DefaultNamespace
             _effectsSource.PlayOneShot(clip);
         }
 
-        public void PlayDelayed(AudioClip clip)
+        public IEnumerator PlayDelayed(AudioClip clip, int delay)
         {
-            _effectsSource.PlayDelayed(1);
+            yield return new WaitForSeconds(delay);
+            _effectsSource.PlayOneShot(clip);
+            //_effectsSource.PlayDelayed(1);
         }
     }
 }
