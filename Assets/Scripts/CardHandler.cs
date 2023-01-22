@@ -13,6 +13,7 @@ public class CardHandler : MonoBehaviour
     GameObject HealthBar;
     GameObject ManaBar;
     GameObject Pion;
+    GameObject turnHighlight;
     public TurnOrderHandler turnOrderHandler;
     Color32 colorTurn = new Color32(255, 191, 45, 255);
     Color32 colorNotTurn = new Color32(214, 214, 214, 255);
@@ -25,6 +26,7 @@ public class CardHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        turnHighlight = Instantiate(Resources.Load("Prefab/ZoneMenu") as GameObject, new Vector3(entity.tangibleObject.transform.position.x, entity.tangibleObject.transform.position.y, 0), Quaternion.identity);
         FillImage = gameObject.transform.GetChild(0).gameObject;
         HealthBar = gameObject.transform.GetChild(1).GetChild(0).gameObject;
         ManaBar = gameObject.transform.GetChild(2).GetChild(0).gameObject;
@@ -40,6 +42,7 @@ public class CardHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        turnHighlight.transform.position = new Vector3(entity.tangibleObject.transform.position.x, entity.tangibleObject.transform.position.y, 0);
         if (entity.lifeMax != 0)
         {
             HealthBar.GetComponent<Image>().fillAmount = ((((float)entity.life / (float)entity.lifeMax) * 100.0f) / 100.0f) * numberPourcentage;
@@ -55,10 +58,18 @@ public class CardHandler : MonoBehaviour
         }
         if(turnOrderHandler.getEntityTurn().globalId == entity.globalId)
         {
+            turnHighlight.SetActive(true);
             FillImage.GetComponent<Image>().color = colorTurn;
+            
         } else
         {
+            turnHighlight.SetActive(false);
             FillImage.GetComponent<Image>().color = colorNotTurn;
         }
+    }
+
+    private void OnDestroy()
+    {
+        GameObject.Destroy(turnHighlight);
     }
 }
