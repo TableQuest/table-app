@@ -86,7 +86,10 @@ public class InitializationSocket : MonoBehaviour
                     _gameState._menuManager.populateMenu();
                     firstSwitch = false;
                 }
-                
+                if(_gameState._state == STATE.PLAYING)
+                {
+                    resetTurnOrder();
+                }
                 if(_gameState._state == STATE.INIT_TURN_ORDER || _gameState._state == STATE.TURN_ORDER)
                 {
                     resetTurnOrder();
@@ -130,6 +133,17 @@ public class InitializationSocket : MonoBehaviour
                 _gameState._entityManager.CreateNewNpc(npcData.id, npcData.name); //normalement cet ID c'est celui du monstre (10: Goblin, 11: Ogre)
             });
         });
+
+        _client.On("removeNpc", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("REMOVE NPC " + data);
+                string str = data.GetValue<string>(0);
+                _gameState._entityManager.RemoveNpc(str);
+            });
+        });
+
 
         _client.On("updateInfoCharacter", (data) =>
         {
@@ -411,7 +425,17 @@ public class InitializationSocket : MonoBehaviour
         public string value;
     }
 
-    public class TurnOrderList
+public class RemoveNpc
+{
+    public RemoveNpc(string pawnCode)
+    {
+        this.pawnCode = pawnCode;
+    }
+
+    public string pawnCode;
+}
+
+public class TurnOrderList
     {
         public TurnOrderList(List<string> list)
         {
