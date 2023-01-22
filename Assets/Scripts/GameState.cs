@@ -24,7 +24,9 @@ public class GameState : MonoBehaviour
 
 	public STATE _state;
 	public STATE _previousState;
-
+	
+	public string diceTangibleId;
+	
 	void Awake () {
 		QualitySettings.vSyncCount = 0;  // VSync must be disabled
 		Application.targetFrameRate = 45;
@@ -42,47 +44,55 @@ public class GameState : MonoBehaviour
 
 	public void HandleTangibleEvents(string id, Vector2 pos, float rotation)
 	{
-		switch(_state)
+		if (id == diceTangibleId)
 		{
-			case STATE.INIT:
-				HandleEventInit(id, pos);
-				MovePawnTangible(id, pos, rotation);
-				break;
-			case STATE.PLAYING:
-				MovePawnTangible(id, pos, rotation);
-				break;
-			case STATE.CONSTRAINT:
-				if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
-				{
-					MovePawnTangible(id, pos, rotation);
-				}
-				if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
-				{
-					HandleConstraintMove(id, pos, rotation);
-				}
-				//HandleConstraintMove(id, pos, rotation);
-				break;
-			case STATE.WRONG:
-				ReplaceTangible(id, pos, rotation);
-				break;
-			case STATE.NEW_NPC:
-				HandleEventNewNpc(id, pos);
-				MovePawnTangible(id, pos, rotation);
-				break;
-			case STATE.TURN_ORDER:
-				if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
-				{
-					MovePawnTangible(id, pos, rotation);
-				}
-				if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
-				{
-					HandleConstraintMove(id, pos, rotation);
-				}
-				break;
-			default:
-				break;
+			MoveDiceTangible(id, pos);
 		}
-		MoveMenuTangible(id, pos, rotation);
+		else
+		{
+			switch(_state)
+			{
+				case STATE.INIT:
+					HandleEventInit(id, pos);
+					MovePawnTangible(id, pos, rotation);
+					break;
+				case STATE.PLAYING:
+					MovePawnTangible(id, pos, rotation);
+					break;
+				case STATE.CONSTRAINT:
+					if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
+					{
+						MovePawnTangible(id, pos, rotation);
+					}
+					if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
+					{
+						HandleConstraintMove(id, pos, rotation);
+					}
+					//HandleConstraintMove(id, pos, rotation);
+					break;
+				case STATE.WRONG:
+					ReplaceTangible(id, pos, rotation);
+					break;
+				case STATE.NEW_NPC:
+					HandleEventNewNpc(id, pos);
+					MovePawnTangible(id, pos, rotation);
+					break;
+				case STATE.TURN_ORDER:
+					if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
+					{
+						MovePawnTangible(id, pos, rotation);
+					}
+					if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
+					{
+						HandleConstraintMove(id, pos, rotation);
+					}
+					break;
+				default:
+					break;
+			}
+			MoveMenuTangible(id, pos, rotation);
+		}
+		
 
 	}
 
@@ -178,6 +188,12 @@ public class GameState : MonoBehaviour
 		{
 			playerMovement.ReplacePlayer(player, pos, rotation);
 		}
+	}
+
+	private void MoveDiceTangible(string id, Vector2 pos)
+	{
+		var canvasPos = _menuManager.GetCanvasPosition(pos);
+		GameObject.Find("DiceManager").GetComponent<DiceManager>().MovePanel(id, canvasPos);
 	}
 }
 
