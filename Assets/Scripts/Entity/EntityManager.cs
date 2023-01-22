@@ -156,9 +156,6 @@ public class EntityManager : MonoBehaviour
         HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
         healthHandler.Initialize(newNpc, false);
         AddButtonTo(newNpc);
-        //if (newNpc.name == "Ogre") {
-        //    newNpc.tangibleObject.transform.Find("Background").transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ogre");
-        //}
 
         SocketIO client = GameObject.Find("TableQuests").GetComponent<InitializationSocket>()._client;
         Debug.Log("Tangible ID " + tangibleId);
