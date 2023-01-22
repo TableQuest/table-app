@@ -233,6 +233,16 @@ public class InitializationSocket : MonoBehaviour
             });
         }); 
         
+        _client.On("skillDice", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("Receive skillDice "+ data);
+                List<SkillDice> myObjectList = JsonConvert.DeserializeObject<List<SkillDice>>(data.ToString());
+                SkillDice skillDice = myObjectList[0];
+                GameObject.Find("DiceManager").GetComponent<DiceManager>().WaitForSkill(skillDice.playerId, skillDice.skillName, skillDice.targetValue);
+            });
+        });
     }
 
     public void updateInfoCharacter(string playerId, string variable, string value, bool isNpc)
@@ -381,3 +391,17 @@ public class InitializationSocket : MonoBehaviour
         public int lifeMax;
         public string name;
     }
+
+public class SkillDice
+{
+    public SkillDice(string playerId, string skillName, int targetValue)
+    {
+        this.playerId = playerId;
+        this.skillName = skillName;
+        this.targetValue = targetValue;
+    }
+    
+    public string playerId;
+    public string skillName;
+    public int targetValue;
+}
