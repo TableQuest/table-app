@@ -5,7 +5,7 @@ public class Movement
 {
     public Player Player;
     
-    private List<Tile> _tiles;
+    public List<Tile> _tiles;
     private Vector2 _initialTilePosition;
     public bool IsMoving = false; // use to check if a player already move from the initial position but didn't validate the move yet.
     
@@ -30,7 +30,7 @@ public class Movement
     {
         foreach (var tile in _tiles)
         {
-            tile.Highlight(Color.red);
+            tile.Highlight(Color.white);
         }
     }
 

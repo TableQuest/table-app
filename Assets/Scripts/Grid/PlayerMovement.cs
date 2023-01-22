@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
             var str = response.GetValue<string>(0);
             _socket._mainThreadhActions.Enqueue(() =>
             {
+                _grid.resetTilesAttack();
                 var playerMove = JsonUtility.FromJson<PlayerMove>(str);
                 var player = _gameState._entityManager.GetPlayerWithGlobalId(playerMove.playerId);
                 

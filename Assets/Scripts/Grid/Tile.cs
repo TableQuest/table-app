@@ -27,11 +27,13 @@ public class Tile : MonoBehaviour
     public void Highlight(Color color)
     {
         tileRenderer.color = color;
+        tileRenderer.sprite = Resources.Load<Sprite>("Images/caseElf");
     }
     
     public void PaintBaseColor()
     {
         tileRenderer.color = _baseColor;
+        tileRenderer.sprite = null;
     }
     
     void OnMouseEnter() {
