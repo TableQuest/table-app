@@ -20,7 +20,7 @@ public class GridManager : MonoBehaviour
     public int currentSkillId = -1;
     private Dictionary<Vector2, Tile> tiles;
     private Dictionary<Vector2, Tile> tilesInit;
-    private GameState _gameState;
+    public GameState _gameState;
 
     void Start() {
         GenerateGrid();
@@ -78,6 +78,17 @@ public class GridManager : MonoBehaviour
             tile.PaintBaseColor();
         }
         tilesAttack = new List<Tile>();
+    }
+
+    public void resetTiles()
+    {
+        foreach (var item in tiles)
+        {
+            if(item.Value != null)
+            {
+                item.Value.PaintBaseColor();
+            }
+        }
     }
     
     public Vector2 GetCanvasPosition(Vector2 oscPos)
