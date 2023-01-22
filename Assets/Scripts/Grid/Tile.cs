@@ -27,7 +27,7 @@ public class Tile : MonoBehaviour
     public void Highlight(Color color, string name)
     {
         tileRenderer.color = color;
-        tileRenderer.sprite = Resources.Load<Sprite>("Images/case" + name) ;
+        tileRenderer.sprite = Resources.Load<Sprite>("Images/case" + name);
     }
     
     public void PaintBaseColor()
