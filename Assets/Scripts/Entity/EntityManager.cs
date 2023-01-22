@@ -29,6 +29,8 @@ public class EntityManager : MonoBehaviour
 		_players = new List<Player>();
         _npcs = new List<Npc>();
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
+        Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
+        serverUrl = socket.requestURI;
 	}
 
     public List<Entity> getEntities()
