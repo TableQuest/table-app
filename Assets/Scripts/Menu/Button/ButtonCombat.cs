@@ -12,7 +12,7 @@ public class ButtonCombat : ButtonAbstract
     List<ButtonAbstract> buttons = new List<ButtonAbstract>();
     string jsonSkills;
     bool initButton = false;
-    bool isActivate = false;
+    public bool isActivate = false;
     GridManager _gridManager;
 
     
@@ -73,6 +73,23 @@ public class ButtonCombat : ButtonAbstract
 
     private async void clickSkill(string playerId, Skill skill)
     {
+        PlayerMovement playerMovement = _gridManager.GetComponent<PlayerMovement>();
+        if (_gridManager._gameState._state != STATE.CONSTRAINT || playerMovement.CurMovement == null)
+        {
+            _gridManager.resetTiles();
+        }
+        else
+        {
+            if (_gridManager._gameState._state != STATE.WRONG && playerMovement.CurMovement.IsInInitialPosition(_gridManager.GetPosFromEntityPos(playerMovement.currPlayer.tangibleObject.transform.position)))
+            {
+                playerMovement.CurMovement.DeactivateMove();
+                playerMovement. CurMovement = null;
+                _gridManager.resetTiles();
+            } else
+            {
+                return;
+            }
+        }
         hideButtonConfirm();
         _gridManager.resetTilesAttack();
         if (isActivate && _gridManager.globalIDPlayerAttack == this.globalID && _gridManager.currentSkillId == skill.id)
@@ -91,12 +108,9 @@ public class ButtonCombat : ButtonAbstract
 
             socket._mainThreadhActions.Enqueue(() =>
             {
-                Debug.Log("HIGHLIGHT TILES");
                 Player playerWhoAttack = GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.GetPlayerWithGlobalId(this.globalID);
-                Debug.Log(playerWhoAttack.globalId);
                 var tilePos = _gridManager.GetPosFromEntityPos(playerWhoAttack.tangibleObject.transform.position);
                 _gridManager.globalIDPlayerAttack = this.globalID;
-                Debug.Log(tilePos.x + " : " + tilePos.y);
                 List<Tile> tiles = _gridManager.GetTilesAroundPosition(tilePos, skill.range);
                 List<Vector2> tilesPossible = new List<Vector2>();
                 _gridManager.tilesAttack = tiles;
@@ -105,15 +119,12 @@ public class ButtonCombat : ButtonAbstract
                     tilesPossible.Add(tile.tilePos);
                     tile.Highlight(Color.red);
                 }
-                Debug.Log(str);
                 SkillUse skillUse = JsonConvert.DeserializeObject<SkillUse>(str);
-                Debug.Log(skillUse.skill.id);
                 foreach (Entity potentialTarget in GameObject.Find("TableQuests").GetComponent<GameState>()._entityManager.getEntities())
                 {
                     if (tilesPossible.Contains(_gridManager.GetPosFromEntityPos(potentialTarget.tangibleObject.transform.position)) &&
                     potentialTarget.tangibleObject.transform.position != playerWhoAttack.tangibleObject.transform.position)
                     {
-                        Debug.Log("CREE LE BUTTON");
                         var button = potentialTarget.tangibleObject.transform.Find("buttonConfirm");
                         button.gameObject.SetActive(true);
                         button.GetComponent<OnClickButton>().call = delegate { sendSkillUsage(skillUse.playerId, skillUse.skill, potentialTarget.globalId, button.gameObject); };
@@ -133,12 +144,8 @@ public class ButtonCombat : ButtonAbstract
     }
 
     private async void sendSkillUsage(string playerId, Skill skill, string targetId, GameObject buttonValidate) {
-        Debug.Log("JE RESET LES TILES");
         _gridManager.resetTilesAttack();
         Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
-        Debug.Log(playerId);
-        Debug.Log(skill.id);
-        Debug.Log(targetId);
         var data = new 
         {
             playerId = playerId,

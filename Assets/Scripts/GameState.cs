@@ -11,7 +11,9 @@ public enum STATE
 	CONSTRAINT,
 	NEW_NPC,
 	PAUSE,
-	WRONG
+	WRONG,
+	INIT_TURN_ORDER,
+	TURN_ORDER
 }
 
 public class GameState : MonoBehaviour
@@ -22,6 +24,11 @@ public class GameState : MonoBehaviour
 
 	public STATE _state;
 	public STATE _previousState;
+
+	void Awake () {
+		QualitySettings.vSyncCount = 0;  // VSync must be disabled
+		Application.targetFrameRate = 45;
+	}
 
 	void Start()
 	{
@@ -45,7 +52,15 @@ public class GameState : MonoBehaviour
 				MovePawnTangible(id, pos, rotation);
 				break;
 			case STATE.CONSTRAINT:
-				HandleConstraintMove(id, pos, rotation);
+				if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
+				{
+					MovePawnTangible(id, pos, rotation);
+				}
+				if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
+				{
+					HandleConstraintMove(id, pos, rotation);
+				}
+				//HandleConstraintMove(id, pos, rotation);
 				break;
 			case STATE.WRONG:
 				ReplaceTangible(id, pos, rotation);
@@ -53,6 +68,16 @@ public class GameState : MonoBehaviour
 			case STATE.NEW_NPC:
 				HandleEventNewNpc(id, pos);
 				MovePawnTangible(id, pos, rotation);
+				break;
+			case STATE.TURN_ORDER:
+				if (_entityManager.GetNPCWithId(id) != null)	// if the npc move he can 
+				{
+					MovePawnTangible(id, pos, rotation);
+				}
+				if (_entityManager.GetPlayerWithId(id) != null)	// if the player move is can't, he is restricted
+				{
+					HandleConstraintMove(id, pos, rotation);
+				}
 				break;
 			default:
 				break;
@@ -120,6 +145,7 @@ public class GameState : MonoBehaviour
 	private void HandleConstraintMove(string id, Vector2 pos, float rotation)
 	{
 		var player = _entityManager.GetPlayerWithId(id);
+		
 		var playerMovement = GameObject.Find("GridManager").GetComponent<PlayerMovement>();
 		
 		if (_entityManager.Exists(id) && playerMovement.TilePositionChanged(player, pos))

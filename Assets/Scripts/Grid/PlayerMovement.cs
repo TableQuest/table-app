@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     private GridManager _grid;
     private GameState _gameState;
     private Socket _socket;
-
+    public Player currPlayer;
     public Movement CurMovement;
     
     void Start()
@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
                 if (CurMovement == null && player != null) 
                 {
                     var tilePos = _grid.GetPosFromEntityPos(player.tangibleObject.transform.position);
+                    currPlayer = player;
                     var tiles = _grid.GetTilesAroundPosition(tilePos, playerMove.speed);
                     CurMovement = new(tiles, player, tilePos);
                     CurMovement.HighlightMove();
@@ -49,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
                 else if (CurMovement != null && player != CurMovement.Player && player != null && !CurMovement.IsMoving) 
                 {
                     var tilePos = _grid.GetPosFromEntityPos(player.tangibleObject.transform.position);
+                    currPlayer = player;
                     var tiles = _grid.GetTilesAroundPosition(tilePos, playerMove.speed);
                     CurMovement.DeactivateMove();
                     CurMovement = new Movement(tiles, player, tilePos);
