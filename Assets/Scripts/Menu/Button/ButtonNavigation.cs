@@ -21,7 +21,6 @@ public class ButtonNavigation : ButtonAbstract
             }
         }
         MenuBuilder.DisplayPage(page, GameObject.Find("TableQuests").GetComponent<MenuManager>().GetMenuWithId(this.globalID));
-        
     }
 
     // Start is called before the first frame update
