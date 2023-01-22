@@ -51,55 +51,50 @@ public class InitializationSocket : MonoBehaviour
 
         _client.On("switchState", (data) =>
         {
+            STATE state;
+            
             string str = data.GetValue<string>(0);
             switch (str)
             {
                 case "FREE":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        if (_gameState._state == STATE.INIT_TURN_ORDER)
-                        {
-                            resetTurnOrder();
-                        }
-                        _gameState._state = STATE.PLAYING;
-                        Debug.Log("changing to: " + _gameState._state);
-                        if (firstSwitch)
-                        {
-                            _gameState._menuManager.populateMenu();
-                            firstSwitch = false;
-                        }
-                    });
+                    state = STATE.PLAYING;
                     break;
 
                 case "RESTRICTED":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        if(_gameState._state == STATE.INIT_TURN_ORDER)
-                        {
-                            resetTurnOrder();
-                        }
-                        _gameState._state = STATE.CONSTRAINT;
-                        Debug.Log("changing to: " + _gameState._state);
-                    });
+                    state = STATE.CONSTRAINT;
                     break;
                 case "INIT_TURN_ORDER":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        _gameState._state = STATE.INIT_TURN_ORDER;
-                        Debug.Log("changing to: " + _gameState._state);
-                    });
+                    state = STATE.INIT_TURN_ORDER;
                     break;
                 case "TURN_ORDER":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        _gameState._state = STATE.TURN_ORDER;
-                        Debug.Log("changing to: " + _gameState._state);
-                    });
+                    state = STATE.TURN_ORDER;
+                    break;
+                case "INIT":
+                    state = STATE.INIT;
                     break;
                 default:
+                    state = state = STATE.PLAYING;
                     Debug.Log("State " + str + " is wrong or not implemented yet.");
                     break;
             }
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (firstSwitch)
+                {
+                    _gameState._menuManager.populateMenu();
+                    firstSwitch = false;
+                }
+                
+                if(_gameState._state == STATE.INIT_TURN_ORDER || _gameState._state == STATE.TURN_ORDER)
+                {
+                    resetTurnOrder();
+                    Debug.Log("Reset Turn Order !");
+                }
+
+                _gameState._state = state;
+                Debug.Log("changing to: " + _gameState._state);
+            });
+            
         });
 
 
@@ -338,6 +333,7 @@ public class InitializationSocket : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+
         canvas.GetComponent<Canvas>().enabled = false;
     }
 }

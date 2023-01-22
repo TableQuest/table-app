@@ -35,19 +35,7 @@ public class DiceManager : MonoBehaviour
     {
         socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         close.AddComponent<OnClickButton>();
-        close.GetComponent<OnClickButton>().call = delegate
-        {
-            Debug.Log("Cick CLOSE !");
-            dicePanel.SetActive(false);
-            successImage.SetActive(false);
-            failImage.SetActive(false);
-            close.SetActive(false);
-            if (waitingSkill)
-            {
-                socket.client.EmitAsync("cancelPendingSkill", "");
-                waitingSkill = false;
-            }
-        };
+        close.GetComponent<OnClickButton>().call = CancelIfWaiting;
         
         waitingSkill = false;
     }
@@ -121,17 +109,23 @@ public class DiceManager : MonoBehaviour
         };
         await socket.client.EmitAsync("dice", JsonConvert.SerializeObject(myData));
     }
-    
-    
-    public void TestDrag()
-    {
-        Debug.Log("DRAGGING ! ");
-    }
 
     public void MovePanel(string id, Vector2 pos)
     {
         var vec = new Vector3(pos.x, pos.y, -10);
-        Debug.Log("Moving Dice Panel : "+vec);
         dicePanel.transform.position = new Vector3(pos.x-30, pos.y-55, -10);
+    }
+
+    public void CancelIfWaiting()
+    {
+        dicePanel.SetActive(false);
+        successImage.SetActive(false);
+        failImage.SetActive(false);
+        close.SetActive(false);
+        if (waitingSkill)
+        {
+            socket.client.EmitAsync("cancelPendingSkill", "");
+            waitingSkill = false;
+        }
     }
 }
