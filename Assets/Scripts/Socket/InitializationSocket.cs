@@ -124,6 +124,17 @@ public class InitializationSocket : MonoBehaviour
             });
         });
 
+        _client.On("removeNpc", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                string str = data.GetValue<string>(0);
+                RemoveNpc npcData = JsonConvert.DeserializeObject<RemoveNpc>(str);
+                _gameState._entityManager.RemoveNpc(npcData.pawnCode);
+            });
+        });
+
+
         _client.On("updateInfoCharacter", (data) =>
         {
            
@@ -379,7 +390,17 @@ public class InitializationSocket : MonoBehaviour
         public string value;
     }
 
-    public class TurnOrderList
+public class RemoveNpc
+{
+    public RemoveNpc(string pawnCode)
+    {
+        this.pawnCode = pawnCode;
+    }
+
+    public string pawnCode;
+}
+
+public class TurnOrderList
     {
         public TurnOrderList(List<string> list)
         {

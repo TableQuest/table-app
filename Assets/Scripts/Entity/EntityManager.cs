@@ -197,6 +197,13 @@ public class EntityManager : MonoBehaviour
         return writer.Write(textToEncode);
     }
 
+    public void RemoveNpc(string id)
+    {
+        Npc npc = GetNPCWithId(id);
+        GameObject.Destroy(npc.tangibleObject);
+        _npcs.Remove(npc);
+    }
+
 
     public void RemoveHelper(string playerId)
     {   
