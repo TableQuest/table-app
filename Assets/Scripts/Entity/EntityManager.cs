@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace;
 using SocketIOClient;
 using TMPro;
 using ZXing;
 using ZXing.QrCode;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class EntityManager : MonoBehaviour
 {
@@ -27,6 +29,8 @@ public class EntityManager : MonoBehaviour
 		_players = new List<Player>();
         _npcs = new List<Npc>();
         _grid = GameObject.Find("GridManager").GetComponent<GridManager>();
+        Socket socket = GameObject.Find("SocketClient").GetComponent<Socket>();
+        serverUrl = socket.requestURI;
 	}
 
     public List<Entity> getEntities()
@@ -104,6 +108,7 @@ public class EntityManager : MonoBehaviour
         GameObject playerInfo = Instantiate(Resources.Load("Prefab/PlayerInfo") as GameObject, new Vector3(pos.x, pos.y, -10), Quaternion.identity);
         HealthHandler healthHandler = playerInfo.AddComponent<HealthHandler>();
         healthHandler.Initialize(player,true);
+        playerInfo.transform.localScale = new Vector3(0, 0, 0);
         AddButtonTo(player);
 
         //Not the best way to do it I guess but couldn't figure anything else yet
@@ -164,20 +169,19 @@ public class EntityManager : MonoBehaviour
         
         GameState gameState = GameObject.Find("TableQuests").GetComponent<GameState>();
         gameState._state = gameState._previousState;
+        GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/npc"));
+
     }
-
-
-
+    
     public void AddButtonTo(Entity entity) {
         var button = Instantiate(Resources.Load("Prefab/Button") as GameObject, new Vector3(), Quaternion.identity);
         button.transform.SetParent(entity.tangibleObject.transform);
-        button.transform.localPosition = new Vector3(0, 1.4f, 0);
+        button.transform.localPosition = new Vector3(0, -1.4f, 0);
         button.transform.localScale = new Vector3(1, 1, 1);
         button.name = "buttonConfirm";
         button.SetActive(false);
     }
-
-
+    
     public Color32[] EncodeTextToQrCode(string textToEncode, int width, int height)
     {
         BarcodeWriter writer = new BarcodeWriter
@@ -190,6 +194,13 @@ public class EntityManager : MonoBehaviour
             }
         };
         return writer.Write(textToEncode);
+    }
+
+    public void RemoveNpc(string id)
+    {
+        Npc npc = GetNPCWithId(id);
+        GameObject.Destroy(npc.tangibleObject);
+        _npcs.Remove(npc);
     }
 
 

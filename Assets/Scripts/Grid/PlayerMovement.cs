@@ -27,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
             var str = response.GetValue<string>(0);
             _socket._mainThreadhActions.Enqueue(() =>
             {
+                _grid.resetTilesAttack();
                 var playerMove = JsonUtility.FromJson<PlayerMove>(str);
                 var player = _gameState._entityManager.GetPlayerWithGlobalId(playerMove.playerId);
                 
@@ -139,6 +140,15 @@ public class PlayerMovement : MonoBehaviour
     public void ActivateMoveButton(Player player)
     {
         var button = player.tangibleObject.transform.GetChild(0);
+        button.transform.localPosition = GetValidePostion(player);
+        if (player.name == "Dwarf")
+        {
+            button.GetChild(0).Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/dwarf");
+        }
+        else
+        {
+            button.GetChild(0).Find("Icon").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/elf");
+        }
         button.gameObject.SetActive(true);
         button.GetComponent<OnClickButton>().call = ValidateMove;
     }
@@ -149,7 +159,60 @@ public class PlayerMovement : MonoBehaviour
         button.gameObject.SetActive(false);
         button.GetComponent<OnClickButton>().call = null;
     }
+
+    public Vector3 GetValidePostion(Entity player)
+    {
+        var tangiblePlayerPos = _grid.GetPosFromEntityPos(player.tangibleObject.transform.position);
+
+        Tile north = _grid.GetTileAtPosition((int) tangiblePlayerPos.x, (int) tangiblePlayerPos.y + 1);
+        Tile east = _grid.GetTileAtPosition((int) tangiblePlayerPos.x+1, (int) tangiblePlayerPos.y);
+        Tile west = _grid.GetTileAtPosition((int) tangiblePlayerPos.x-1, (int) tangiblePlayerPos.y);
+        Tile south = _grid.GetTileAtPosition((int) tangiblePlayerPos.x, (int) tangiblePlayerPos.y - 1);
+        
+        if (IsPositionFree(south)) // south
+        {
+            return new Vector3(0, -1.4f, 0);
+        } 
+        else if (IsPositionFree(east)) // East
+        {
+            return new Vector3(1.4f, 0, 0);
+        }
+        else if (IsPositionFree(west)) // west
+        {
+            return new Vector3(-1.4f, 0, 0);
+
+        }
+        else if (IsPositionFree(north)) // north
+        {
+            return new Vector3(0, 1.4f, 0);
+
+        }
+        
+        return new Vector3(0, -1.4f, 0);
+    }
+
+    public bool IsPositionFree(Tile tile)
+    {
+        foreach (var entity in _gameState._entityManager.getEntities())
+        {
+            if (tile == null)
+            {
+                return false;
+            }
+            var tangiblePos = _grid.GetPosFromEntityPos(entity.tangibleObject.transform.position);
+            Tile t = _grid.GetTileAtPosition((int) tangiblePos.x, (int) tangiblePos.y);
+
+            if (t == tile)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 }
+
+
 
 class PlayerMove
 {

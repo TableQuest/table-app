@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using Mono.Cecil;
 using Newtonsoft.Json;
 using TMPro;
@@ -23,30 +24,22 @@ public class DiceManager : MonoBehaviour
     public TextMeshProUGUI diceValueText;
     public TextMeshProUGUI targetValueText;
 
+    public AudioClip failEffect;
+    public AudioClip successEffect;
+    
     public string testName;
     
     private int _currentTargetValue;
     private string _currentPlayerId;
     private string _currentPawnCodeId;
 
-    public bool waitingSkill; 
+    public bool waitingSkill;
+
     private void Start()
     {
         socket = GameObject.Find("SocketClient").GetComponent<Socket>();
         close.AddComponent<OnClickButton>();
-        close.GetComponent<OnClickButton>().call = delegate
-        {
-            Debug.Log("Cick CLOSE !");
-            dicePanel.SetActive(false);
-            successImage.SetActive(false);
-            failImage.SetActive(false);
-            close.SetActive(false);
-            if (waitingSkill)
-            {
-                socket.client.EmitAsync("cancelPendingSkill", "");
-                waitingSkill = false;
-            }
-        };
+        close.GetComponent<OnClickButton>().call = CancelIfWaiting;
         
         waitingSkill = false;
     }
@@ -61,6 +54,8 @@ public class DiceManager : MonoBehaviour
     {
         _currentPlayerId = playerId;
         _currentTargetValue = targetValue;
+        failImage.SetActive(false);
+        successImage.SetActive(false);
         
         var player = gameState._entityManager.GetPlayerWithGlobalId(playerId);
         _currentPawnCodeId = player.id;
@@ -89,10 +84,14 @@ public class DiceManager : MonoBehaviour
         if (diceValue >= _currentTargetValue)
         {
             successImage.SetActive(true);
+            Debug.Log("Fail Attack");
+            StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/success"),1));
         }
         else
         {
             failImage.SetActive(true);
+            Debug.Log("Fail Attack");
+            StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/fail"), 1));
         }
         var myData = new
         {
@@ -120,10 +119,23 @@ public class DiceManager : MonoBehaviour
         };
         await socket.client.EmitAsync("dice", JsonConvert.SerializeObject(myData));
     }
-    
-    
-    public void TestDrag()
+
+    public void MovePanel(string id, Vector2 pos)
     {
-        Debug.Log("DRAGGING ! ");
+        var vec = new Vector3(pos.x, pos.y, -10);
+        dicePanel.transform.position = new Vector3(pos.x-30, pos.y-55, -10);
+    }
+
+    public void CancelIfWaiting()
+    {
+        dicePanel.SetActive(false);
+        successImage.SetActive(false);
+        failImage.SetActive(false);
+        close.SetActive(false);
+        if (waitingSkill)
+        {
+            socket.client.EmitAsync("cancelPendingSkill", "");
+            waitingSkill = false;
+        }
     }
 }

@@ -4,8 +4,10 @@ using SocketIOClient;
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using DefaultNamespace;
 using Newtonsoft.Json;
 using TMPro;
+using Unity.VisualScripting;
 
 public class InitializationSocket : MonoBehaviour
 {
@@ -51,55 +53,74 @@ public class InitializationSocket : MonoBehaviour
 
         _client.On("switchState", (data) =>
         {
+            STATE state;
+            
             string str = data.GetValue<string>(0);
             switch (str)
             {
                 case "FREE":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        if (_gameState._state == STATE.INIT_TURN_ORDER)
-                        {
-                            resetTurnOrder();
-                        }
-                        _gameState._state = STATE.PLAYING;
-                        Debug.Log("changing to: " + _gameState._state);
-                        if (firstSwitch)
-                        {
-                            _gameState._menuManager.populateMenu();
-                            firstSwitch = false;
-                        }
-                    });
+                    state = STATE.PLAYING;
                     break;
 
                 case "RESTRICTED":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        if(_gameState._state == STATE.INIT_TURN_ORDER)
-                        {
-                            resetTurnOrder();
-                        }
-                        _gameState._state = STATE.CONSTRAINT;
-                        Debug.Log("changing to: " + _gameState._state);
-                    });
+                    state = STATE.CONSTRAINT;
                     break;
                 case "INIT_TURN_ORDER":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        _gameState._state = STATE.INIT_TURN_ORDER;
-                        Debug.Log("changing to: " + _gameState._state);
-                    });
+                    state = STATE.INIT_TURN_ORDER;
                     break;
                 case "TURN_ORDER":
-                    socket._mainThreadhActions.Enqueue(() =>
-                    {
-                        _gameState._state = STATE.TURN_ORDER;
-                        Debug.Log("changing to: " + _gameState._state);
-                    });
+                    state = STATE.TURN_ORDER;
+                    break;
+                case "INIT":
+                    state = STATE.INIT;
                     break;
                 default:
+                    state = state = STATE.PLAYING;
                     Debug.Log("State " + str + " is wrong or not implemented yet.");
                     break;
             }
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (firstSwitch)
+                {
+                    _gameState._menuManager.populateMenu();
+                    firstSwitch = false;
+                }
+                if(_gameState._state == STATE.PLAYING)
+                {
+                    resetTurnOrder();
+                }
+                if(_gameState._state == STATE.INIT_TURN_ORDER || _gameState._state == STATE.TURN_ORDER)
+                {
+                    resetTurnOrder();
+                    Debug.Log("Reset Turn Order !");
+                }
+
+                
+
+                if (_gameState._state == STATE.INIT && state != STATE.INIT)
+                {
+                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/init"));
+                }
+                else
+                {
+                    if (_gameState._state != state && state != STATE.INIT_TURN_ORDER && state != STATE.TURN_ORDER)
+                    {
+                        GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/change_state"));
+                    }
+                }
+
+                _gameState._state = state;
+                Debug.Log("changing to: " + _gameState._state);
+                
+                if (_gameState._state == STATE.INIT_TURN_ORDER)
+                {
+                    GameObject.Find("SoundManager").GetComponent<SoundManager>().PlaySound(Resources.Load<AudioClip>("Audio/Effects/init_turn_order"));
+                    //GameObject.Find("Canvas").AddComponent<TextMeshProUGUI>().text = "Roll your dice !!";
+                    // TODO afficher "lancez vos dés" sur un panel qui s'enlève tous seul ou avec un click
+                }
+            });
+            
         });
 
 
@@ -112,6 +133,18 @@ public class InitializationSocket : MonoBehaviour
                 _gameState._entityManager.CreateNewNpc(npcData.id, npcData.name); //normalement cet ID c'est celui du monstre (10: Goblin, 11: Ogre)
             });
         });
+
+        _client.On("removeNpc", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                Debug.Log("REMOVE NPC " + data);
+                string str = data.GetValue<string>(0);
+                _gameState._entityManager.RemoveNpc(str);
+                StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/death_npc"),3));
+            });
+        });
+
 
         _client.On("updateInfoCharacter", (data) =>
         {
@@ -153,7 +186,8 @@ public class InitializationSocket : MonoBehaviour
             {
                 List<CharacterSelection> myObjectList = JsonConvert.DeserializeObject<List<CharacterSelection>>(data.ToString());
                 CharacterSelection characterSelection = myObjectList[0];
-                _gameState._entityManager.GetPlayerWithGlobalId(characterSelection.playerId).name = characterSelection.character;    
+                _gameState._entityManager.GetPlayerWithGlobalId(characterSelection.playerId).name = characterSelection.character;
+                _gameState._entityManager.GetPlayerWithGlobalId(characterSelection.playerId).tangibleObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Table" + characterSelection.character);
             });
         });
 
@@ -199,11 +233,11 @@ public class InitializationSocket : MonoBehaviour
                     errorMessage += "Player "+playerId+" has disconnected.\n";
                     int pos = Array.IndexOf(everyDisconnectedPlayerIds, playerId);
 
-                    GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
+                    GameObject qrCodeCanvas = Instantiate(Resources.Load("Prefab/QrCodeCanvas") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 700, -15), Quaternion.identity);
                     qrCodeCanvas.name = "reconnectionCanvas";
-                    GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 300, -5), Quaternion.identity);
+                    GameObject _rawImageReceiver = Instantiate(Resources.Load("Prefab/QrCode") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length, 700, -15), Quaternion.identity);
                     _rawImageReceiver.name = "qrCode"+playerId;
-                    GameObject _playerIdText = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length+50, 220, -5), Quaternion.identity);
+                    GameObject _playerIdText = Instantiate(Resources.Load("Prefab/textID") as GameObject, new Vector3((pos+1)*Screen.width/everyDisconnectedPlayerIds.Length+50, 620, -15), Quaternion.identity);
                     _rawImageReceiver.name = "QrCode" + playerId;
                     _playerIdText.name = playerId;
                     _playerIdText.GetComponent<TextMeshPro>().text = playerId;
@@ -241,6 +275,37 @@ public class InitializationSocket : MonoBehaviour
                 List<SkillDice> myObjectList = JsonConvert.DeserializeObject<List<SkillDice>>(data.ToString());
                 SkillDice skillDice = myObjectList[0];
                 GameObject.Find("DiceManager").GetComponent<DiceManager>().WaitForSkill(skillDice.playerId, skillDice.skillName, skillDice.targetValue);
+            });
+        });
+        
+        _client.On("attackApply", (data) =>
+        {
+            Debug.Log("attack launch "+data.GetValue<string>(0));
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (data.GetValue<string>(0) == "true")
+                {
+                    StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/heal"),3));
+                }
+                else
+                {
+                    var corout = StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/sword"),3));
+                }
+            });
+        });
+        
+        _client.On("npcAttack", (data) =>
+        {
+            socket._mainThreadhActions.Enqueue(() =>
+            {
+                if (data.GetValue<string>(0) == "True" || data.GetValue<string>(0) == "true")
+                {
+                    StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/heal"),0));
+                }
+                else
+                {
+                    var corout = StartCoroutine(GameObject.Find("SoundManager").GetComponent<SoundManager>().PlayDelayed(Resources.Load<AudioClip>("Audio/Effects/sword"),0));
+                }
             });
         });
     }
@@ -338,6 +403,7 @@ public class InitializationSocket : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+
         canvas.GetComponent<Canvas>().enabled = false;
     }
 }
@@ -360,7 +426,17 @@ public class InitializationSocket : MonoBehaviour
         public string value;
     }
 
-    public class TurnOrderList
+public class RemoveNpc
+{
+    public RemoveNpc(string pawnCode)
+    {
+        this.pawnCode = pawnCode;
+    }
+
+    public string pawnCode;
+}
+
+public class TurnOrderList
     {
         public TurnOrderList(List<string> list)
         {

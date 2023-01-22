@@ -151,6 +151,10 @@ public class MenuManager : MonoBehaviour
         menu.listPagesButton = MenuBuilder.generatePages(menu.globalId, message);
         MenuBuilder.InstantiateButton(menu);
         MenuBuilder.DisplayPage(0, menu);
+        // GameObject.Find("SocketClient").GetComponent<Socket>()._mainThreadhActions.Enqueue(() =>
+        // {
+        //     
+        // });
     }
 
     public async void attackPlayerButtonClick(string globalIDPlayer)
