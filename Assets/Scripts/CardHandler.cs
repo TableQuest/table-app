@@ -50,7 +50,7 @@ public class CardHandler : MonoBehaviour
             GameObject.Destroy(gameObject);
             return;
         } 
-        turnHighlight.transform.position = new Vector3(entity.tangibleObject.transform.position.x, entity.tangibleObject.transform.position.y, 0);
+        turnHighlight.transform.position = new Vector3(entity.tangibleObject.transform.position.x, entity.tangibleObject.transform.position.y, -2);
         if (entity.lifeMax != 0)
         {
             HealthBar.GetComponent<Image>().fillAmount = ((((float)entity.life / (float)entity.lifeMax) * 100.0f) / 100.0f) * numberPourcentage;
